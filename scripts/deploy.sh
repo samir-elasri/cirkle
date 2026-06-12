@@ -49,6 +49,8 @@ EXCLUDES=(
   --exclude='node_modules/'
   --exclude='storage/'
   --exclude='public_html/storage'   # symlink target lives in storage/ (excluded)
+  --exclude='public_html/lang/'     # server-owned CMS translation overrides (admin UI edits)
+  --exclude='public_html/dist/compiled/lang/'  # regenerated remotely by locales:compile
   --exclude='docs/'
   --exclude='*.sql'
   --exclude='*.log'
@@ -131,6 +133,7 @@ ssh "${SSH_HOST}" "bash -lc '
   cd \"${REMOTE_PATH}\"
   composer install --no-dev --optimize-autoloader --no-interaction
   php artisan migrate --force
+  php artisan locales:compile
   php artisan view:clear
   php artisan config:cache
   php artisan route:cache
