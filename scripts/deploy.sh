@@ -186,7 +186,11 @@ else
   COMPOSER="php \$HOME/composer.phar"
 fi
 
-\$COMPOSER install --no-dev --optimize-autoloader --no-interaction
+# NO --no-dev: app/helpers/debug.php instantiates Faker\Factory at file scope
+# and is autoloaded on every request (composer.json "files"), so the app cannot
+# boot without dev dependencies. Running --no-dev took prod down on 2026-06-12.
+# Revisit only after debug.php stops hard-requiring Faker.
+\$COMPOSER install --optimize-autoloader --no-interaction
 php artisan migrate --force
 php artisan locales:compile
 php artisan view:clear
