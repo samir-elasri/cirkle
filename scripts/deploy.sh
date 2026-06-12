@@ -6,58 +6,58 @@
 #
 #   Usage:  bash scripts/deploy.sh
 #
+# Transport: git-driven tar-over-ssh (NOT rsync — Git Bash on this machine has
+# no rsync). Only files changed since the last deployed commit are sent:
+#   - the server stores the deployed commit in ~/.cirkle_deployed_sha
+#   - first deploy falls back to BASELINE_SHA (the initial commit, which IS
+#     the server's tree: the repo was created from the Nov 2025 server pull)
+#   - the exact file list (sends + deletions) is shown before the "yes" prompt
+#   - deploys ship the committed state: the clean-tree check guarantees the
+#     working tree (which tar reads) is identical to HEAD
+#
 # What it does, in order:
 #   1. Verifies you are in the repo with a CLEAN git working tree (aborts otherwise).
-#   2. Prints exactly what will change on the server (rsync dry-run summary).
-#   3. Requires you to type "yes" before anything is transferred.
-#   4. rsync-pushes the app to node14 (excludes .env, vendor, node_modules,
-#      storage, .git, docs, *.sql, *.log — see EXCLUDES below).
-#   5. Over SSH: composer install --no-dev, migrate --force, cache view/config/route.
-#   6. Smoke-checks the homepage for HTTP 200.
+#   2. Computes changed/deleted files since the server's deployed commit.
+#   3. Prints them and requires you to type "yes" before anything is transferred.
+#   4. tar-over-ssh the changed files; explicit rm for deletions.
+#      Never sent: .env*, vendor/, node_modules/, storage/, docs/, *.sql,
+#      public_html/lang/ (CMS overrides), public_html/dist/compiled/lang/
+#      (regenerated remotely by locales:compile).
+#   5. Over SSH: composer install --no-dev, migrate --force, locales:compile,
+#      then view/config/route CLEARS (this app breaks under route:cache /
+#      config:cache — see section 6).
+#   6. Smoke-checks the homepage for HTTP 200, then records the deployed SHA.
 #
 # Notes:
 #   - Assets are NOT rebuilt here. The committed public_html/dist/compiled/*
 #     are authoritative (the SCSS vendor/ rebuild is a separate, deferred task).
-#   - rsync runs WITHOUT --delete on purpose, so server-side uploads
-#     (public_html/medias, files, imagecache, storage) are never clobbered.
+#   - Working-tree text files are CRLF on Windows; PHP/Blade/JSON tolerate it.
+#     *.sh stays LF via .gitattributes (eol=lf).
 # ----------------------------------------------------------------------------
 
 set -euo pipefail
 
 # ── Config ──────────────────────────────────────────────────────────────────
-# Preferred: the `cirkle` SSH alias from ~/.ssh/config (encodes host/port/user/key).
-# If you don't have the alias, set SSH_HOST to the explicit form below.
-SSH_HOST="${CIRKLE_SSH_HOST:-cirkle}"
-# Explicit fallback (uncomment / export CIRKLE_SSH_HOST to override):
-#   ssh -p 5022 -i ~/.ssh/cirkle_n0c yymcsmwb@node14-ca.n0c.com
+SSH_HOST="${CIRKLE_SSH_HOST:-cirkle}"          # ~/.ssh/config alias (host/port/user/key)
 REMOTE_PATH="${CIRKLE_REMOTE_PATH:-/home/yymcsmwb}"
 SMOKE_URL="${CIRKLE_SMOKE_URL:-https://cirkleservices.com/fr}"
+SHA_FILE=".cirkle_deployed_sha"                # lives in the remote $HOME
+BASELINE_SHA="34083c2"                         # initial commit == server tree (Nov 2025 pull)
+
+# Paths that must never reach the server (git pathspec excludes).
+# .env*, vendor/, node_modules/, storage/ are untracked, so git never lists them.
+EXCLUDE_PATHSPECS=(
+  ':(exclude)docs'
+  ':(exclude)*.sql'
+  ':(exclude).env*'
+  ':(exclude)public_html/lang'
+  ':(exclude)public_html/dist/compiled/lang'
+)
 
 # Resolve repo root from this script's location, and always run from there.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${REPO_ROOT}"
-
-EXCLUDES=(
-  --exclude='.git/'
-  --exclude='.github/'
-  --exclude='.idea/'
-  --exclude='.vscode/'
-  --exclude='.env'
-  --exclude='.env.*'
-  --exclude='vendor/'
-  --exclude='node_modules/'
-  --exclude='storage/'
-  --exclude='public_html/storage'   # symlink target lives in storage/ (excluded)
-  --exclude='public_html/lang/'     # server-owned CMS translation overrides (admin UI edits)
-  --exclude='public_html/dist/compiled/lang/'  # regenerated remotely by locales:compile
-  --exclude='docs/'
-  --exclude='*.sql'
-  --exclude='*.log'
-  --exclude='.DS_Store'
-  --exclude='Homestead.*'
-  --exclude='.phpunit.result.cache'
-)
 
 # ── Pretty output ───────────────────────────────────────────────────────────
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
@@ -76,7 +76,8 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-HEAD_SHA="$(git rev-parse --short HEAD)"
+HEAD_SHA="$(git rev-parse HEAD)"
+HEAD_SHORT="$(git rev-parse --short HEAD)"
 HEAD_MSG="$(git log -1 --pretty=%s)"
 
 bold "──────────────────────────────────────────────"
@@ -84,46 +85,79 @@ bold " Cirkle deploy → ${SSH_HOST}:${REMOTE_PATH}"
 bold "──────────────────────────────────────────────"
 green "✓ Clean working tree"
 echo  "  Branch : ${BRANCH}"
-echo  "  Commit : ${HEAD_SHA}  ${HEAD_MSG}"
+echo  "  Commit : ${HEAD_SHORT}  ${HEAD_MSG}"
 echo
 
-# ── 2. Verify SSH reachability ──────────────────────────────────────────────
+# ── 2. SSH reachability + last deployed commit ──────────────────────────────
 yellow "Checking SSH connectivity to ${SSH_HOST}…"
 ssh -o BatchMode=yes -o ConnectTimeout=10 "${SSH_HOST}" 'echo ok' >/dev/null 2>&1 \
   || die "Cannot reach ${SSH_HOST} over SSH (check ~/.ssh/config alias 'cirkle' or set CIRKLE_SSH_HOST)."
 green "✓ SSH OK"
+
+LAST_SHA="$(ssh -o BatchMode=yes "${SSH_HOST}" "cat ~/${SHA_FILE} 2>/dev/null" || true)"
+if [[ -z "${LAST_SHA}" ]]; then
+  yellow "No ${SHA_FILE} on the server — using baseline ${BASELINE_SHA} (initial pull)."
+  LAST_SHA="${BASELINE_SHA}"
+fi
+git cat-file -e "${LAST_SHA}^{commit}" 2>/dev/null \
+  || die "Deployed commit ${LAST_SHA} is unknown locally — fetch/pull first."
+
+if [[ "$(git rev-parse "${LAST_SHA}")" == "${HEAD_SHA}" ]]; then
+  green "Server is already at ${HEAD_SHORT} — nothing to deploy."
+  exit 0
+fi
+echo "  Server is at : $(git log -1 --pretty='%h  %s' "${LAST_SHA}")"
 echo
 
-# ── 3. Dry-run summary (what WILL change) ───────────────────────────────────
-bold "Files that would change on the server (rsync dry-run):"
+# ── 3. Compute + show the delta ─────────────────────────────────────────────
+# core.quotepath=off keeps accented filenames literal so tar -T can read them.
+SEND_LIST="$(mktemp)"
+DEL_LIST="$(mktemp)"
+trap 'rm -f "${SEND_LIST}" "${DEL_LIST}"' EXIT
+
+git -c core.quotepath=off diff --name-only --diff-filter=ACMR \
+  "${LAST_SHA}" "${HEAD_SHA}" -- . "${EXCLUDE_PATHSPECS[@]}" > "${SEND_LIST}"
+git -c core.quotepath=off diff --name-only --diff-filter=D \
+  "${LAST_SHA}" "${HEAD_SHA}" -- . "${EXCLUDE_PATHSPECS[@]}" > "${DEL_LIST}"
+
+N_SEND="$(grep -c . "${SEND_LIST}" || true)"
+N_DEL="$(grep -c . "${DEL_LIST}" || true)"
+
+if [[ "${N_SEND}" -eq 0 && "${N_DEL}" -eq 0 ]]; then
+  green "Delta is empty after exclusions — nothing to deploy."
+  exit 0
+fi
+
+bold "Files to SEND (${N_SEND}):"
+sed 's/^/   + /' "${SEND_LIST}"
+if [[ "${N_DEL}" -gt 0 ]]; then
+  bold "Files to DELETE on the server (${N_DEL}):"
+  sed 's/^/   - /' "${DEL_LIST}"
+fi
 echo
-set +e
-rsync -azz --dry-run --itemize-changes --human-readable \
-  "${EXCLUDES[@]}" \
-  -e "ssh" \
-  ./ "${SSH_HOST}:${REMOTE_PATH}/" | sed 's/^/   /'
-RSYNC_DRY_RC=$?
-set -e
-[[ ${RSYNC_DRY_RC} -eq 0 ]] || die "rsync dry-run failed (rc=${RSYNC_DRY_RC})."
-echo
-yellow "Excludes: .env(.* ) · vendor/ · node_modules/ · storage/ · .git/ · docs/ · *.sql · *.log"
-yellow "rsync runs WITHOUT --delete (server uploads are preserved)."
+yellow "Never sent: .env* · vendor/ · node_modules/ · storage/ · docs/ · *.sql · public_html/lang/ · public_html/dist/compiled/lang/"
 echo
 
 # ── 4. Explicit confirmation ────────────────────────────────────────────────
-bold "This will push the above to ${SSH_HOST}:${REMOTE_PATH} and run migrations + cache rebuild."
+bold "This will push the above to ${SSH_HOST}:${REMOTE_PATH} and run migrations + cache clears."
 printf 'Type "yes" to proceed: '
 read -r CONFIRM
 [[ "${CONFIRM}" == "yes" ]] || { yellow "Aborted — nothing was transferred."; exit 0; }
 echo
 
-# ── 5. Real rsync push ──────────────────────────────────────────────────────
-bold "→ Syncing files…"
-rsync -azz --human-readable --info=stats1,progress2 \
-  "${EXCLUDES[@]}" \
-  -e "ssh" \
-  ./ "${SSH_HOST}:${REMOTE_PATH}/"
-green "✓ Files synced"
+# ── 5. Transfer ─────────────────────────────────────────────────────────────
+if [[ "${N_SEND}" -gt 0 ]]; then
+  bold "→ Sending ${N_SEND} file(s)…"
+  tar -czf - -T "${SEND_LIST}" | ssh "${SSH_HOST}" "tar -xzf - -C '${REMOTE_PATH}'"
+  green "✓ Files sent"
+fi
+
+if [[ "${N_DEL}" -gt 0 ]]; then
+  bold "→ Deleting ${N_DEL} file(s) on the server…"
+  # File list goes over stdin; one path per line, removed relative to REMOTE_PATH.
+  ssh "${SSH_HOST}" "cd '${REMOTE_PATH}' && while IFS= read -r f; do rm -f -- \"\$f\"; done" < "${DEL_LIST}"
+  green "✓ Deletions done"
+fi
 echo
 
 # ── 6. Remote post-deploy ───────────────────────────────────────────────────
@@ -160,14 +194,17 @@ REMOTE
 green "✓ Remote post-deploy complete"
 echo
 
-# ── 7. Smoke check ──────────────────────────────────────────────────────────
+# ── 7. Smoke check, then record the deployed commit ─────────────────────────
 bold "→ Smoke-checking ${SMOKE_URL} …"
 HTTP_CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${SMOKE_URL}" || echo 000)"
 if [[ "${HTTP_CODE}" == "200" ]]; then
   green "✓ ${SMOKE_URL} → HTTP ${HTTP_CODE}"
 else
-  yellow "⚠ ${SMOKE_URL} → HTTP ${HTTP_CODE} (verify manually)"
+  yellow "⚠ ${SMOKE_URL} → HTTP ${HTTP_CODE} (verify manually before trusting this deploy)"
 fi
 
+ssh "${SSH_HOST}" "echo '${HEAD_SHA}' > ~/${SHA_FILE}"
+green "✓ Recorded deployed commit ${HEAD_SHORT} on the server"
+
 echo
-green "Deploy finished: ${BRANCH}@${HEAD_SHA} → ${SSH_HOST}:${REMOTE_PATH}"
+green "Deploy finished: ${BRANCH}@${HEAD_SHORT} → ${SSH_HOST}:${REMOTE_PATH}"
