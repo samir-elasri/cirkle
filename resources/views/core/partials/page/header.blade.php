@@ -35,6 +35,32 @@
 		</div>
 
 		<div class="header__buttons">
+			@if(!empty($latestMemberNumber))
+				{{-- Compteur de membres : plus récent numéro de la séquence partagée C/F, sans la lettre --}}
+				{{-- Styles inline temporaires : la rebuild SCSS est gelée (voir docs/gap-map.md) --}}
+				<style>
+					.header__member-counter {
+						display: inline-flex;
+						align-items: baseline;
+						gap: .35em;
+						margin-right: 1em;
+						white-space: nowrap;
+					}
+					.header__member-counter-label {
+						font-size: .8em;
+						text-transform: uppercase;
+						letter-spacing: .04em;
+					}
+					.header__member-counter-value {
+						font-weight: 700;
+						font-variant-numeric: tabular-nums;
+					}
+				</style>
+				<div class="header__member-counter" title="@lang('main.memberCounterTitle')">
+					<span class="header__member-counter-label">@lang('main.memberCounter')</span>
+					<span class="header__member-counter-value">{{ $latestMemberNumber }}</span>
+				</div>
+			@endif
 			@if(logged_in())
 				<a href="{{urlRouteName('subscriber.logout')}}" class="call-to-action">{{ __('auth.profile.logout') }}</a>
 			@else

@@ -43,6 +43,7 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  * App\Models\Core\Subscriber
  *
  * @property int $id
+ * @property int|null $member_number
  * @property string|null $first_name
  * @property string|null $last_name
  * @property string|null $login_datetime
@@ -58,6 +59,7 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $collection_name
+ * @property-read string|null $formatted_member_number
  * @property-read string $name
  * @property-read mixed $preference_language_name
  * @property-read SearchResult $search_result
@@ -94,6 +96,12 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 class Subscriber extends Authenticatable implements TranslatableContract
 {
 	use Notifiable, HasFactory, Translatable;
+
+	/**
+	 * Premier numéro de la séquence de membres partagée clients/fournisseurs
+	 * (C02350, F02351, C02352, ...). La lettre est dérivée de is_provider à l'affichage.
+	 */
+	public const MEMBER_NUMBER_START = 2350;
 
     public $searchFields = ['serviceCategory', 'serviceCategories', 'services', 'main_description'];
 
@@ -186,6 +194,7 @@ class Subscriber extends Authenticatable implements TranslatableContract
 
 	protected array $grid = [
 		'id',
+		'member_number',
 		'name',
 		'company_name',
 		'email',
@@ -207,6 +216,7 @@ class Subscriber extends Authenticatable implements TranslatableContract
 	];
 
 	protected array $niceNames = [
+		'member_number'                             => 'Numéro de membre',
 		'email'                                     => 'Courriel',
 		'first_name'                                => 'Prénom',
 		'last_name'                                 => 'Nom',
@@ -276,6 +286,35 @@ class Subscriber extends Authenticatable implements TranslatableContract
 			'method' => 'exportFile'
 		)
 	];
+
+	public static function boot()
+	{
+		parent::boot();
+
+		// Assigne le prochain numéro de la séquence de membres partagée (clients et fournisseurs).
+		// DB::table contourne les global scopes : le max doit couvrir tous les membres, même inactifs.
+		// L'index unique sur member_number sert de garde-fou en cas de création simultanée.
+		static::creating(static function ($subscriber) {
+			if (empty($subscriber->member_number)) {
+				$max = DB::table($subscriber->getTable())->max('member_number');
+				$subscriber->member_number = max((int)$max + 1, self::MEMBER_NUMBER_START);
+			}
+		});
+	}
+
+	/**
+	 * Numéro de membre affichable : C02350 pour un client, F02351 pour un fournisseur.
+	 *
+	 * @return string|null
+	 */
+	public function getFormattedMemberNumberAttribute(): ?string
+	{
+		if (!$this->member_number) {
+			return null;
+		}
+
+		return sprintf('%s%05d', $this->is_provider ? 'F' : 'C', $this->member_number);
+	}
 
 	/**
 	 * @return string

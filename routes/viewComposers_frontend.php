@@ -3,6 +3,14 @@
 use App\Models\Service;
 use App\Models\ServiceCategory;
 
+View::composer('core.partials.page.header', static function ($view) {
+    // Compteur de membres : le plus récent numéro de la séquence partagée C/F (sans la lettre).
+    // DB::table contourne les global scopes pour couvrir tous les membres, même inactifs.
+    $latestMemberNumber = DB::table('subscribers')->max('member_number');
+
+    return $view->with('latestMemberNumber', $latestMemberNumber);
+});
+
 View::composer('partials.profileOptionsForm', function ($view) {
 	$profileOptions = setting()->sorted_profile_options;
 
