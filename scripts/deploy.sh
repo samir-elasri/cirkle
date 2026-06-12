@@ -127,17 +127,36 @@ green "✓ Files synced"
 echo
 
 # ── 6. Remote post-deploy ───────────────────────────────────────────────────
-bold "→ Running remote post-deploy (composer / migrate / cache)…"
-ssh "${SSH_HOST}" "bash -lc '
-  set -euo pipefail
-  cd \"${REMOTE_PATH}\"
-  composer install --no-dev --optimize-autoloader --no-interaction
-  php artisan migrate --force
-  php artisan locales:compile
-  php artisan view:clear
-  php artisan config:cache
-  php artisan route:cache
-'"
+# IMPORTANT — clears, not caches: this app has NEVER run with route/config
+# caches (verified on node14: bootstrap/cache/ has only packages/services).
+#   - route:cache  → HTTP 500 (routes depend on the request locale + DB pages)
+#   - config:cache → would null the raw env() calls (e.g. Stripe keys in
+#     BasicCartController) since .env stops being loaded once config is cached
+bold "→ Running remote post-deploy (composer / migrate / locales / cache clears)…"
+ssh "${SSH_HOST}" 'bash -s' <<REMOTE
+set -euo pipefail
+cd "${REMOTE_PATH}"
+
+# node14 has no system composer; install composer.phar to \$HOME once and reuse it.
+if command -v composer >/dev/null 2>&1; then
+  COMPOSER=composer
+else
+  if [ ! -f "\$HOME/composer.phar" ]; then
+    echo "composer introuvable sur le serveur - installation de ~/composer.phar"
+    php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
+    php /tmp/composer-setup.php --install-dir="\$HOME" --filename=composer.phar --quiet
+    rm -f /tmp/composer-setup.php
+  fi
+  COMPOSER="php \$HOME/composer.phar"
+fi
+
+\$COMPOSER install --no-dev --optimize-autoloader --no-interaction
+php artisan migrate --force
+php artisan locales:compile
+php artisan view:clear
+php artisan config:clear
+php artisan route:clear
+REMOTE
 green "✓ Remote post-deploy complete"
 echo
 
