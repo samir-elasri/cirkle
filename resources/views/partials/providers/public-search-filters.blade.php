@@ -4,11 +4,12 @@
             <p>{{ __('providers.search.title-public') }}</p>
             <p>{{ __('providers.search.description-public') }}</p>
             <div class="form__container">
+                {{-- Présélectionné selon la plateforme choisie (sélecteur 4 plateformes) --}}
                 <div class="radio-button-group">
-                    <input type="radio" name="provider_type" value="residential" id="provider-type-residential" checked>
+                    <input type="radio" name="provider_type" value="residential" id="provider-type-residential" @checked(($selectedProviderType ?? 'residential') !== 'business')>
                     <label for="provider-type-residential">{{ __('providers.provider-type.residential') }}</label>
 
-                    <input type="radio" name="provider_type" value="business" id="provider-type-business">
+                    <input type="radio" name="provider_type" value="business" id="provider-type-business" @checked(($selectedProviderType ?? null) === 'business')>
                     <label for="provider-type-business">{{ __('providers.provider-type.business') }}</label>
                 </div>
                 <div class="form__row">

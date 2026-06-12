@@ -7,9 +7,11 @@ $localeRegex = implode('|', getLocales());
 
 if (isMultilingual()) {
 
-	// Redirige vers une langue
-	Route::get('/', function () use ($locale) {
-		return Redirect::to($locale);
+	// Redirige vers une langue.
+	// Spec Cirkle (PAGE ACCUEIL 010626) : la page d'accueil / frontispice ouvre en ANGLAIS;
+	// le visiteur choisit ensuite sa plateforme (sélecteur 4 plateformes).
+	Route::get('/', function () {
+		return Redirect::to('en');
 	});
 
 	// $route_params = ['prefix' => '{locale?}', 'before' => 'localization'];

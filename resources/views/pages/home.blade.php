@@ -1,5 +1,7 @@
 <section>
     <div class="optimal-content-width">
+        @include ('partials.platform-selector')
+
         <div class="tile-row">
             @include ('partials.providers.public-search-filters')
         </div>

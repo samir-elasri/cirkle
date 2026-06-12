@@ -26,6 +26,7 @@ return array_replace_recursive(
 					'en' => '/',
 				],
 				'view'  => 'pages.home',
+				'uses'  => 'App\\Http\\Controllers\\SearchController@home',
 				'admin' => [
 					'title'        => true,
 					'metas'        => true,

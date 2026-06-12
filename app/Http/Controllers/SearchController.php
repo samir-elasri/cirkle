@@ -16,6 +16,24 @@ class SearchController extends Controller
         parent::__construct();
     }
 
+    /**
+     * Page d'accueil : gère le sélecteur de plateforme (locale × type de fournisseur).
+     * La locale vient de l'URL (/fr, /en); le type choisi est conservé en session
+     * via SearchDataService — le même mécanisme que la recherche par code postal.
+     */
+    public function home($params, Request $request)
+    {
+        $platform = $request->query('platform');
+
+        if (in_array($platform, ['residential', 'business'], true)) {
+            $this->searchDataService->storeProviderType($platform);
+        }
+
+        $params['selectedProviderType'] = $this->searchDataService->getStoredProviderType();
+
+        return $params;
+    }
+
     public function search(Request $request)
     {
         $postalCode = $request->input('postal_code');

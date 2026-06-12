@@ -1,6 +1,11 @@
 {
   "memberCounter"      : "Membres",
   "memberCounterTitle" : "Numéro du plus récent membre Cirkle",
+  "platformSelectorTitle"  : "Clients et fournisseurs : veuillez cliquer sur la plateforme de votre choix avant de continuer",
+  "platformResidentialEn"  : "Residential English",
+  "platformResidentialFr"  : "Résidentiel Français",
+  "platformBusinessEn"     : "B2B English",
+  "platformBusinessFr"     : "B2B Français",
   "mbiance_slogan"   : "Conception de sites web et applications mobiles",
   "purchase"         : "Acheter",
   "inaccessible"     : "Ce contenu n'est pas disponible",
