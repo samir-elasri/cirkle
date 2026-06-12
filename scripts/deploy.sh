@@ -90,11 +90,13 @@ echo
 
 # ── 2. SSH reachability + last deployed commit ──────────────────────────────
 yellow "Checking SSH connectivity to ${SSH_HOST}…"
-ssh -o BatchMode=yes -o ConnectTimeout=10 "${SSH_HOST}" 'echo ok' >/dev/null 2>&1 \
+# -n everywhere stdin isn't needed: otherwise ssh would swallow a piped/typed
+# confirmation meant for the "yes" prompt below.
+ssh -n -o BatchMode=yes -o ConnectTimeout=10 "${SSH_HOST}" 'echo ok' >/dev/null 2>&1 \
   || die "Cannot reach ${SSH_HOST} over SSH (check ~/.ssh/config alias 'cirkle' or set CIRKLE_SSH_HOST)."
 green "✓ SSH OK"
 
-LAST_SHA="$(ssh -o BatchMode=yes "${SSH_HOST}" "cat ~/${SHA_FILE} 2>/dev/null" || true)"
+LAST_SHA="$(ssh -n -o BatchMode=yes "${SSH_HOST}" "cat ~/${SHA_FILE} 2>/dev/null" || true)"
 if [[ -z "${LAST_SHA}" ]]; then
   yellow "No ${SHA_FILE} on the server — using baseline ${BASELINE_SHA} (initial pull)."
   LAST_SHA="${BASELINE_SHA}"
@@ -203,7 +205,7 @@ else
   yellow "⚠ ${SMOKE_URL} → HTTP ${HTTP_CODE} (verify manually before trusting this deploy)"
 fi
 
-ssh "${SSH_HOST}" "echo '${HEAD_SHA}' > ~/${SHA_FILE}"
+ssh -n "${SSH_HOST}" "echo '${HEAD_SHA}' > ~/${SHA_FILE}"
 green "✓ Recorded deployed commit ${HEAD_SHORT} on the server"
 
 echo
