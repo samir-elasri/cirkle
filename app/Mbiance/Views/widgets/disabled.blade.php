@@ -1,0 +1,1 @@
+{!! FormUtility::text($field, $label, $obj->$field, array('disabled'=>'disabled')) !!}

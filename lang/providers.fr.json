@@ -1,0 +1,79 @@
+{
+	"view": "Voir le fournisseur",
+	"restricted_view": "Veuillez-vous connecter pour entrer en contact avec un fournisseur",
+	"address": "Adresse principale",
+	"services": "Services",
+	"capabilities": "Capabilités",
+	"other-services": "Autres services",
+	"estimation_cost": "Coût d’un estimé",
+	"accepts_cash": "Accepte cash",
+	"accepts_check": "Accepte chèque",
+	"accepts_debit": "Accepte débit",
+	"accepts_credit": "Accepte carte de crédit",
+	"evaluations_average": "Note moyenne",
+	"visit-website": "Visiter le site Web du fournisseur",
+	"evaluation": "Évaluation",
+	"updated-success": "Fiche sauvegardée",
+	"contact-this-provider": {
+		"cta": "Je veux contacter ce fournisseur",
+		"title": "Contacter ce fournisseur",
+		"description": "description dans subscribers/providers.contact-this.provider.description",
+		"text": "Votre demande",
+		"submit": "Envoyer",
+		"success": "Un courriel a été envoyé au fournisseur.",
+		"error": "Une erreur est survenue."
+	},
+	"provider-type": {
+		"residential": "Résidentiel",
+		"business": "Business",
+		"both": "Résidentiel et business"
+	},
+	"form": {
+		"provider_type": "Type de business",
+		"company_name": "Nom de la compagnie",
+		"main_description": "Description",
+		"profile_image": "Photo de profile",
+		"address": "Adresse",
+		"number": "Numéro",
+		"street": "Rue",
+		"app": "Bureau",
+		"city": "Ville",
+		"state_id": "Province/État",
+		"country_id": "Pays",
+		"postal_code": "Code postal",
+		"service_category_id": "Catégorie de service",
+		"subcategories": "Sous-catégories",
+		"services": "Services",
+		"other_service_descriptions": "Autres services",
+		"fr": "En français",
+		"en": "En anglais",
+		"category-description": "Description",
+		"served-zone": "Zone desservie"
+	},
+	"search": {
+		"title": "Je cherche un service de...",
+		"title-public": "Clients membres et non-membres",
+		"description-public": "Après avoir inscrit le code postal Cirkle téléchargera la liste des professions de cette région",
+		"where": "Où",
+		"provider_type": "Type de business",
+		"filter-submit": "Rechercher",
+		"category": "Catégorie",
+		"subcategories": "Sous-catégories",
+		"services": "Services",
+		"postal_code": "Code postal",
+		"no-result": "Désolé, il n'y a pas de fournisseur qui réponde à votre recherche en ce moment.",
+		"results": "Il y a 1 fournisseur qui est susceptible de pouvoir répondre à votre demande.|Il y a :count fournisseurs qui sont susceptible de pouvoir répondre à votre demande.",
+		"save": {
+			"title": "Sauvegarder la recherche",
+			"text": "explications dans providers/search.save.text",
+			"submit": "Confirmer",
+			"cta": "Sauvegarder la recherche et m’aviser des prochaines disponibilités"
+		}
+	},
+	"postal-code-selector": {
+		"no-postal-code": "Pas de code postal unique pour ce lieu.",
+		"max-reached": "Limite atteinte.",
+		"remaining":  "Code postaux choisis :",
+		"already-has": "Code postal déjà choisi."
+	}
+}

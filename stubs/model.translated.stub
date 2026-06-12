@@ -1,0 +1,55 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Models\Core\Translatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Core\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class {{ class }} extends Model
+{
+    use HasFactory;
+    use Translatable;
+
+    public string $order_default = 'id';
+    public string $order_direction = 'asc';
+
+    protected bool $bigData = true;
+
+    protected $fillable = [
+        'active'
+    ];
+
+    public array $positionParentFields = [];
+
+    protected array $grid = [
+        'id',
+        'active'
+    ];
+
+	public array $translatedAttributes = [];
+
+    protected array $niceNames = [];
+
+    protected array $enum = [];
+
+    protected array $customFields = [];
+
+    /**
+     * @return BelongsTo|TODOClass
+     */
+    /*public function parent()
+    {
+    	return $this->belongsTo('#TODO');
+    }*/
+
+    /**
+     * @return HasMany|ChildClass[]|ChildClass
+     */
+    /*public function children()
+    {
+    	return $this->hasMany('#TODO');
+    }*/
+}

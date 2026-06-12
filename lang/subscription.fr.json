@@ -1,0 +1,24 @@
+{
+  "buy": "Acheter",
+  "title": "Titre",
+  "description": "Description",
+  "subscriptionPrices": "Prix",
+  "zone_serviced": "Zone desservi",
+  "price": {
+    "free": "GRATUIT",
+    "month": "mois",
+    "years": "ans",
+    "year": "an"
+  },
+  "subscriber-intro": "Voici le texte qui explique le processus (subscription.subscriber-intro)",
+  "no-active-subscription": "Vous n'avez pas d'abonnement en ce moment",
+  "no-active-subscription-renew": "Renouvelez votre abonnement",
+  "no-active-subscription-subscribe": "Veuillez choisir un abonnement pour commencer",
+  "subscription-details": "Votre abonnement est valide jusqu'au :date inclusivement",
+  "cta": {
+    "pause": "Mettre mon abonnement en pause",
+    "unpause": "Réactiver mon abonnement",
+    "cancel": "Annuler mon abonnement",
+    "pick": "Veuillez choisir un abonnement pour commencer"
+  }
+}

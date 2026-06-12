@@ -1,0 +1,119 @@
+{
+  "failed": "These credentials do not match our records.",
+  "password": "The provided password is incorrect.",
+  "throttle": "Too many login attempts. Please try again in :seconds seconds.",
+  "login": "Login page",
+  "sign-in": "Register as provider",
+  "sign-in-subscriber": "Register as requester",
+  "lost-password": "Lost password",
+  "valid_up_to": "Your subscription is valid up to :date inclusively",
+  "no_valid": "You have no subscription right now",
+  "renew": "Renew your subscription",
+  "call-to-action.become-member": "Become member",
+  "profile": {
+    "greetings": "Hello,",
+    "update-profile": "Update profile",
+    "update-password": "Update password",
+    "previous-orders": "My orders",
+    "see-previous": "See previous order",
+    "go-to": "Go to profile",
+    "logout": "Log out",
+    "login": "Sign in"
+  },
+  "subscriber": {
+    "not-found": "User not found",
+    "must-be-connected": "Login to access your profile.",
+    "login-success": "You are now connected",
+    "login-disconnected": "You have been disconnected"
+  },
+  "register": {
+    "last_name": "Last name",
+    "first_name": "First name",
+    "email": "Email",
+    "check_email": "Repeat email",
+    "password": "Password",
+    "password_confirmation": "Repeat password",
+    "company": "Company",
+    "company_name": "Legal name",
+    "legal_form_id": "Legal form of company",
+    "federal_tax_number": "Federal tax number",
+    "phone": "Phone",
+    "toll_free_phone": "Toll-free number",
+    "fax": "Fax",
+    "start_date": "Start date",
+    "insurance_coverage": "Liability insurance coverage in $",
+    "business_hours": "Business hours",
+    "provider_type": "Platform choice",
+    "service_category_id": "Service, profession, trade name",
+    "services": "Services offered",
+    "custom_services": "Custom services",
+    "role": "Role",
+    "first_phone": "Phone 1",
+    "second_phone": "Phone 2",
+    "second_email": "Second email",
+    "billing_address": "Billing address",
+    "street_number": "Street number",
+    "number": "Number",
+    "street_name": "Street name",
+    "street": "Main address",
+    "flat_number": "Apartment",
+    "office": "Apartment",
+    "city": "City",
+    "state": "Province",
+    "state_id": "Province",
+    "country": "Country",
+    "country_id": "Country",
+    "postal_code": "Postal code",
+    "terms": "I accept the conditions",
+    "preference_language": "Preferred language",
+    "web_site": "Website",
+    "promotions": "Promotions",
+    "licenses": "Permits",
+    "photos": "Photos",
+    "estimation": "Estimate",
+    "job-offers": "Job offers",
+    "evaluations": "Evaluations",
+    "search_location": "Address",
+    "full_address": "Full address",
+    "subscription_id": "Package",
+    "postal_codes": "Postal codes",
+    "capabilities": "Capabilities",
+    "custom_capabilities": "Custom capabilities",
+    "service_input": "Services",
+    "capability_input": "Capabilities",
+    "options": "Options",
+    "email_changed": {
+      "success": "A validation link has been sent to your new email."
+    },
+    "updated": {
+      "success": "The changes have been successfully made."
+    },
+    "login": {
+      "failure": "This email and password do not match, please try again.",
+      "disconnected": "You are disconnected",
+      "inactive": "Account not yet activated"
+    },
+    "lost": {
+      "success": "A recovery link has been sent to you by email."
+    },
+    "validated": {
+      "success": "Your email has been validated."
+    },
+    "password-form": {
+      "success": "Your password has been reset."
+    },
+    "title": {
+      "basic": "Requester registration",
+      "step1": "Provider registration",
+      "step1-subtitle": "Self-employed or company"
+    }
+  },
+  "subscription": {
+    "paused": "Your subscription is now paused",
+    "unpaused": "Your subscription is now active",
+    "canceled": "Your subscription is canceled"
+  },
+  "step-unvalidated": "Fill out the form",
+  "already-loggedin": "You are already registered.",
+  "choose-password": "You have completed registration, please now choose a password."
+}

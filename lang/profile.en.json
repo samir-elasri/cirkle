@@ -1,0 +1,85 @@
+{
+  "tabs": {
+    "client": "Client",
+    "supplier": "Supplier",
+    "profile": "My profile",
+    "contacted-suppliers": "Contacted suppliers",
+    "favorited-suppliers": "Favorite suppliers",
+    "saved-searches": "My saved searches",
+    "supplier-profile": "My supplier profile",
+    "profile-options": "Profile options descriptions",
+    "invoices": "My invoices"
+  },
+  "saved-search": {
+    "delete": "Delete",
+    "view-results": "View results"
+  },
+  "modal": {
+    "delete-confirmation-title": "Are you sure?",
+    "pause-confirmation-title": "Are you sure?",
+    "edit-options": "Add options",
+    "option": {
+      "title": "Modal title for profile options choices",
+      "description": "Modal description for profile options choices"
+    }
+  },
+  "public": {
+    "view": "View my public profile",
+    "create": "Create my public profile",
+    "edit": "Edit my public profile"
+  },
+  "profile_options": {
+    "date": "Active since :date",
+    "end_date": "Ends on :date",
+    "pay": "Pay",
+    "price_section": "Amount to pay"
+  },
+  "invoices": {
+    "view": "View invoice"
+  },
+  "update-info": "Update my information",
+  "propose_services": "Want to offer services? Click here",
+  "options": {
+    "edit": "Edit profile options",
+    "updated": "Profile options updated",
+    "license_add_modal_title": "Add a license",
+    "promotions_add_modal_title": "Add a promotion",
+    "subscriber_images_add_modal_title": "Add a photo",
+    "job_offers_add_modal_title": "Add a job offer",
+    "add": "Add",
+    "update-url": "Update my URL",
+    "fields": {
+      "fr_title" : "Title (fr)",
+      "en_title" : "Title (en)",
+      "fr_url" : "URL (fr)",
+      "en_url" : "URL (en)",
+      "fr_description" : "Description (fr)",
+      "en_description" : "Description (en)",
+      "image": "Image",
+      "images": "Images",
+      "current": "Current",
+      "currently-recruiting": "Currently recruiting",
+      "legend": "Caption",
+      "add-image": "Add your images"
+    }
+  },
+  "edit": {
+    "step1": {
+      "title": "Update my profile",
+      "substitle": ""
+    },
+    "step2": {
+      "title": "Update my services",
+      "substitle": ""
+    }
+  },
+  "step1": {
+    "edit": "Update my profile",
+    "updated": "Changes saved"
+  },
+  "step2": {
+    "edit": "Update my services",
+    "updated": "Changes saved"
+  },
+  "no_active_options": "No active profile options to edit"
+}

@@ -1,0 +1,13 @@
+{
+	"title": "Form",
+	"services": "Services",
+	"label": {
+		"label": "Internal title",
+		"category": "Category",
+		"profession": "Profession",
+		"service": "Service",
+		"provider_description": "Text for provider",
+		"client_description": "Text for client"
+	},
+	"submit": "Submit"
+}

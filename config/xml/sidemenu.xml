@@ -1,0 +1,345 @@
+<?xml version="1.0"?>
+<SideMenu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<SideMenuGroup>
+		<Nom>Tableau de bord</Nom>
+		<Icone>fa-dashboard</Icone>
+		<Identifiant>dashboard</Identifiant>
+		<UrlDestination>/admin/dashboard/</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode></Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Site</Nom>
+		<Identifiant>form_group</Identifiant>
+		<Icone>fa-globe</Icone>
+		<Autorisation>*</Autorisation>
+		<SideMenuItems>
+			<SideMenuItem>
+				<Nom>Arborescence</Nom>
+				<Icone>fa-sitemap</Icone>
+				<Identifiant>menu_trees</Identifiant>
+				<UrlDestination>/admin/menu_trees/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Pages</Nom>
+				<Icone>fa-file</Icone>
+				<Determinant>des </Determinant>
+				<Singulier>une page</Singulier>
+				<Identifiant>pages</Identifiant>
+				<UrlDestination>/admin/pages/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+		</SideMenuItems>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Transactionnel</Nom>
+		<Identifiant>form_group</Identifiant>
+		<Icone>fa-shopping-cart</Icone>
+		<Autorisation>*</Autorisation>
+		<SideMenuItems>
+			<SideMenuItem>
+				<Nom>Inscrits</Nom>
+				<Icone>fa-user</Icone>
+				<Singulier>un inscrit</Singulier>
+				<Identifiant>subscribers</Identifiant>
+				<UrlDestination>/admin/subscribers/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Pays</Nom>
+				<Icone>fa-globe</Icone>
+				<Singulier>un pays</Singulier>
+				<Identifiant>countries</Identifiant>
+				<UrlDestination>/admin/countries/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Provinces</Nom>
+				<Icone>fa-flag</Icone>
+				<Singulier>une province</Singulier>
+				<Identifiant>states</Identifiant>
+				<UrlDestination>/admin/states/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Forfaits</Nom>
+				<Icone>fa-user</Icone>
+				<Singulier>un forfait</Singulier>
+				<Identifiant>subscriptions</Identifiant>
+				<UrlDestination>/admin/subscriptions/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Forfaits achetés</Nom>
+				<Icone>fa-user</Icone>
+				<Singulier>un forfait</Singulier>
+				<Identifiant>purchased_subs</Identifiant>
+				<UrlDestination>/admin/purchased_subs/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<!-- <SideMenuItem>
+				<Nom>Catégorie de produit</Nom>
+				<Icone>fa-user</Icone>
+				<Singulier>une catégorie</Singulier>
+				<Identifiant>product_cats</Identifiant>
+				<UrlDestination>/admin/product_cats/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem> -->
+			<!-- <SideMenuItem>
+				<Nom>Produits</Nom>
+				<Icone>fa-dollar</Icone>
+				<Singulier>un produit</Singulier>
+				<Identifiant>products</Identifiant>
+				<UrlDestination>/admin/products/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem> -->
+			<SideMenuItem>
+				<Nom>Commandes</Nom>
+				<Icone>fa-shopping-cart</Icone>
+				<Singulier>une commande</Singulier>
+				<Identifiant>orders</Identifiant>
+				<UrlDestination>/admin/orders/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Rabais</Nom>
+				<Icone>fa-dollar</Icone>
+				<Singulier>un rabais</Singulier>
+				<Identifiant>price_cuts</Identifiant>
+				<UrlDestination>/admin/price_cuts/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+		</SideMenuItems>
+	</SideMenuGroup>
+
+
+
+
+	<SideMenuGroup>
+		<Nom>Formulaires</Nom>
+		<Identifiant>form_group</Identifiant>
+		<Icone>fa-pencil-square-o</Icone>
+		<Autorisation>*</Autorisation>
+		<SideMenuItems>
+			<SideMenuItem>
+				<Nom>Formulaires</Nom>
+				<Icone>fa-tasks</Icone>
+				<Singulier>un formulaire</Singulier>
+				<Identifiant>form_generators</Identifiant>
+				<UrlDestination>/admin/form_generators</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Réponses</Nom>
+				<Icone>fa-tasks</Icone>
+				<Singulier>une réponse</Singulier>
+				<Identifiant>form_answers</Identifiant>
+				<UrlDestination>/admin/form_answers</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>RUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Listes de choix</Nom>
+				<Icone>fa-check-square-o</Icone>
+				<Singulier>une liste de choix pour les formulaires</Singulier>
+				<Identifiant>choice_groups</Identifiant>
+				<UrlDestination>/admin/choice_groups</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+		</SideMenuItems>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Contenu</Nom>
+		<Identifiant>content_group</Identifiant>
+		<Icone>fa-puzzle-piece</Icone>
+		<Autorisation>*</Autorisation>
+		<SideMenuItems>
+			<SideMenuItem>
+				<Nom>Diaporamas</Nom>
+				<Icone>fa-desktop</Icone>
+				<Singulier>un diaporama</Singulier>
+				<Identifiant>slideshows</Identifiant>
+				<UrlDestination>/admin/slideshows/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Publicités</Nom>
+				<Icone>fa-bookmark</Icone>
+				<Singulier>une campagne</Singulier>
+				<Regroupement>campagnes</Regroupement>
+				<Identifiant>pub_groups</Identifiant>
+				<UrlDestination>/admin/pub_groups/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Google Maps</Nom>
+				<Icone>fa-map-marker</Icone>
+				<Singulier>un regroupement Google Maps</Singulier>
+				<Regroupement>regroupements Google Maps</Regroupement>
+				<Identifiant>google_map_groups</Identifiant>
+				<UrlDestination>/admin/google_map_groups/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Mini-fiches</Nom>
+				<Icone>fa-align-left</Icone>
+				<Singulier>un regroupement de mini-fiches</Singulier>
+				<Regroupement>regroupements de mini-fiches</Regroupement>
+				<Identifiant>mini_card_groups</Identifiant>
+				<UrlDestination>/admin/mini_card_groups/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Catégories</Nom>
+				<Icone>fa-tags</Icone>
+				<Singulier>une catégorie</Singulier>
+				<Regroupement>catégories</Regroupement>
+				<Identifiant>category_groups</Identifiant>
+				<UrlDestination>/admin/category_groups/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<SideMenuItem>
+				<Nom>Galeries</Nom>
+				<Icone>fa-picture-o</Icone>
+				<Singulier>une galerie</Singulier>
+				<Identifiant>galleries</Identifiant>
+				<UrlDestination>/admin/galleries/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem>
+			<!-- <SideMenuItem>
+				<Nom>Documents</Nom>
+				<Icone>fa-file</Icone>
+				<Singulier>un document</Singulier>
+				<Identifiant>documents</Identifiant>
+				<UrlDestination>/admin/documents/</UrlDestination>
+				<Autorisation>*</Autorisation>
+				<Mode>CRUD</Mode>
+			</SideMenuItem> -->
+		</SideMenuItems>
+	</SideMenuGroup>
+
+	<SideMenuGroup>
+		<Nom>Catégories de service</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>une catégorie de service</Singulier>
+		<Identifiant>service_categories</Identifiant>
+		<UrlDestination>/admin/service_categories</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Services</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>un service</Singulier>
+		<Identifiant>services</Identifiant>
+		<UrlDestination>/admin/services</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Options de profil</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>une option profil</Singulier>
+		<Identifiant>profile_options</Identifiant>
+		<UrlDestination>/admin/profile_options</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Recherches Sauvegardée</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>une recherche</Singulier>
+		<Identifiant>saved_searches</Identifiant>
+		<UrlDestination>/admin/saved_searches</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Fournisseurs aimés</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>une fournisseur aimé</Singulier>
+		<Identifiant>liked_subscribers</Identifiant>
+		<UrlDestination>/admin/liked_subscribers</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Historique de fournisseur contacté</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>une fournisseur contacté</Singulier>
+		<Identifiant>contacted_providers</Identifiant>
+		<UrlDestination>/admin/contacted_providers</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Évaluations</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>une évaluation</Singulier>
+		<Identifiant>evaluations</Identifiant>
+		<UrlDestination>/admin/evaluations</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+	<SideMenuGroup>
+		<Nom>Librairie de fichiers</Nom>
+		<Icone>fa-files-o</Icone>
+		<Singulier>un fichier</Singulier>
+		<Identifiant>filescontainer</Identifiant>
+		<UrlDestination>/admin/filescontainer</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode></Mode>
+	</SideMenuGroup>
+
+	<SideMenuGroup>
+		<Nom>Traduction</Nom>
+		<Icone>fa-language</Icone>
+		<Singulier>un fichier</Singulier>
+		<Identifiant>translations</Identifiant>
+		<UrlDestination>/admin/translations</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode></Mode>
+	</SideMenuGroup>
+
+	<SideMenuGroup>
+		<Nom>Configuration SMTP</Nom>
+		<Icone>fa-envelope</Icone>
+		<Singulier></Singulier>
+		<Identifiant>smtp</Identifiant>
+		<UrlDestination>/admin/smtp</UrlDestination>
+		<Autorisation>*</Autorisation>
+		<Mode></Mode>
+	</SideMenuGroup>
+
+	<SideMenuGroup>
+		<Nom>Accès</Nom>
+		<Icone>fa-shield</Icone>
+		<Singulier>un usager</Singulier>
+		<Identifiant>users</Identifiant>
+		<UrlDestination>/admin/users/</UrlDestination>
+		<Autorisation>admin</Autorisation>
+		<Mode>CRUD</Mode>
+	</SideMenuGroup>
+
+</SideMenu>
+	<!-- CRUD -->

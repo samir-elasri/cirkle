@@ -1,0 +1,13 @@
+{
+	"submit": "Submit my evaluation",
+	"submit-success": "Evaluation saved",
+	"submit-fail": "Incomplete form",
+	"global_grade": "Overall satisfaction",
+	"service_quality_grade": "Service quality",
+	"reliability_grade": "Punctuality and reliability",
+	"communication_grade": "Communication and responsiveness",
+	"hourly_rate_grade": "Provider's hourly rate",
+	"comment": "Your comment",
+	"for-provider": "Provider",
+	"contact-date": "Contact date"
+}

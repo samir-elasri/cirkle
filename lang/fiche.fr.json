@@ -1,0 +1,13 @@
+{
+	"title": "Fiche",
+	"services": "Services",
+	"label": {
+		"label": "Titre interne",
+		"category": "Catégorie",
+		"profession": "Profession",
+		"service": "Service",
+		"provider_description": "Texte pour fournisseur",
+		"client_description": "Texte pour client"
+	},
+	"submit": "Soumettre"
+}

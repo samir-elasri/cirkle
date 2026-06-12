@@ -1,0 +1,604 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Core\Subscriber;
+use App\Models\JobOffer;
+use App\Models\License;
+use App\Models\Promotion;
+use App\Models\SubscriberImage;
+use Arr;
+use Auth;
+use DB;
+use Illuminate\Http\Request;
+use ModelUtility as ModelUtilityFacade;
+use Str;
+use View;
+use Storage;
+use Log;
+use File;
+
+class ProfileOptionController extends Controller
+{
+	private function getSubscriber() {
+		if (logged_in()) {
+			return Auth::guard('subscribers')->user();
+		}
+		return request()->session()->get('subscriber_model');
+	}
+
+	public function option($params, Request $request)
+	{
+		$optionName = $request->route()->getName();
+		$params['optionTitle'] = setting("{$optionName}_title");
+		$params['optionDescription'] = setting("{$optionName}_description");
+		$params['optionName'] = $optionName;
+
+		if (!logged_in()) {
+			return restricted($params);
+		}
+
+		$params['optionData'] = $this->getData($optionName);
+
+		return $params;
+	}
+
+	private function getData($optionName)
+	{
+		$data = null;
+		$sub = $this->getSubscriber();
+
+		switch ($optionName) {
+			case 'estimation':
+			case 'url':
+				$data = $sub;
+				break;
+			default:
+				$relation = Str::camel(Str::plural($optionName, 2));
+				if ($sub->id) {
+					// Subscriber exists in database, get relations normally
+					$data = $sub->$relation;
+				} else {
+					// Subscriber is from session, get data from session and convert to models
+					$sessionKey = 'profile_' . $optionName;
+					$rawData = request()->session()->get($sessionKey, []);
+					$class = ModelUtilityFacade::getClassByCollectionName($optionName);
+					$data = collect($rawData)->map(function($item) use ($class) {
+						$model = new $class();
+						$model->fill($item);
+						return $model;
+					});
+				}
+		}
+
+		return $data;
+	}
+
+	public function add(Request $request, $type = null)
+	{
+		$data = $request->all();
+		$class = ModelUtilityFacade::getClassByCollectionName($type);
+
+		$sub = $this->getSubscriber();
+		if (!$sub) {
+			return response()->json(['error' => 'No subscriber found'], 400);
+		}
+
+		if ($sub->id) {
+			// Subscriber exists in database, save normally
+			$data['subscriber_id'] = $sub->id;
+			$element = new $class;
+
+			if (Arr::get($data, 'is_photos')) {
+				foreach (Arr::get($data, 'images') as $image) {
+					$element = new $class;
+					$element->saveElement([
+						'image' => $image,
+						'subscriber_id' => $sub->id,
+						'legend' => Arr::get($data, 'legend'),
+					]);
+				}
+
+				return response()->json(['data' => $data]);
+			}
+
+			$element->saveElement($data);
+			return response()->json(['data' => $data]);
+		} else {
+			// Subscriber is from session, process file uploads and store processed data
+			$sessionKey = 'profile_' . $type;
+			$existingData = request()->session()->get($sessionKey, []);
+
+			// Process file uploads and replace UploadedFile objects with web paths
+			$processedData = $this->processFileUploadsForSession($data, $request);
+
+			if (Arr::get($data, 'is_photos')) {
+				// Handle multiple images for photos
+				foreach (Arr::get($processedData, 'images', []) as $imagePath) {
+					$existingData[] = [
+						'image' => $imagePath,
+						'legend' => Arr::get($processedData, 'legend'),
+					];
+				}
+			} else {
+				$existingData[] = $processedData;
+			}
+
+			request()->session()->put($sessionKey, $existingData);
+			return response()->json(['data' => $processedData]);
+		}
+	}
+
+	public function editLicenses($params, Request $request)
+	{
+		$params['data'] = $this->edit('licenses');
+		return $params;
+	}
+
+	public function editPromotions($params, Request $request)
+	{
+		$params['data'] = $this->edit('promotions');
+		return $params;
+	}
+
+	public function editPhotos($params, Request $request)
+	{
+		$params['data'] = $this->edit('photos');
+		return $params;
+	}
+
+	public function editEstimations($params, Request $request)
+	{
+		$params['data'] = $this->edit('estimations');
+		return $params;
+	}
+
+	public function editJobOffers($params, Request $request)
+	{
+		$params['data'] = $this->edit('jobOffers');
+		return $params;
+	}
+
+	public function editUrl($params, Request $request)
+	{
+		$params['data'] = $this->edit('url');
+		return $params;
+	}
+
+	private function edit($type)
+	{
+		$sub = $this->getSubscriber();
+
+		if (!$sub) {
+			abort(404);
+		}
+
+		switch ($type) {
+			case 'licenses':
+				if ($sub->id) {
+					return $sub->licenses->sortBy('position');
+				} else {
+					$rawData = request()->session()->get('profile_licenses', []);
+					return collect($rawData)->map(function($data) {
+						$license = new License();
+						$license->fill($data);
+						return $license;
+					});
+				}
+			case 'promotions':
+				if ($sub->id) {
+					return $sub->promotions->sortBy('position');
+				} else {
+					$rawData = request()->session()->get('profile_promotions', []);
+					return collect($rawData)->map(function($data) {
+						$promotion = new Promotion();
+						$promotion->fill($data);
+						return $promotion;
+					});
+				}
+			case 'photos':
+				if ($sub->id) {
+					return $sub->subscriberImages->sortBy('position');
+				} else {
+					$rawData = request()->session()->get('profile_subscriber_images', []);
+					return collect($rawData)->map(function($data) {
+						$image = new SubscriberImage();
+						$image->fill($data);
+						return $image;
+					});
+				}
+			case 'estimations':
+				return $sub;
+			case 'jobOffers':
+				if ($sub->id) {
+					return $sub->jobOffers->sortBy('position');
+				} else {
+					$rawData = request()->session()->get('profile_job_offers', []);
+					return collect($rawData)->map(function($data) {
+						$jobOffer = new JobOffer();
+						$jobOffer->fill($data);
+						return $jobOffer;
+					});
+				}
+			case 'url':
+				return $sub;
+		}
+	}
+
+	public function getJobOfferList(Request $request)
+	{
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				// Logged in subscriber - query database
+				$jobOffers = JobOffer::where('subscriber_id', $sub->id)->get();
+			} else {
+				// Session subscriber - convert raw data to models for display
+				$rawData = request()->session()->get('profile_job_offers', []);
+				$jobOffers = collect($rawData)->map(function($data) {
+					$jobOffer = new JobOffer();
+					$jobOffer->fill($data);
+					return $jobOffer;
+				});
+			}
+			
+			$view = View::make('partials.profile-options.job-offer-list')->with(['data' => $jobOffers])->render();
+			return response()->json(['view' => $view], 200);
+		}
+		return response()->json([], 200);
+	}
+
+	public function getLicenseList(Request $request)
+	{
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				// Logged in subscriber - query database
+				$licenses = License::where('subscriber_id', $sub->id)->orderBy('position')->get();
+			} else {
+				// Session subscriber - convert raw data to models for display
+				$rawData = request()->session()->get('profile_licenses', []);
+				$licenses = collect($rawData)->map(function($data) {
+					$license = new License();
+					$license->fill($data);
+					return $license;
+				});
+			}
+			
+			$view = View::make('partials.profile-options.license-list')->with(['data' => $licenses])->render();
+			return response()->json(['view' => $view, 'licenses' => $licenses], 200);
+		}
+		return response()->json([], 200);
+	}
+
+	public function getPromotionList(Request $request)
+	{
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				// Logged in subscriber - query database
+				$promotions = Promotion::where('subscriber_id', $sub->id)->orderBy('position')->get();
+			} else {
+				// Session subscriber - convert raw data to models for display
+				$rawData = request()->session()->get('profile_promotions', []);
+				$promotions = collect($rawData)->map(function($data) {
+					$promotion = new Promotion();
+					$promotion->fill($data);
+					return $promotion;
+				});
+			}
+			
+			$view = View::make('partials.profile-options.promotion-list')->with(['data' => $promotions])->render();
+			return response()->json(['view' => $view, 'data' => $promotions], 200);
+		}
+		return response()->json([], 200);
+	}
+
+	public function getPhotoList(Request $request)
+	{
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				// Logged in subscriber - query database
+				$images = SubscriberImage::where('subscriber_id', $sub->id)->orderBy('position')->get();
+			} else {
+				// Session subscriber - convert raw data to models for display
+				$rawData = request()->session()->get('profile_subscriber_images', []);
+				$images = collect($rawData)->map(function($data) {
+					$image = new SubscriberImage();
+					$image->fill($data);
+					return $image;
+				});
+			}
+			
+			$view = View::make('partials.profile-options.photo-list')->with(['data' => $images])->render();
+			return response()->json(['view' => $view], 200);
+		}
+		return response()->json([], 200);
+	}
+
+	public function deleteOption(Request $request, $type = null, $id = null)
+	{
+		$sub = $this->getSubscriber();
+		if ($sub && $id) {
+			if ($sub->id) {
+				// Logged in subscriber - delete from database
+				$element = DB::table($type)->where('id', $id)->where('subscriber_id', $sub->id)->delete();
+			} else {
+				// Session subscriber - remove from collection and update session
+				$relationName = Str::camel(Str::plural($type, 2));
+				if (isset($sub->$relationName)) {
+					$sub->$relationName = $sub->$relationName->reject(function($item) use ($id) {
+						return $item->id == $id;
+					});
+					request()->session()->put('subscriber_model', $sub);
+				}
+			}
+			return response()->json([], 200);
+		}
+		return response()->json([], 200);
+	}
+
+	public function moveOption(Request $request, $type = null, $id = null, $direction = null)
+	{
+		if (!$id || !$direction) {
+			return response()->json([], 200);
+		}
+
+		$sub = $this->getSubscriber();
+		if (!$sub) {
+			return response()->json([], 200);
+		}
+
+		if ($sub->id) {
+			// Logged in subscriber - handle normally with database
+			$class = ModelUtilityFacade::getClassByCollectionName($type);
+
+			$element = $class::find($id);
+			if ($direction === 'up') {
+				$next = $class::where('subscriber_id', '=', $element->subscriber_id)->where('position', '<', $element->position)
+					->orderByDesc('position')->first();
+			}
+			else {
+				$next = $class::where('subscriber_id', '=', $element->subscriber_id)->where('position', '>', $element->position)
+					->orderBy('position')->first();
+			}
+
+			if (!$next) {
+				return response()->json(['success' => true], 200);
+			}
+
+			$nextPosition = $next->position;
+			$next->position = $element->position;
+			$element->position = $nextPosition;
+			$element->save();
+			$next->save();
+		} else {
+			// Session subscriber - manipulate collection and update session
+			$relationName = Str::camel(Str::plural($type, 2));
+			if (isset($sub->$relationName)) {
+				$collection = $sub->$relationName;
+				$elementIndex = $collection->search(function($item) use ($id) {
+					return $item->id == $id;
+				});
+				
+				if ($elementIndex !== false) {
+					$element = $collection->get($elementIndex);
+					$targetIndex = $direction === 'up' ? $elementIndex - 1 : $elementIndex + 1;
+					
+					if ($targetIndex >= 0 && $targetIndex < $collection->count()) {
+						$target = $collection->get($targetIndex);
+						$tempPosition = $element->position;
+						$element->position = $target->position;
+						$target->position = $tempPosition;
+						
+						request()->session()->put('subscriber_model', $sub);
+					}
+				}
+			}
+		}
+
+		return response()->json(['success' => true], 200);
+	}
+
+	function promotionInProgressToggle(Request $request, $id)
+	{
+		$sub = $this->getSubscriber();
+		if (!$sub) {
+			return response()->json([], 200);
+		}
+
+		if ($sub->id) {
+			// Logged in subscriber
+			$promotion = Promotion::find($id);
+			if ($promotion && $promotion->subscriber_id == $sub->id) {
+				$promotion->saveElement(['in_progress' => !$promotion->in_progress]);
+			}
+		} else {
+			// Session subscriber
+			if (isset($sub->promotions)) {
+				$promotion = $sub->promotions->firstWhere('id', $id);
+				if ($promotion) {
+					$promotion->in_progress = !$promotion->in_progress;
+					request()->session()->put('subscriber_model', $sub);
+				}
+			}
+		}
+
+		return response()->json([], 200);
+	}
+
+	function jobOfferActiveToggle(Request $request, $id)
+	{
+		$sub = $this->getSubscriber();
+		if (!$sub) {
+			return response()->json([], 200);
+		}
+
+		if ($sub->id) {
+			// Logged in subscriber
+			$jobOffer = JobOffer::find($id);
+			if ($jobOffer && $jobOffer->subscriber_id == $sub->id) {
+				$jobOffer->saveElement(['currently_recruiting' => !$jobOffer->currently_recruiting]);
+			}
+		} else {
+			// Session subscriber
+			if (isset($sub->jobOffers)) {
+				$jobOffer = $sub->jobOffers->firstWhere('id', $id);
+				if ($jobOffer) {
+					$jobOffer->currently_recruiting = !$jobOffer->currently_recruiting;
+					request()->session()->put('subscriber_model', $sub);
+				}
+			}
+		}
+
+		return response()->json([], 200);
+	}
+
+	function editLegend(Request $request, $id = null)
+	{
+		$data = $request->all();
+		$sub = $this->getSubscriber();
+
+		if ($sub) {
+			if ($sub->id) {
+				// Logged in subscriber
+				$image = SubscriberImage::where('subscriber_id', $sub->id)->where('id', $id)->first();
+				if ($image) {
+					$image->saveElement($data);
+				}
+			} else {
+				// Session subscriber
+				if (isset($sub->subscriberImages)) {
+					$image = $sub->subscriberImages->firstWhere('id', $id);
+					if ($image) {
+						foreach ($data as $key => $value) {
+							$image->$key = $value;
+						}
+						request()->session()->put('subscriber_model', $sub);
+					}
+				}
+			}
+		}
+	}
+
+	function updateEstimations(Request $request) {
+		$data = $request->all();
+
+		$data['accepts_cash'] = Arr::has($data, 'accepts_cash');
+		$data['accepts_check'] = Arr::has($data, 'accepts_check');
+		$data['accepts_debit'] = Arr::has($data, 'accepts_debit');
+		$data['accepts_credit'] = Arr::has($data, 'accepts_credit');
+
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				// Subscriber exists in database, save normally
+				$subscriber = Subscriber::find($sub->id);
+				$subscriber->saveElement($data, true);
+			} else {
+				// Subscriber is from session, update model directly
+				foreach ($data as $key => $value) {
+					$sub->$key = $value;
+				}
+				// Update session with modified subscriber
+				request()->session()->put('subscriber_model', $sub);
+			}
+		}
+
+		return back()->withInput()->with(['success' => trans('providers.updated-success')]);
+	}
+
+	function updateUrl(Request $request) {
+		$data = $request->all();
+
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				// Subscriber exists in database, save normally
+				$subscriber = Subscriber::find($sub->id);
+				$subscriber->saveElement($data, true);
+			} else {
+				// Subscriber is from session, update model directly
+				foreach ($data as $key => $value) {
+					$sub->$key = $value;
+				}
+				// Update session with modified subscriber
+				request()->session()->put('subscriber_model', $sub);
+			}
+		}
+
+		return back()->withInput()->with(['success' => trans('providers.updated-success')]);
+	}
+
+	/**
+	 * Process file uploads following the platform's media handling approach
+	 * 
+	 * @param array $data
+	 * @param Request $request
+	 * @return array
+	 */
+	private function processFileUploadsForSession(array $data, Request $request): array
+	{
+		$sessionId = $request->session()->getId();
+		$processedData = [];
+		
+		foreach ($data as $key => $value) {
+			if ($value instanceof \Illuminate\Http\UploadedFile) {
+				// Handle single file upload
+				$webPath = $this->saveTempFile($value, $sessionId, $key);
+				$processedData[$key] = $webPath;
+			} elseif (is_array($value) && !empty($value)) {
+				// Handle array of files (like images[])
+				$processedArray = [];
+				foreach ($value as $item) {
+					if ($item instanceof \Illuminate\Http\UploadedFile) {
+						$webPath = $this->saveTempFile($item, $sessionId, $key);
+						$processedArray[] = $webPath;
+					} else {
+						$processedArray[] = $item;
+					}
+				}
+				$processedData[$key] = $processedArray;
+			} else {
+				// Keep non-file data as is
+				$processedData[$key] = $value;
+			}
+		}
+		
+		return $processedData;
+	}
+
+	/**
+	 * Save temporary file following platform's MediaTrait approach
+	 * 
+	 * @param \Illuminate\Http\UploadedFile $file
+	 * @param string $sessionId
+	 * @param string $tag
+	 * @return string Web path to the file
+	 */
+	private function saveTempFile(\Illuminate\Http\UploadedFile $file, string $sessionId, string $tag): string
+	{
+		// Follow MediaTrait setup pattern
+		$public_path = rtrim(config('media.public_path', public_path()), '/\\') . '/';
+		$files_directory = rtrim(ltrim(config('media.files_directory', 'medias'), '/\\'), '/\\') . '/';
+		
+		// Create temp directory structure following platform's pattern
+		$directory_uri = 'temp/registration/' . $sessionId . '/';
+		$full_directory = $public_path . $files_directory . $directory_uri;
+		
+		// Create directory if it doesn't exist
+		if (!File::isDirectory($full_directory)) {
+			File::makeDirectory($full_directory, 0755, true);
+		}
+		
+		// Generate unique filename following platform's approach
+		$filename = uniqid() . '_' . $file->getClientOriginalName();
+		
+		// Move file to temporary location
+		$file->move($full_directory, $filename);
+		
+		// Return web-accessible path following MediaTrait pattern
+		return '/' . $files_directory . $directory_uri . $filename;
+	}
+}

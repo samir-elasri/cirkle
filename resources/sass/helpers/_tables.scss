@@ -1,0 +1,51 @@
+@use "sass:color";
+@use "sass:math";
+
+@use "settings";
+
+@mixin table {
+}
+
+table {
+
+	@media #{settings.$bp-TN},
+	#{settings.$bp-SM},
+	#{settings.$bp-MD} {
+
+		tbody,
+		th,
+		td,
+		tr,
+		caption {
+			display: block;
+		}
+
+		thead {
+			display: none;
+		}
+
+		th,
+		td {
+			border: 0;
+			padding: 0 0 .5em 0;
+
+			&>span.responsive-table-label {
+				display: inline-block;
+				font-weight: bold;
+				min-width: 120px;
+				padding-right: 1em;
+				word-break: break-all;
+			}
+		}
+	}
+
+	@media #{settings.$bp-BG} {
+
+		th,
+		td {
+			&>span.responsive-table-label {
+				display: none;
+			}
+		}
+	}
+}

@@ -1,0 +1,39 @@
+@use "sass:math";
+
+@use "settings";
+
+@mixin font-scale($font-size: settings.$text-font-size) {
+
+	font-size: $font-size;
+
+	@media #{settings.$bp-MD} {
+		font-size: math.max(settings.$font-scale-min-size, $font-size * settings.$font-scale-bp-md);
+	}
+
+	@media #{settings.$bp-SM} {
+		font-size: math.max(settings.$font-scale-min-size, $font-size * settings.$font-scale-bp-sm);
+	}
+
+	@media #{settings.$bp-TN} {
+		font-size: math.max(settings.$font-scale-min-size, $font-size * settings.$font-scale-bp-tn);
+	}
+
+	body.font-scaled & {
+
+		font-size: $font-size * settings.$font-scaled;
+
+		@media #{settings.$bp-MD} {
+			font-size: math.max(settings.$font-scale-min-size, $font-size * settings.$font-scale-bp-md * settings.$font-scaled);
+		}
+
+		@media #{settings.$bp-SM} {
+			font-size: math.max(settings.$font-scale-min-size, $font-size * settings.$font-scale-bp-sm * settings.$font-scaled);
+		}
+
+		@media #{settings.$bp-TN} {
+			font-size: math.max(settings.$font-scale-min-size, $font-size * settings.$font-scale-bp-tn * settings.$font-scaled);
+		}
+	}
+
+}
+

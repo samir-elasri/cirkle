@@ -1,0 +1,87 @@
+@use "settings";
+
+.content-card {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    @media #{settings.$bp-TN} {
+        padding: 1rem;
+        border-radius: .2rem;
+    }
+
+    @media #{settings.$bp-SM} {
+        padding: 1.5rem;
+        border-radius: .5rem;
+    }
+
+    @media #{settings.$bp-MD} {
+        padding: 2rem 4rem;
+        border-radius: .75rem;
+        &--half-width {
+            padding: 1.5rem;
+        }
+    }
+
+    @media #{settings.$bp-BG} {
+        padding: 3rem 8rem;
+        border-radius: 1.25rem;
+
+        &--half-width {
+            padding: 2rem;
+        }
+
+        &--with-icon {
+            padding-left: 8rem;
+
+            .content-card__header {
+                margin-left: -8rem;
+                &>:first-child {
+                    width: 7rem; // margin 8rem minus gap 1rem
+                    img {
+                        display: block;
+                        margin-left: auto;
+                    }
+                }
+            }
+        }
+    }
+
+    &__label {
+        color: var(--sl-color-primary-600);
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+
+        h1,h2,h3,h4,h5,h6 {
+            flex-grow: 1;
+        }
+
+        &--title {
+
+        }
+
+        &--subtitle {
+
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: auto;
+    }
+}
+
+.tile-row {
+    display: flex;
+    padding: 70px 0;
+    gap: 140px;
+}

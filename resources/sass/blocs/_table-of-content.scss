@@ -1,0 +1,27 @@
+.toc {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+
+	&__element {
+		position: relative;
+		padding: 5px 20px 5px 20px;
+
+		&::before {
+			content: '⯈';
+			position: absolute;
+			left: 0;
+		}
+	}
+}
+
+@media screen and (max-width: 768px) {
+
+	.toc {
+		grid-template-columns: 1fr!important;
+
+		&__element {
+			grid-column: unset!important;
+			grid-row: unset!important;
+		}
+	}
+}

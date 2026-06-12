@@ -1,0 +1,235 @@
+@use "sass:color";
+@use "settings";
+@use "font-awesome";
+
+#menu-mobile {
+	&+.menu-mobile__shadow {
+		background: black;
+		height: 100vh;
+		position: fixed;
+		width: 100vw;
+		z-index: 998; //opacity: 1; // done in js
+	}
+
+	bottom: 0;
+	box-shadow: 2px 2px 20px rgba(0, 0, 0, .7);
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 320px;
+	z-index: 999;
+
+	.pad {
+		padding: 1em;
+	}
+
+	>.container {
+		background-color: #f6f6f6;
+		display: block;
+		height: 100%;
+		margin: 0;
+		overflow-y: auto;
+		padding: 0 0 1em 0;
+		position: relative;
+		width: 100%;
+
+		>.menu-mobile__close-icon {
+			color: white;
+			cursor: pointer;
+			display: inline-block;
+			position: absolute;
+			right: 1em;
+			top: 1.2em;
+
+			&::before {
+				@extend .fas;
+				content: font-awesome.fa-content(font-awesome.$fa-var-times);
+				font-size: 1.5em;
+			}
+		}
+
+		>h2 {
+			background-color: black;
+			color: white;
+			font-weight: normal;
+			margin-top: 0;
+			padding: 1em 2em .75em 1em;
+			text-transform: uppercase;
+		}
+	}
+
+	color: #58585b;
+
+	>.container {
+		background-color: white;
+
+		>h1 {
+			color: white;
+			background-color: settings.$color-primary;
+			margin: auto;
+		}
+
+		>.closeIcon {
+			color: white;
+		}
+
+		>nav {
+
+			a {
+				text-transform: uppercase;
+				color: inherit;
+				display: flex;
+				padding: 0.5em 2em 0.5em 1em;
+				position: relative;
+				text-decoration: none;
+				align-items: center;
+
+				&.active,
+				&:hover {
+					text-decoration: underline;
+				}
+
+				&[href^="#"] {
+					//background-color: $color-primary;
+					cursor: default;
+					text-transform: uppercase;
+
+					&.open.parent::after {
+						@extend .fas;
+						content: font-awesome.fa-content(font-awesome.$fa-var-times-circle); //times-circle - font-awesome
+					}
+				}
+
+				&.parent::after {
+					@extend .fas;
+					content: font-awesome.fa-content(font-awesome.$fa-var-arrow-down); // arrow down - font-awesome
+					display: inline;
+					margin-left: .5em;
+					position: absolute;
+					right: 1em;
+					top: 1em;
+				}
+
+				&.open.parent::after {
+					@extend %fa-icon;
+					@extend .fas;
+					content: font-awesome.fa-content(font-awesome.$fa-var-external-link-square-alt); //external-link - font-awesome
+				}
+
+				&.linkedin i,
+				&.facebook i {
+					@extend %fa-icon;
+					@extend .fab;
+					@extend .fas;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					margin-right: settings.$gutter;
+					padding: 0;
+					width: 26px;
+					height: 26px;
+					border-radius: 100%;
+					color: white;
+
+				}
+			}
+
+			>ul {
+				display: flex;
+				flex-direction: column;
+				margin: 0;
+				padding: 0;
+				position: relative;
+				width: 100%;
+
+				.search {
+					width: 100%;
+					text-transform: uppercase;
+					color: inherit;
+					display: flex;
+					padding: 1em;
+					position: relative;
+
+					&::after {
+						@extend %fa-icon;
+						@extend .fas;
+						position: absolute;
+						font-size: 20px;
+						right: 30px;
+						top: 50%;
+						transform: translateY(-50%);
+						content: font-awesome.fa-content(font-awesome.$fa-var-search);
+					}
+
+					>form {
+						width: 100%;
+
+						>input {
+							margin: 0!important;
+							width: 100%;
+							height: 30px;
+							padding: settings.$spacer (settings.$padding+settings.$spacer) settings.$spacer settings.$gutter;
+							border: 1px solid black;
+
+							&::placeholder {
+								color: #b3b3b3;
+							}
+						}
+					}
+				}
+
+				>li {
+
+					&.locales {
+						padding: settings.$gutter settings.$padding;
+
+						a {
+							display: inline;
+							padding: settings.$gutter;
+							font-weight: bold;
+
+							&:first-child {
+								margin-left: settings.$gutter;
+							}
+						}
+
+					}
+
+					>ul {
+						>li {
+							>a {
+								text-transform: none;
+								padding-left: 3em;
+								color: white;
+								background-color: settings.$color-primary;
+
+								&.active,
+								&:hover {
+									text-decoration: underline;
+								}
+							}
+
+							>ul {
+								>li {
+									>a {
+										text-transform: none;
+										padding-left: 5em;
+										color: white;
+										background-color: var(--sl-color-primary-500);
+
+										&.active,
+										&:hover {
+											text-decoration: underline;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+}

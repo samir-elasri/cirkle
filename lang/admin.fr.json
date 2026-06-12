@@ -1,0 +1,27 @@
+{
+	"save": "Sauvegarder",
+	"notice": "Les champs marqués d'un <i class='fa fa-asterisk'><\/i> sont requis",
+	"validation": "S'il vous plaît valider les éléments suivants",
+	"additem": "Ajouter :attr",
+	"backtolist": "Retour à la liste :det:attr",
+	"managing": "Gestion :det:attr",
+	"listing": "Liste :det:attr",
+	"det": "des ",
+	"edit": "Éditer",
+	"add": "Ajouter",
+	"saveSuccess": "L'élément a été correctement sauvegardé!",
+	"deleteSuccess": "L'élément a été correctement supprimé!",
+	"importSuccess": "Traitement du fichier terminé",
+	"admin-bar": {
+		"title": "Barre d'admin",
+		"clear-cache": "Vider le cache",
+		"guides": "Guides",
+		"inactive-bloc": "Le bloc est inactif",
+		"inactive-blocs": "Blocs inactifs",
+		"edit-tree": "Éditer l'arborescence",
+		"edit-page": "Éditer la page",
+		"edit-bloc": "Éditer le bloc",
+		"logout": "Déconnecter",
+		"settings": "Paramètres"
+	}
+}

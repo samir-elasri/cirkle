@@ -1,0 +1,23 @@
+{
+    "base": "resources/semantic/",
+    "paths": {
+        "source": {
+            "config": "src/theme.config",
+            "definitions": "src/definitions/",
+            "site": "src/site/",
+            "themes": "src/themes/"
+        },
+        "output": {
+            "packaged": "../../public_html/dist/compiled/semantic/",
+            "uncompressed": "../../public_html/dist/compiled/semantic/components/",
+            "compressed": "../../public_html/dist/compiled/semantic/components/",
+            "themes": "../../public_html/dist/compiled/semantic/themes/"
+        },
+        "clean": "../../public_html/dist/compiled/semantic/"
+    },
+    "permission": false,
+    "autoInstall": true,
+    "rtl": false,
+    "components": ["dropdown", "transition", "icon", "tab", "checkbox", "popup", "toggle"],
+    "version": "2.9.3"
+}

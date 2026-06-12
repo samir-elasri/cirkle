@@ -1,0 +1,65 @@
+@use "settings";
+
+.pagination {
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
+
+	@media #{settings.$bp-MENU-DESKTOP} {
+		height: 35px;
+	}
+
+	li {
+		display: block;
+		border-style: solid;
+		border-color: #bab1ab;
+		border-width: 1px 0;
+
+		@media #{settings.$bp-SM} {
+			font-size: 14px;
+		}
+
+		@media #{settings.$bp-TN} {
+			font-size: 10px;
+		}
+
+		&:first-child {
+			border-width: 1px 1px;
+			border-radius: 5px 0 0 5px;
+		}
+
+		&:last-child {
+			border-width: 1px 1px;
+			border-radius: 0 5px 5px 0;
+		}
+
+		&.active {
+			span {
+				font-weight: bold;
+			}
+		}
+
+		&:not(.disabled) {
+			&:hover {
+				font-weight: bold;
+			}
+		}
+
+		a,
+		span {
+			width: 100%;
+			height: 100%;
+			padding: 10px 20px;
+
+			@media #{settings.$bp-MENU-DESKTOP} {
+				display: flex;
+				align-items: center;
+			}
+
+			@media #{settings.$bp-SM},
+			#{settings.$bp-TN} {
+				padding: 2.5vw;
+			}
+		}
+	}
+}

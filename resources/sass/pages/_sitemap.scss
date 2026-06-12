@@ -1,0 +1,45 @@
+@use "settings";
+@use "content";
+
+.sitemap {
+
+	@extend .content-writable;
+
+	>ul>li>ul>li>a {
+		font-size: .9em;
+	}
+
+	>ul>li>ul>li>ul>li>a {
+		font-size: .9em;
+	}
+
+	ul {
+		li {
+
+			&:first-child {
+				margin-top: .2em;
+			}
+
+			&::before {
+				color: settings.$color-primary;
+			}
+
+			a {
+				font-family: settings.$font-main;
+
+				&:hover {
+					text-decoration: underline;
+				}
+
+				&[href^="#"] {
+
+					&,
+					&:hover {
+						cursor: default;
+						text-decoration: none;
+					}
+				}
+			}
+		}
+	}
+}

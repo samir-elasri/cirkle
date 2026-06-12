@@ -1,0 +1,27 @@
+{
+    "save": "Save",
+    "notice": "Fields marked with <i class='fa fa-asterisk'><\/i> are required",
+    "validation": "Please confirm the following items",
+    "additem": "Add :attr",
+    "backtolist": "Back to list :det:attr",
+    "managing": "Managing",
+    "listing": "List :det:attr",
+    "det": "of ",
+    "edit": "Edit",
+    "add": "Add",
+    "saveSuccess": "The item was correctly Saved !",
+    "deleteSuccess": "The item was deleted successfully !",
+    "importSuccess": "File processing is completed",
+	"admin-bar": {
+		"title": "Admin bar",
+		"clear-cache": "Clear cache",
+		"guides": "Guides",
+		"inactive-bloc": "Bloc is inactive",
+		"inactive-blocs": "Inactive blocs",
+		"edit-tree": "Edit menutree",
+		"edit-page": "Edit page",
+		"edit-bloc": "Edit bloc",
+		"logout": "Logout",
+		"settings": "Settings"
+	}
+}

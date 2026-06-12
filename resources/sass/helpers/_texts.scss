@@ -1,0 +1,59 @@
+@use "sass:color";
+
+@use "fonts";
+@use "settings";
+
+@mixin p($font-size: settings.$text-font-size) {
+
+	@include fonts.font-scale($font-size);
+	font-family: settings.$text-font-family;
+	//color: settings.$text-color;
+	line-height: settings.$text-line-height;
+	margin: 0 0 settings.$text-paragraph-margin 0;
+
+	@media #{settings.$bp-MD} {
+		font-size: calc(#{$font-size} * #{settings.$font-scale-bp-md});
+	}
+
+	@media #{settings.$bp-SM} {
+		font-size: calc(#{$font-size} * #{settings.$font-scale-bp-sm});
+	}
+
+	@media #{settings.$bp-TN} {
+		font-size: calc(#{$font-size} * #{settings.$font-scale-bp-tn});
+	}
+}
+
+@mixin message($color-background, $fontCode) {
+	background-color: $color-background;
+	border: 1px solid $color-background;
+	border-radius: $borderRadius;
+	display: inline-block;
+	margin: 1em 0;
+	vertical-align: middle;
+
+	>.title {
+		color: $color-white;
+		display: block;
+		padding: 1em;
+
+		&::before {
+			@extend %fa-icon;
+			@extend .fab;
+			@extend .fas;
+			content: "#{$fontCode}";
+			padding-right: .5em;
+		}
+	}
+
+	>.content {
+		@extend %noMarginExtremity;
+		background: color.adjust($color-background, $lightness: 20%);
+		padding: 1em;
+
+		&,
+		* {
+			color: $color-white;
+		}
+	}
+}

@@ -1,0 +1,149 @@
+{
+  "mbiance_slogan"   : "Conception de sites web et applications mobiles",
+  "purchase"         : "Acheter",
+  "inaccessible"     : "Ce contenu n'est pas disponible",
+  "months"           : "mois",
+  "searchPlaceholder": "Recherche",
+  "category"         : "Categorie : ",
+  "seeTheSite"       : "Voir le site",
+  "filterBy"         : "Filtrer par : ",
+  "followUs"         : "Suivez-nous",
+  "yes"              : "Oui",
+  "knowMore"         : "En savoir plus",
+  "select"           : "Choisir",
+  "submit"           : "Soumettre",
+  "cancel"           : "Annuler",
+  "previous"         : "Précédent",
+  "next"             : "Suivant",
+  "selected"         : "sélectionné",
+  "learnMore"        : "En savoir plus",
+  "know-more"        : "Pour en savoir plus",
+  "about-us"         : "À propos",
+  "filter"           : "Fliter",
+  "apply"            : "Appliquer",
+  "all-events"       : "Tous les événements",
+  "back-all-events"  : "Retourner à la liste des événements",
+  "back-all-news"    : "Retourner à la liste des nouvelles",
+  "bloc-error"       : "Désolé, une erreur est survenue avec ce bloc.",
+  "google-maps"      : {
+    "not-enabled": "Google Maps n'est pas disponible."
+  },
+  "menu-mobile"      : {
+    "locales": "{0}|[1,2] Langue :|[3,Inf] Langues :"
+  },
+  "calendar"         : {
+    "days"  : [
+      "Lundi",
+      "Mardi",
+      "Mercredi",
+      "Jeudi",
+      "Vendredi",
+      "Samedi",
+      "Dimanche"
+    ],
+    "months": [
+      "Janvier",
+      "Février",
+      "Mars",
+      "Avril",
+      "Mai",
+      "Juin",
+      "Juillet",
+      "Aout",
+      "Septembre",
+      "Octobre",
+      "Novembre",
+      "Décembre"
+    ]
+  },
+  "events"           : {
+    "from-to"         : {
+      "day" : "Du :start au :end",
+      "time": "De :start à :end"
+    },
+    "next_events"     : "Prochains événements",
+    "passed_events"   : "Événements passés",
+    "next-event"      : "Événement suivant",
+    "next"            : "Suivant",
+    "previous-event"  : "Événement précédent",
+    "previous"        : "Précédent",
+    "places_left"     : "Nombre de places restantes",
+    "full"            : "Complet",
+    "buy"             : {
+      "non-sub-price": "Prix non-membre",
+      "sub-price"    : "Prix membre",
+      "your-price"   : "Votre prix"
+    },
+    "address"         : "Adresse",
+    "street_number"   : "Numéro",
+    "street"          : "Rue",
+    "flat"            : "Appartement",
+    "zip_code"        : "Code postal",
+    "city"            : "Ville",
+    "state"           : "Province",
+    "country"         : "Pays",
+    "price_categories": "Catégories de prix",
+    "buy_ticket"      : "Buy a ticket",
+    "from_date"       : "From",
+    "to_date"         : "to",
+    "the_date"        : "The",
+    "at_time"         : "at",
+    "get_member_price": "Si vous êtes membre, le prix sera automatiquement ajusté après que vous soyez conntecté au site. Si vous n'êtes pas membre, vous aurez la possibilité de bénéficier des prix membre si vous achetez une <a href=\":url\">souscription<\/a> dans le même panier.",
+    "coordinates"     : "Coordonnées",
+    "schedule"        : "Horaire"
+  },
+  "page-not-found"   : {
+    "title"      : "Page introuvable",
+    "description": "La page recherchée est inexistante; nous vous invitons à consulter le plan du site ci-dessous."
+  },
+  "search"           : {
+    "totalResults": "{0} Aucun résultat de recherche pour \":query\"|{1} 1 résultat pour \":query\"|[2,*] :count résultats pour \":query\"",
+    "pages"       : "Résultats – pages du site",
+    "news"        : "Résultats – nouvelles",
+    "documents"   : "Résultats – documents"
+  },
+  "loading"          : {
+    "calendar": "Chargement du calendrier...",
+    "bloc"    : "Chargement du bloc :name..."
+  },
+  "blocs"            : {
+    "text"       : "texte",
+    "image"      : "image",
+    "gallery"    : "galerie",
+    "video"      : "vidéo",
+    "form"       : "formulaire",
+    "audio"      : "audio",
+    "mini-cards" : "mini-fiches",
+    "google-maps": "Google Maps",
+    "portfolio"  : "portfolio"
+  },
+  "news"             : "Nouvelles",
+  "all-news"         : "Toutes les nouvelles",
+  "maintenance"      : "Site en maintenance",
+  "installation"     : {
+    "title"      : "Instruction pour installer l'application",
+    "confirm-cta": "Fermer"
+  },
+  "confirm"          : "Confirmer",
+  "errorOccurred"    : "Une erreur s'est produite, veuillez réessayer",
+  "modify"           : "Modifier",
+  "delete"           : "Supprimer",
+  "delete-modal"     : {
+    "title"  : "Supprimer",
+    "text"   : "Êtes-vous certain",
+    "confirm": "Confirmer",
+    "cancel" : "Annuler"
+  },
+  "edit-modal"       : "Modifier la légende",
+	"error-with-image" : "Une erreur est survenue avec l'image choisie.",
+  "no-results" : "Aucun résultat",
+  "choose": "Choisissez",
+  "back": "Retour",
+  "add-service": "Ajouter un service",
+  "add-capability": "Ajouter une capabilité",
+  "Les catégories Cirkle": "Les catégories Cirkle",
+  "Les professions avec fournisseur dans votre code postal": "Les professions avec fournisseur dans votre code postal",
+  "Les professions sans fournisseur dans votre code postal": "Les professions sans fournisseur dans votre code postal",
+  "member": "Membre",
+  "Ce fournisseur vous offre" : "Ce fournisseur vous offre :"
+}

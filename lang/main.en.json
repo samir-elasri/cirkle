@@ -1,0 +1,149 @@
+{
+	"mbiance_slogan": "Web sites and mobile applications",
+	"purchase": "Purchase",
+	"inaccessible": "This content is not available",
+	"months": "{0}|[1]month|[2,Inf]months",
+	"searchPlaceholder": "Search",
+	"category": "Category : ",
+	"seeTheSite": "See the site",
+	"filterBy": "Filter by : ",
+	"followUs": "Follow us",
+	"yes": "Yes",
+	"knowMore": "More",
+	"select": "Select",
+	"submit": "Submit",
+	"cancel": "Cancel",
+	"previous": "Previous",
+    "selected": "selected",
+	"next": "Next",
+	"learnMore": "Learn more",
+	"know-more": "To know more",
+	"about-us": "About us",
+	"filter": "Filter",
+	"apply": "Apply",
+	"all-events": "All events",
+	"back-all-events": "Return to events list",
+	"back-all-news": "Return to the news list",
+	"bloc-error": "Sorry, an error occured with this bloc.",
+	"google-maps": {
+		"not-enabled": "Google Maps is not available."
+	},
+	"menu-mobile": {
+		"locales": "{0}|[1,2] Language :|[3,Inf] Languages :"
+	},
+	"calendar": {
+		"days": [
+			"Monday",
+			"Tuesday",
+			"Wednesday",
+			"Thursday",
+			"Friday",
+			"Saturday",
+			"Sunday"
+		],
+		"months": [
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December"
+		]
+	},
+	"events": {
+		"from-to": {
+			"day": "From :start to :end",
+			"time": "From :start to :end"
+		},
+		"next_events": "Next events",
+		"passed_events": "Past events",
+		"next-event": "Next event",
+		"next": "Next",
+		"previous-event": "Previous event",
+		"previous": "Previous",
+		"places_left": "Amount of places left",
+		"full": "Full",
+		"buy": {
+			"non-sub-price": "Non-member price",
+			"sub-price": "Member price",
+			"your-price": "Your price"
+		},
+		"address": "Address",
+		"street_number": "Street number",
+		"street": "Street",
+		"flat": "Appartement",
+		"zip_code": "Postal code",
+		"city": "City",
+		"state": "State",
+		"country": "Country",
+		"price_categories": "Price categories",
+		"buy_ticket": "Buy a ticket",
+		"from_date": "From",
+		"to_date": "to",
+		"the_date": "The",
+		"at_time": "at",
+		"get_member_price": "The price will be automatically adjusted after you login to the site if you are a member. If you are not a member, you will be able to benefit from the member rate if you buy a <a href=\":url\">subscription<\/a> at the same time.",
+		"coordinates": "Coordinates",
+		"schedule": "Schedule"
+	},
+	"page-not-found": {
+		"title": "Page not found",
+		"description": "The page searched does not exist; we invite you to consult the site map below."
+	},
+	"search": {
+		"totalResults": "{0} No results for \":query\"|{1} 1 result for \":query\"|[2,*] :count results for \":query\"",
+		"pages": "Results – website pages",
+		"news": "Results – news",
+		"documents": "Results – documents"
+	},
+	"loading": {
+		"calendar": "Loading calendar...",
+		"bloc": "Loading bloc :name..."
+	},
+	"blocs": {
+		"text": "text",
+		"image": "image",
+		"gallery": "gallery",
+		"video": "video",
+		"form": "form",
+		"audio": "audio",
+		"mini-cards": "mini-cards",
+		"google-maps": "Google Maps",
+		"portfolio": "portfolio"
+	},
+	"news": "News",
+	"all-news": "All news",
+	"maintenance": "Site under maintenance",
+	"installation": {
+		"title": "Instructions to install the application",
+		"confirm-cta": "Close"
+	},
+	"confirm": "Confirm",
+	"errorOccurred": "An error occurred, please try again",
+	"modify": "Modify",
+	"delete": "Delete",
+	"delete-modal": {
+		"title": "Delete",
+		"text": "Are you sure",
+		"confirm": "Confirm",
+		"cancel": "Cancel"
+	},
+	"edit-modal": "Edit caption",
+	"error-with-image": "An error occurred with the selected image.",
+  "no-results" : "No results",
+  "choose": "Choose",
+  "back": "Back",
+  "add-service": "Add a service",
+  "add-capability": "Add a capability",
+  "Les catégories Cirkle": "Cirkle categories",
+  "Les professions avec fournisseur dans votre code postal": "Professions with suppliers in your postal code",
+  "Les professions sans fournisseur dans votre code postal": "Professions without suppliers in your postal code",
+  "member": "Member",
+  "Ce fournisseur vous offre": "This supplier offers:"
+}

@@ -1,0 +1,40 @@
+@use "helpers";
+
+$color-border: #ccc;
+$color-text: #333;
+$color-inactive: #f5f5f5;
+$color-active: #d1e7c7;
+
+// Block
+.progress {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  &__node {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    border: 1px solid $color-border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text;
+    background-color: $color-inactive;
+    flex-shrink: 0;
+
+    @include helpers.font-scale(13px);
+
+    &--active {
+      background-color: $color-active;
+    }
+  }
+  
+  &__connector {
+    height: 1px;
+    background-color: $color-border;
+    flex-grow: 1;
+  }
+}

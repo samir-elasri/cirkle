@@ -1,0 +1,17 @@
+{
+    "lang": "en",
+    "name": "Laravel base",
+    "short_name": "Base",
+    "description": "Laravel base",
+    "icons": [
+        {
+             "src": "/dist/img/icons-192.png",
+             "type": "image/png",
+             "sizes": "192x192"
+        }
+    ],
+    "start_url": "/en",
+    "display": "fullscreen",
+    "theme_color": "#1A4E90",
+    "background_color": "#000000"
+}

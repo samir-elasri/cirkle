@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Models\Translations\TranslationModel;
+
+class {{ class }} extends TranslationModel
+{
+	public $timestamps = false;
+}

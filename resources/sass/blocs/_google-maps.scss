@@ -1,0 +1,21 @@
+@use "settings";
+
+.bloc-google-maps {
+
+	&__box-title {
+		font-weight: bold;
+	}
+
+	&__box-link {
+		color: settings.$color-tertiary;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.google-maps--bordered {
+		border: 1px solid settings.$color-primary;
+	}
+}

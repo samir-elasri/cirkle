@@ -1,0 +1,130 @@
+@use "helpers";
+@use "settings";
+@use "font-awesome";
+
+section.blocs {
+	width: 100%;
+
+	&>.spacing {
+
+		@media print,
+		#{settings.$bp-MD},
+		#{settings.$bp-BG} {
+			display: none;
+		}
+	}
+
+	.bloc {
+		display: flex;
+		position: relative;
+
+		&--full {
+			justify-content: center;
+			width: 100%;
+		}
+
+		&--left {
+			justify-content: flex-end;
+			width: 50%;
+
+			.bloc__content {
+				margin-left: settings.$padding;
+			}
+		}
+
+		&--right {
+			justify-content: flex-start;
+			width: 50%;
+
+			.bloc__content {
+				margin-right: settings.$padding;
+			}
+		}
+
+		&:not(.bloc--bleed) {
+			.bloc__content {
+				position: relative;
+			}
+		}
+
+		&--inactive {
+			.admin-bar__inactive-bloc::before {
+				@extend .far;
+				content: font-awesome.fa-content(font-awesome.$fa-var-eye-slash);
+				position: absolute;
+				right: 4px;
+				top: 22px;
+				font-size: 12px;
+				color: gray;
+			}
+		}
+
+		@media not print {
+
+			@media #{settings.$bp-SM},
+			#{settings.$bp-TN} {
+
+				&--left,
+				&--right {
+					justify-content: center;
+					width: 100%;
+
+					.bloc__content {
+						max-width: calc(100% - #{settings.$padding} - #{settings.$padding}) !important;
+						margin-right: settings.$padding !important;
+						margin-left: settings.$padding !important;
+						padding-right: 0 !important;
+						padding-left: 0 !important;
+					}
+				}
+
+				&--full,
+				&--left,
+				&--right {
+					&.bloc--need-inner-spacing:not(.bloc--bleed) .bloc__content {
+						padding-right: settings.$padding !important;
+						padding-left: settings.$padding !important;
+					}
+				}
+			}
+
+			.bloc__loading {
+				margin-top: 1em;
+			}
+
+			.bloc__content {
+
+				&>*:first-child {
+					margin-top: 0;
+				}
+
+				.admin-bar__edit {
+					position: absolute;
+					top: 0;
+					right: 1px;
+				}
+			}
+		}
+
+		.bloc__content-front {
+			margin-top: settings.$h2-bottom-margin;
+		}
+
+		.bloc__content-back {
+			position: absolute;
+			z-index: -1;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+		}
+
+
+		.bloc__content-title {
+			@include helpers.title2;
+			margin: calc(-#{settings.$h2-top-margin} * .2) 0 0 0 !important;
+			position: relative;
+			scroll-margin-top: 100px;
+		}
+	}
+}

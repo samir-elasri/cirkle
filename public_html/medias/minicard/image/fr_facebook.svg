@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <g id="Group" style="isolation: isolate">
+    <path id="Ellipse" d="M0,14A14,14,0,1,1,14,28,14,14,0,0,1,0,14Z" fill="#37937e" style="isolation: isolate"/>
+    <path id="Vector" d="M1.869,6.621H0V4.457H1.869v-1.6A2.608,2.608,0,0,1,4.653,0a15.334,15.334,0,0,1,1.67.085V2.021H5.177c-.9,0-1.073.427-1.073,1.054V4.457H6.247L5.968,6.621H4.1v5.554H1.869Z" transform="translate(10.84 8.129)" fill="#fff" style="isolation: isolate"/>
+  </g>
+</svg>

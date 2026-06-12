@@ -1,0 +1,79 @@
+{
+	"view": "View provider",
+	"restricted_view": "Please log in to contact a provider",
+	"address": "Main address",
+	"services": "Services",
+	"capabilities": "Capabilities",
+	"other-services": "Other services",
+	"estimation_cost": "Estimation cost",
+	"accepts_cash": "Accepts cash",
+	"accepts_check": "Accepts check",
+	"accepts_debit": "Accepts debit",
+	"accepts_credit": "Accepts credit card",
+	"evaluations_average": "Average rating",
+	"visit-website": "Visit provider's website",
+	"evaluation": "Evaluation",
+	"updated-success": "Profile saved",
+	"contact-this-provider": {
+		"cta": "I want to contact this provider",
+		"title": "Contact this provider",
+		"description": "description in subscribers/providers.contact-this.provider.description",
+		"text": "Your request",
+		"submit": "Send",
+		"success": "An email has been sent to the provider.",
+		"error": "An error occurred."
+	},
+	"provider-type": {
+		"residential": "Residential",
+		"business": "Business",
+		"both": "Residential and business"
+	},
+	"form": {
+		"provider_type": "Business type",
+		"company_name": "Company name",
+		"main_description": "Description",
+		"profile_image": "Profile photo",
+		"address": "Address",
+		"number": "Number",
+		"street": "Street",
+		"app": "Office",
+		"city": "City",
+		"state_id": "Province/State",
+		"country_id": "Country",
+		"postal_code": "Postal code",
+		"service_category_id": "Service category",
+		"subcategories": "Subcategories",
+		"services": "Services",
+		"other_service_descriptions": "Other services",
+		"fr": "In French",
+		"en": "In English",
+		"category-description": "Description",
+		"served-zone": "Served area"
+	},
+	"search": {
+		"title": "I'm looking for a service for...",
+		"title-public": "Member and non-member clients",
+		"description-public": "After entering the postal code, Cirkle will download the list of professions in this region",
+		"where": "Where",
+		"provider_type": "Business type",
+		"filter-submit": "Search",
+		"category": "Category",
+		"subcategories": "Subcategories",
+		"services": "Services",
+		"postal_code": "Postal code",
+		"no-result": "Sorry, there are no providers matching your search at this time.",
+		"results": "There is 1 provider who may be able to respond to your request.|There are :count providers who may be able to respond to your request.",
+		"save": {
+			"title": "Save search",
+			"text": "explanations in providers/search.save.text",
+			"submit": "Confirm",
+			"cta": "Save search and notify me of upcoming availability"
+		}
+	},
+	"postal-code-selector": {
+		"no-postal-code": "No unique postal code for this location.",
+		"max-reached": "Limit reached.",
+		"remaining":  "Postal codes selected:",
+		"already-has": "Postal code already selected."
+	}
+}

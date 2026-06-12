@@ -1,0 +1,1 @@
+{!! $bloc->email_alert_content !!}

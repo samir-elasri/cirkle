@@ -1,0 +1,64 @@
+<button type="button"
+        class="call-to-action"
+        data-component="modal"
+        data-modal-template="add-new-modal{{$optionName}}">
+    <script type="application/json">{!! json_encode([
+        'options' => [
+            'showCloseButton' => true,
+            'showConfirmButton' => false,
+            'title' => trans("profile.options.{$optionName}_add_modal_title"),
+        ],
+    ], JSON_THROW_ON_ERROR) !!}</script>
+    <i class="fas fa-plus"></i> @lang('profile.options.add')
+</button>
+
+<template
+        id="add-new-modal{{$optionName}}">
+
+    <div data-component="addOption">
+        <script type="application/json">{!! json_encode([
+            'postUrl' => urlRouteName("profile-option.add", ['type' => $optionName]),
+            'csrf' => csrf_token()
+        ], JSON_THROW_ON_ERROR) !!}</script>
+
+        <form class="form" data-ref="addForm">
+            @csrf
+
+            @if($optionName === 'subscriber_images')
+                <input type="hidden" name="is_photos" value="1">
+                <div class="form__column">
+                    <label for="image[]">@lang('profile.options.fields.images')</label>
+                    <input name="images[]" type="file" multiple>
+                </div>
+            @else
+            <div class="form__column">
+                <label for="fr[title]">@lang('profile.options.fields.fr_title')</label>
+                <input name="fr[title]">
+            </div>
+            <div class="form__column">
+                <label for="fr[description]">@lang('profile.options.fields.fr_description')</label>
+                <textarea name="fr[description]"></textarea>
+            </div>
+            <div class="form__column">
+                <label for="en[title]">@lang('profile.options.fields.en_title')</label>
+                <input name="en[title]">
+            </div>
+            <div class="form__column">
+                <label for="en[description]">@lang('profile.options.fields.en_description')</label>
+                <textarea name="en[description]"></textarea>
+            </div>
+
+            @if($optionName === 'promotions')
+                <div class="form__column">
+                    <label for="image">@lang('profile.options.fields.add-image')</label>
+                    <input name="image" alt="" type="file">
+                </div>
+            @endif
+
+            @endif
+            <button type="submit" class="call-to-action">
+                @lang('main.confirm')
+            </button>
+        </form>
+    </div>
+</template>

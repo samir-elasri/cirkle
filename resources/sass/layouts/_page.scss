@@ -1,0 +1,197 @@
+@use "helpers";
+@use "settings";
+
+
+/*****************************************************************************
+ * Layout
+ *****************************************************************************/
+
+/* Défini la largeur optimale du contenu */
+.optimal-content-width {
+	max-width: var(--optimal-content-width);
+}
+
+.narrow-content-width {
+	max-width: var(--narrow-content-width);
+}
+
+.wide-content-width  {
+	max-width: var(--wide-content-width);
+}
+
+/* Défini la largeur optimale du contenu à demi-largeur (blocs) */
+.half-content-width {
+	max-width: calc(var(--optimal-content-width) * 0.5);
+}
+
+/*****************************************************************************
+ * Contenu principal et colonne de droite
+ *****************************************************************************/
+
+/* Défini la largeur de la colonne de droite */
+.main__right-column {
+	width: var(--right-column-width);
+	min-width: var(--right-column-width);
+}
+
+/* Réduit la largeur maximale du contenu principal pour inclure la colonne de droite */
+.main__content--has-right-column {
+	max-width: calc(var(--optimal-content-width) - var(--right-column-width) - var(--right-column-spacing) + 20px);
+}
+
+/*****************************************************************************
+ * Blocs
+ *****************************************************************************/
+
+/* Ajuste le padding des blocs ayant une couleur de fond */
+.bloc--need-inner-spacing .bloc__content {
+	padding-top: var(--default-bloc-inner-spacing);
+	padding-bottom: var(--default-bloc-inner-spacing);
+}
+
+/* Ajuste le padding des blocs à demi-largeur gauche */
+.main__content .bloc--left .bloc__content {
+	padding-right: calc(var(--default-bloc-inner-spacing) * 0.5);
+}
+
+/* Ajuste le padding des blocs à demi-largeur gauche ayant un arrière-plan différent de celui de droit */
+.main__content .bloc--left.bloc--need-inner-spacing .bloc__content {
+	padding-right: var(--default-bloc-inner-spacing);
+}
+
+/* Ajuste le padding des blocs à demi-largeur gauche qui ne s'étendend pas */
+.main__content .bloc--left.bloc--need-inner-spacing:not(.bloc--bleed) .bloc__content {
+	padding-left: var(--default-bloc-inner-spacing);
+}
+
+/* Ajuste le padding des blocs à demi-largeur droit */
+.main__content .bloc--right .bloc__content {
+	padding-left: calc(var(--default-bloc-inner-spacing) * 0.5);
+}
+
+/* Ajuste le padding des blocs à demi-largeur droit ayant un arrière-plan différent de celui de gauche  */
+.main__content .bloc--right.bloc--need-inner-spacing .bloc__content {
+	padding-left: var(--default-bloc-inner-spacing);
+}
+
+/* Ajuste le padding des blocs à demi-largeur droit qui ne s'étendent pas */
+.main__content .bloc--right.bloc--need-inner-spacing:not(.bloc--bleed) .bloc__content {
+	padding-right: var(--default-bloc-inner-spacing);
+}
+
+/* Ajuste le padding des blocs qui ne s'étendent pas */
+.main__content .bloc--full.bloc--need-inner-spacing:not(.bloc--bleed) .bloc__content
+/*, .main__content.main__content--has-right-column .bloc--full.bloc--need-inner-spacing.bloc--bleed .bloc__content*/ {
+	padding-left: var(--default-bloc-inner-spacing);
+	padding-right: var(--default-bloc-inner-spacing);
+}
+
+.full-content-width {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.optimal-content-width,
+.narrow-content-width,
+.wide-content-width {
+	margin: 0 settings.$padding;
+	width: calc(100% - (2 * #{settings.$padding}));
+    @media #{settings.$bp-TN},
+    #{settings.$bp-SM} {
+        flex-wrap: wrap;
+    }
+}
+
+.half-content-width {
+    width: 100%;
+}
+
+#main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; // Pousse le pied de page dans le bas de l'écran
+
+    background-image: url(/dist/img/wave-top.png), url(/dist/img/wave-bottom.png);
+    background-position: top center, bottom center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: 100% auto, 100% auto;
+}
+
+.main__banner {
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.main__edit {
+    justify-content: flex-end;
+}
+
+.main__title {
+    justify-content: center;
+
+    &>.optimal-content-width,
+    &>.narrow-content-width,
+    &>.wide-content-width {
+        position: relative;
+
+        h1 {
+            @include helpers.title1;
+        }
+
+        .admin-bar__edit {
+            position: absolute;
+            top: 0;
+            right: 1px;
+        }
+    }
+}
+
+.main__layout {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    flex-grow: 1;
+
+    @media #{settings.$bp-MENU-DESKTOP} {
+        .main__right-column {
+            margin-right: settings.$padding;
+        }
+    }
+
+    @media #{settings.$bp-MENU-MOBILE} {
+        flex-wrap: wrap;
+
+        .main__right-column {
+            width: 100% !important;
+            padding: settings.$padding;
+        }
+    }
+}
+
+.main__content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    @media #{settings.$bp-MENU-MOBILE} {
+        max-width: 100% !important;
+    }
+
+    &>section {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    &>.optimal-content-width,
+    &>.narrow-content-width,
+    &>.wide-content-width {
+        flex-grow: 1;
+    }
+}

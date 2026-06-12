@@ -1,0 +1,85 @@
+{
+  "tabs": {
+    "client": "Client",
+    "supplier": "Fournisseur",
+    "profile": "Mon profil",
+    "contacted-suppliers": "Fournisseur contacté",
+    "favorited-suppliers": "Fournisseur favoris",
+    "saved-searches": "Mes recherches sauvegardés",
+    "supplier-profile": "Mon profil fournisseur",
+    "profile-options": "Descriptions pour onglet options de profil",
+    "invoices": "My invoices"
+  },
+  "saved-search": {
+    "delete": "Supprimer",
+    "view-results": "Montrer les résultats"
+  },
+  "modal": {
+    "delete-confirmation-title": "Êtes-vous sûr",
+    "pause-confirmation-title": "Êtes-vous sûr",
+    "edit-options": "Ajouter des options",
+    "option": {
+      "title": "Titre modal pour choix d'options de profil",
+      "description": "Description modal pour choix d'options de profil"
+    }
+  },
+  "public": {
+    "view": "Voir ma fiche publique",
+    "create": "Créer ma fiche publique",
+    "edit": "Modifier ma fiche publique"
+  },
+  "profile_options": {
+    "date": "Actif depuis le :date",
+    "end_date": "Se termine le :date",
+    "pay": "Payer",
+    "price_section": "Prix a payer"
+  },
+  "invoices": {
+    "view": "Voir la facture"
+  },
+  "update-info": "Mettre à jour mes informations",
+  "propose_services": "Vous souhaitez proposez des services cliquez ici",
+  "options": {
+    "edit": "Modifier mes options",
+    "updated": "Options de profil mises à jour",
+    "license_add_modal_title": "Ajouter un permis",
+    "promotions_add_modal_title": "Ajouter une promotion",
+    "subscriber_images_add_modal_title": "Ajouter une photo",
+    "job_offers_add_modal_title": "Ajouter une offre d'emploi",
+    "add": "Ajouter",
+    "update-url": "Mettre à jour mon URL",
+    "fields": {
+      "fr_title" : "Titre (fr)",
+      "en_title" : "Titre (en)",
+      "fr_url" : "URL (fr)",
+      "en_url" : "URL (en)",
+      "fr_description" : "Description (fr)",
+      "en_description" : "Description (en)",
+      "image": "Image",
+      "images": "Images",
+      "current": "En cours",
+      "currently-recruiting": "Recrutement en cours",
+      "legend": "Légende",
+      "add-image": "Ajouter vos images"
+    }
+  },
+  "edit": {
+    "step1": {
+      "title": "Modifier mon profil",
+      "substitle": ""
+    },
+    "step2": {
+      "title": "Modifier mes services",
+      "substitle": ""
+    }
+  },
+  "step1": {
+    "edit": "Modifier mon profil",
+    "updated": "Modifications enregistrées"
+  },
+  "step2": {
+    "edit": "Modifier mes services",
+    "updated": "Modifications enregistrées"
+  },
+  "no_active_options": "Aucune option de profil active à modifier"
+}

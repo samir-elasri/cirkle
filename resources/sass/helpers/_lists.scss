@@ -1,0 +1,114 @@
+@use "sass:color";
+@use "sass:math";
+
+@use "fonts";
+@use "settings";
+@use "font-awesome";
+
+@mixin ul {
+  margin: 0 0 0 0;
+  padding: 0;
+  //list-style-position: outside;
+  overflow: hidden;
+  line-height: 1.3em;
+
+  li {
+    margin-left: 1em;
+    position: relative;
+
+    @media #{settings.$bp-MENU-MOBILE} {
+      font-size: calc(18px * .8);
+    }
+
+    &::before {
+      @extend .fas;
+      content: '\f111';
+      color: settings.$color-primary;
+      font-size: 7px;
+      margin-right: 10px;
+      //left: -14px;
+      //position: absolute;
+      //top: 50%;
+      //transform: translateY(-50%);
+    }
+
+    ul {
+      margin: 0 0 1em 0;
+      padding: 0;
+      list-style-position: outside;
+      overflow: hidden;
+
+      li {
+        margin: 0 0 0 1.8em;
+        position: relative;
+
+        &::before {
+          //@extend .fas;
+          //content: '\f111';
+          //color: settings.$color-secondary;
+          //font-size: 6px;
+          //top: 10px;
+          content: '-';
+          left: -17px;
+          position: absolute;
+        }
+      }
+    }
+  }
+}
+
+@mixin ol {
+  padding: 0;
+  list-style-position: outside;
+  overflow: hidden;
+  margin-top: 0;
+  list-style: none;
+  counter-reset: li;
+  line-height: 1.3em;
+
+  li {
+    counter-increment: li;
+    margin-left: 14px;
+    position: relative;
+
+    @media #{settings.$bp-MENU-MOBILE} {
+      font-size: calc(18px * .8);
+    }
+
+    &::before {
+      content: counter(li);
+      color: settings.$color-primary;
+      display: inline-block;
+      width: 1em;
+      margin-left: -0.8em;
+      margin-right: 3px;
+      font-size: 17px;
+      font-weight: bold;
+      font-family: settings.$font-main;
+    }
+
+    ol {
+      margin: 0 0 1em 0;
+      padding: 0;
+      list-style-position: outside;
+      overflow: hidden;
+
+      li {
+        margin: 0 0 0 2em;
+        counter-increment: li;
+
+        &::before {
+          content: counter(li);
+          color: settings.$color-secondary;
+          display: inline-block;
+          width: 1em;
+          margin-left: -0.8em;
+          margin-right: 3px;
+          font-size: 17px;
+          font-weight: bold;
+          font-family: settings.$font-main;
+        }
+      }
+    }
+  }
+}

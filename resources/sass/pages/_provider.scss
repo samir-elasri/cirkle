@@ -1,0 +1,245 @@
+@use "../settings";
+@use "helpers";
+
+.provider-single {
+  width: 300px;
+  max-width: 100%;
+  padding: 1em;
+  box-shadow: rgba(#101010, .15) 0 3px 20px;
+  border-radius: 4px;
+  background-color: white;
+
+  display: flex;
+  flex-direction: column;
+
+  img {
+    max-width: 100%;
+  }
+
+  .star-displayer {
+    padding: 15px 0;
+    font-size: 36px;
+
+    .stars, .fa, .far {
+      color: #AF8F44;
+      font-size: 15px;
+    }
+
+    :not(:first-child i) {
+      margin-right: 20px;
+    }
+  }
+}
+
+.label-style {
+  color: settings.$color-grey-dark;
+
+  @include helpers.font-scale(18px);
+
+  &.small-label {
+    @include helpers.font-scale(13px);
+  }
+}
+
+.service-category__style {
+  border: 1px solid settings.$color-primary;
+  color: settings.$color-primary;
+  border-radius: 100px;
+  padding: 8px 12px;
+  width: fit-content;
+}
+
+.service-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 12px;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+.service-single {
+  min-width: calc(50% - 12px);
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: .25em;
+
+  &__description {
+    @include helpers.font-scale(13px);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  img {
+    max-width: 24px;
+    max-height: 24px;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.flex-justify-center {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.estimations-container {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  width: 100%;
+  justify-content: space-between;
+  max-width: 350px;
+
+  .yes__no {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    text-transform: capitalize;
+    @include helpers.font-scale(13px);
+
+    :not(.active) {
+      color: settings.$color-grey-dark;
+    }
+
+    .active {
+      color: black;
+    }
+  }
+}
+
+.item-spacer__container {
+  > *:not(:last-child) {
+    margin-bottom: 48px;
+  }
+}
+
+div.like-row {
+  text-align: left!important;
+  font-size: 30px;
+}
+
+
+.profile-img {
+  height: 212px;
+  width: 212px;
+  object-fit: cover;
+  border-radius: 100%;
+  box-shadow: rgba(#101010, 15%) 0 3px 20px 0;
+}
+
+.evaluations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  margin: 1em 0;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    > div {
+      font-size: 13px;
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+
+      .fa, .far {
+        font-size: 15px;
+        color: #AF8F44;
+      }
+    }
+  }
+
+  &--scrollbar {
+    max-height: 300px;
+    overflow-y: scroll;
+  }
+
+  &__item-title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    margin-bottom: 24px;
+    justify-content: space-between;
+  }
+
+  &__comment {
+    margin-bottom: 24px;
+  }
+
+  &__star-row {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    flex-direction: row;
+
+    > div {
+      width: calc(50% - 1em);
+      display: flex;
+      flex-direction: row;
+      gap: 1.25em;
+      font-size: 13px;
+
+      .stars {
+        font-size: 15px;
+      }
+    }
+  }
+}
+
+
+.provider-search {
+
+  @media #{settings.$bp-MENU-MOBILE} {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  @media #{settings.$bp-MENU-DESKTOP} {
+    gap: 1em;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__filters {
+
+  }
+
+  &__results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+
+    & > p {
+      width: 100%;
+      margin: 0;
+    }
+  }
+}
+
+.postalCodeSelector {
+  &__list-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0.5em 0;
+
+    button {
+      background-color: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+  }
+}

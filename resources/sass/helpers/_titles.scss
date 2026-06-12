@@ -1,0 +1,82 @@
+@use "fonts";
+@use "settings";
+
+@mixin title1 {
+
+	@include fonts.font-scale(settings.$h1-font-size);
+
+	color: settings.$h1-color;
+	font-family: settings.$h1-font-family;
+	font-weight: settings.$h1-font-weight;
+	line-height: settings.$h1-line-height;
+
+	@if(settings.$h1-uppercase) {
+		text-transform: uppercase;
+	}
+
+	@if(settings.$h1-italic) {
+		font-style: italic;
+	}
+
+	margin: settings.$h1-top-margin 0 settings.$h1-bottom-margin 0;
+}
+
+@mixin title2 {
+
+	@include fonts.font-scale(settings.$h2-font-size);
+
+	color: settings.$h2-color;
+	font-family: settings.$h2-font-family;
+	font-weight: settings.$h2-font-weight;
+	line-height: settings.$h2-line-height;
+
+	@if(settings.$h2-uppercase) {
+		text-transform: uppercase;
+	}
+
+	@if(settings.$h2-italic) {
+		font-style: italic;
+	}
+
+	margin: settings.$h2-top-margin 0 settings.$h2-bottom-margin 0;
+}
+
+@mixin title3 {
+
+	@include fonts.font-scale(settings.$h3-font-size);
+
+	color: settings.$h3-color;
+	font-family: settings.$h3-font-family;
+	font-weight: settings.$h3-font-weight;
+	line-height: settings.$h3-line-height;
+
+	@if(settings.$h3-uppercase) {
+		text-transform: uppercase;
+	}
+
+	@if(settings.$h3-italic) {
+		font-style: italic;
+	}
+
+	margin: settings.$h3-top-margin 0 settings.$h3-bottom-margin 0;
+}
+
+@mixin title4 {
+
+	@include fonts.font-scale(settings.$h4-font-size);
+
+	color: settings.$h4-color;
+	font-family: settings.$h4-font-family;
+	font-weight: settings.$h4-font-weight;
+	line-height: settings.$h4-line-height;
+
+	@if(settings.$h4-uppercase) {
+		text-transform: uppercase;
+	}
+
+	@if(settings.$h4-italic) {
+		font-style: italic;
+	}
+
+	margin: settings.$h4-top-margin 0 settings.$h4-bottom-margin 0;
+}

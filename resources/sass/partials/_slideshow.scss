@@ -1,0 +1,326 @@
+@use "settings";
+@use "font-awesome";
+@use "helpers";
+
+.mini-slide {
+  display: flex !important;
+  flex-direction: column;
+  //width: 145px!important;
+  margin: 0 8px 0 8px !important;
+
+  &.photos > div {
+    max-width: 160px;
+  }
+
+  &.promotions > div {
+    max-width: 212px;
+  }
+
+  >div {
+    width: 100%;
+  }
+
+  img {
+    max-height: 160px;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+.mini-slides {
+  height: 100%;
+}
+
+.mini-slideshow {
+
+  .slick-list {
+    padding-right: 54px;
+  }
+
+  &__header {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+
+    &__arrows {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+    }
+  }
+
+  .slick-prev,
+  .slick-next {
+    font-size: 25px;
+    z-index: 5;
+    color: black;
+    cursor: pointer;
+    top: 50%;
+  }
+}
+
+.arrow-container{
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.slideshow {
+    padding: 0 !important;
+    margin: 0;
+    background-color: #ECF4EE;
+
+    &,
+    .slide,
+    .slides,
+    .slick-side,
+    .slick-list,
+    .slick-track,
+    .slick-slide,
+    .slick-slide>.localContainer {
+        width: inherit;
+        height: inherit;
+        min-height: inherit;
+        max-height: inherit;
+    }
+
+    .slides {
+        overflow: hidden;
+
+        .slick-prev,
+        .slick-next {
+            font-size: 30px;
+            position: absolute;
+            z-index: 5;
+            color: settings.$color-primary;
+            cursor: pointer;
+            top: 50%;
+        }
+
+        .slick-prev {
+            left: 20px;
+
+            &:before {
+                @extend .fas;
+                content: '\f053';
+            }
+        }
+
+        .slick-next {
+            right: 20px;
+
+            &:before {
+                @extend .fas;
+                content: '\f054';
+            }
+        }
+    }
+
+    .slides-mobile {
+        overflow: hidden;
+
+        .slick-prev,
+        .slick-next {
+            font-size: 30px;
+            position: absolute;
+            z-index: 5;
+            color: settings.$color-primary;
+            cursor: pointer;
+            top: 0;
+        }
+
+        .slick-prev {
+            left: 20px;
+
+            &:before {
+                @extend .fas;
+                content: '\f053';
+            }
+        }
+
+        .slick-next {
+            right: 20px;
+
+            &:before {
+                @extend .fas;
+                content: '\f054';
+            }
+        }
+    }
+
+    .slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &__content {
+        position: absolute;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
+
+        h2 {
+            color: inherit;
+            @include helpers.font-scale(80px);
+        }
+    }
+
+    &__text {
+        max-width: 875px;
+        @include helpers.font-scale(37px);
+    }
+
+    .slides-mobile {
+        &__content {
+            color: black;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+
+            .call-to-action {
+                margin-top: 20px;
+            }
+        }
+    }
+
+    &__end {
+        margin-top: 40px;
+    }
+}
+
+.slick-dots {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    top: -40px;
+
+    margin: 0;
+
+    list-style-type: none;
+
+    @media #{settings.$bp-MENU-MOBILE} {
+        top: 0;
+    }
+
+    li {
+        margin: 0 0.25rem;
+
+        &.slick-active {
+            @media #{settings.$bp-MENU-MOBILE} {
+                button {
+                    background-color: blue;
+                }
+            }
+        }
+    }
+
+    button {
+        display: block;
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        cursor: pointer;
+        border: none;
+        outline: none;
+        border-radius: 100%;
+        background-color: white;
+
+        @media #{settings.$bp-MENU-MOBILE} {
+            background-color: black;
+        }
+
+        text-indent: -9999px;
+
+        @media #{settings.$bp-MENU-MOBILE} {
+            width: 12px;
+            height: 12px;
+        }
+
+        @media #{settings.$bp-TN} {
+            width: 8px;
+            height: 8px;
+        }
+
+        &.play {
+            background-color: white;
+
+            @media #{settings.$bp-MENU-MOBILE} {
+                background-color: black;
+            }
+
+            width: 32px;
+            height: 32px;
+            margin-top: -8px;
+            text-indent: 0;
+
+            @media #{settings.$bp-MENU-MOBILE} {
+                width: 24px;
+                height: 24px;
+                margin-top: -6px;
+            }
+
+
+            &.playing:after {
+                @extend .fas;
+                content: font-awesome.fa-content(font-awesome.$fa-var-pause);
+                color: black;
+                height: 12px;
+                margin-left: 0;
+                margin-top: 2px;
+                width: 12px;
+
+                @media #{settings.$bp-MENU-MOBILE} {
+                    width: 12px;
+                    height: 12px;
+                    color: white;
+                }
+            }
+
+            &.pause:after {
+                @extend .fas;
+                content: font-awesome.fa-content(font-awesome.$fa-var-play);
+                color: black;
+                height: 12px;
+                margin-left: 2px;
+                margin-top: 2px;
+                width: 12px;
+
+                @media #{settings.$bp-MENU-MOBILE} {
+                    width: 12px;
+                    height: 12px;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    li.slick-active button {
+        background-color: settings.$color-secondary;
+        border: 4px solid white;
+
+        @media #{settings.$bp-MENU-MOBILE} {
+            border: 3px solid white;
+        }
+
+        @media #{settings.$bp-TN} {
+            border: none;
+        }
+    }
+
+}

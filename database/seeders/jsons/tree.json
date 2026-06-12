@@ -1,0 +1,322 @@
+{
+	"corpo": [{
+		"fr": {
+			"title": "Profil",
+			"custom_url": "*"
+		},
+		"en": {
+			"title": "Profile",
+			"custom_url": "*"
+		},
+		"label": "profile"
+	}],
+	"main": [{
+			"fr": {
+				"title": "Page standard",
+				"custom_url": "*"
+			},
+			"en": {
+				"title": "Standard page",
+				"custom_url": "*"
+			},
+			"label": "page_standard",
+			"blocs": [{
+					"blocType": "bloc_texts",
+					"label": "Bloc texte avec image",
+					"fr": {
+						"title": "Titre d'un bloc texte avec image",
+						"content": "<h3>Sous-titre pour un bloc texte h3</h3><h4>Titre additionnel H4</h4><p>Paragraphe ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua nostrud exercitation ullamco</p><ul><li>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut</li><li>Lorem ipsum dolor sit amet pariatur<ul><li>Lorem ipsum dolor sit</li></ul></li></ul><ol><li>Lorem ipsum dolor sit amet<ol><li>Lorem ipsum dolor sit amet</li><li>Lorem ipsum dolor sit amet</li><li>Lorem ipsum dolor sit amet</li></ol></li></ol>",
+						"image": "/dist/img/bloc_image.png",
+						"legend": "Légende"
+					},
+					"en": {
+						"title": "Titre d'un bloc texte avec image (en)",
+						"content": "<h3>Sous-titre pour un bloc texte h3</h3><h4>Titre additionnel H4</h4><p>Paragraphe ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua nostrud exercitation ullamco</p><ul><li>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut</li><li>Lorem ipsum dolor sit amet pariatur<ul><li>Lorem ipsum dolor sit</li></ul></li></ul><ol><li>Lorem ipsum dolor sit amet<ol><li>Lorem ipsum dolor sit amet</li><li>Lorem ipsum dolor sit amet</li><li>Lorem ipsum dolor sit amet</li></ol></li></ol>",
+						"image": "/dist/img/bloc_image.png",
+						"legend": "Legend"
+					},
+					"media_type": "image",
+					"half_width_mode": 0,
+					"align": "left",
+					"relation": "straight",
+					"active": true
+				},
+				{
+					"blocType": "bloc_texts",
+					"label": "Bloc texte sans image",
+					"fr": {
+						"title": "Titre d'un bloc texte",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"en": {
+						"title": "Titre d'un bloc texte (en)",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"active": true
+				},
+				{
+					"blocType": "bloc_images",
+					"label": "Bloc image",
+					"fr": {
+						"title": "Titre d'un bloc image",
+						"image": "/dist/img/bloc_image.png",
+						"legend": "Légende"
+					},
+					"en": {
+						"title": "Titre d'un bloc image (en)",
+						"image": "/dist/img/bloc_image.png",
+						"legend": "Legend"
+					},
+					"active": true
+				},
+				{
+					"blocType": "bloc_videos",
+					"label": "Bloc Video",
+					"fr": {
+						"title": "Titre d'un bloc vidéo",
+						"description": "Contenu bloc video",
+						"video_url": "c8qrwON1-zE"
+					},
+					"en": {
+						"title": "Titre d'un bloc vidéo (en)",
+						"description": "Bloc video content",
+						"video_url": "c8qrwON1-zE"
+					},
+					"video_type": "youtube",
+					"active": true
+				},
+				{
+					"blocType": "bloc_texts",
+					"label": "Bloc accordéon",
+					"fr": {
+						"title": "Titre d'un bloc accordéon",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"en": {
+						"title": "Titre d'un bloc accordéon (en)",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"accordion": 1,
+					"active": true
+				},
+				{
+					"blocType": "bloc_texts",
+					"label": "Bloc accordéon",
+					"fr": {
+						"title": "Titre d'un bloc accordéon",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"en": {
+						"title": "Titre d'un bloc accordéon (en)",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"accordion": 1,
+					"top_spacing": 20,
+					"active": true
+				},
+				{
+					"blocType": "bloc_texts",
+					"label": "Bloc accordéon",
+					"fr": {
+						"title": "Titre d'un bloc accordéon",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"en": {
+						"title": "Titre d'un bloc accordéon (en)",
+						"content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+					},
+					"accordion": 1,
+					"top_spacing": 20,
+					"active": true
+				},
+				{
+					"blocType": "bloc_galleries",
+					"label": "Bloc Galerie",
+					"fr": {
+						"title": "Titre d'un bloc galerie"
+					},
+					"en": {
+						"title": "Titre d'un bloc galerie (en)"
+					},
+					"gallery_id": 1,
+					"active": true
+				},
+				{
+					"blocType": "bloc_portfolios",
+					"label": "Bloc Portfolio",
+					"fr": {
+						"title": "Titre d'un bloc portfolio"
+					},
+					"en": {
+						"title": "Titre d'un bloc portfolio (en)"
+					},
+					"gallery_id": 1,
+					"active": true
+				},
+				{
+					"blocType": "bloc_audios",
+					"label": "Bloc audio",
+					"fr": {
+						"title": "Titre d'un bloc audio"
+					},
+					"en": {
+						"title": "Titre d'un bloc audio (en)"
+					},
+					"audio_filename": "/tests/mp3/better.mp3",
+					"active": true
+				},
+				{
+					"blocType": "bloc_google_maps",
+					"label": "Bloc google map",
+					"google_map_group_id": 1,
+					"fr": {
+						"title": "Titre d'un bloc Google Maps"
+					},
+					"en": {
+						"title": "Titre d'un bloc Google Maps (en)"
+					},
+					"active": true
+				},
+				{
+					"blocType": "bloc_forms",
+					"label": "Bloc Formulaire",
+					"form_generator_id": 1,
+					"fr": {
+						"title": "Titre d'un bloc formulaire",
+						"call_to_action_label": "Envoyer",
+						"message": "Votre demande a bien été prise en compte, elle sera traitée dans les plus brefs délais."
+					},
+					"en": {
+						"title": "Titre d'un bloc formulaire (en)",
+						"call_to_action_label": "Send",
+						"message": "Your request has been taken into account and will be processed as soon as possible."
+					},
+					"active": true
+				},
+				{
+					"blocType": "bloc_mini_cards",
+					"label": "Bloc Mini fiches",
+					"mini_card_group_id": 1,
+					"fr": {
+						"title": "Titre d'un bloc mini-fiches"
+					},
+					"en": {
+						"title": "Titre d'un bloc mini-fiches (en)"
+					},
+					"active": true
+				}
+			]
+		},
+		{
+			"fr": {
+				"title": "Test",
+				"custom_url": "/test"
+			},
+			"en": {
+				"title": "Test",
+				"custom_url": "/test"
+			},
+			"children": [{
+					"fr": {
+						"title": "Liste de nouvelles",
+						"custom_url": "*"
+					},
+					"en": {
+						"title": "News list",
+						"custom_url": "*"
+					},
+					"label": "news-list"
+				},
+				{
+					"fr": {
+						"title": "Liste de galleries",
+						"custom_url": "*"
+					},
+					"en": {
+						"title": "Gallery list",
+						"custom_url": "*"
+					},
+					"custom_code": "galleryList"
+				}
+			]
+		},
+		{
+			"fr": {
+				"title": "Sous-menu"
+			},
+			"en": {
+				"title": "Submenu"
+			},
+			"children": [{
+					"fr": {
+						"title": "Test1",
+						"url": "/url-to",
+						"target_blank": true
+					},
+					"en": {
+						"title": "Test1",
+						"url": "/url-to",
+						"target_blank": true
+					}
+				},
+				{
+					"fr": {
+						"title": "Test2"
+					},
+					"en": {
+						"title": "Test2"
+					},
+					"sublevel": true,
+					"children": [{
+							"fr": {
+								"title": "SubTest1"
+							},
+							"en": {
+								"title": "SubTest1"
+							}
+						},
+						{
+							"fr": {
+								"title": "SubTest2"
+							},
+							"en": {
+								"title": "SubTest2"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"footer": [{
+			"fr": {
+				"title": "Politique de confidentialité",
+				"custom_url": "/politique-de-confidentialite"
+			},
+			"en": {
+				"title": "Privacy policy",
+				"custom_url": "/privacy-policy"
+			}
+		},
+		{
+			"fr": {
+				"title": "Conditions d'utilisation"
+			},
+			"en": {
+				"title": "Term of use"
+			},
+			"label": "term-of-use"
+		},
+		{
+			"fr": {
+				"title": "Plan du site",
+				"custom_url": "*"
+			},
+			"en": {
+				"title": "Sitemap",
+				"custom_url": "*"
+			},
+			"custom_code": "sitemap"
+		}
+	]
+}

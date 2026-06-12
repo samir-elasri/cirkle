@@ -1,0 +1,55 @@
+{
+	"buy": "Buy",
+	"bought": "Your transaction was successful. You will receive a confirmation email shortly.",
+	"setup": "Thank you for confirming your order. You have a free trial period of :length day(s) and your transaction will be processed on :date",
+	"transaction_date": "Your transaction will be processed on :date",
+	"unpaid": "The transaction was not processed.",
+	"emptied": "Your cart has been emptied",
+	"is_empty": "Your cart is empty",
+	"empty": "Empty cart",
+	"confirm": "Confirm",
+	"product_type": "Product type",
+	"product_name": "Product name",
+	"product_quantity": "Quantity",
+	"product_unit_price": "Unit cost",
+	"total": "Total",
+	"item": {
+		"already_in": "This item already in cart",
+		"not_in": "This item not in cart",
+		"added": "Item added to cart",
+		"remove": "Remove item",
+		"removed": "Item removed from cart",
+		"price": "Unit cost",
+		"location": "Location",
+		"duration": "Duration",
+		"quantity": "Quantity"
+	},
+	"totals": {
+		"sub_total": "Subtotal",
+		"discounted": "With coupon",
+		"saved": "Saved",
+		"tps": "TPS",
+		"tvq": "TVQ",
+		"total": "Total"
+	},
+	"checkout": {
+		"checkout": "Confirm",
+		"see-receipt": "See the receipt",
+		"Event": "Event",
+		"Subscription": "Subscription"
+	},
+	"date": {
+		"hour": "Hour",
+		"date": "Date"
+	},
+	"coupon": {
+		"coupon": "Coupon",
+		"your-coupon-is": "Your coupon is",
+		"add-coupon": "Enter your discount code",
+		"remove-coupon": "Remove the coupon",
+		"removed": "The coupon has been deleted.",
+		"apply": "Apply",
+		"added": "The coupon has been added.",
+		"invalid": "The coupon is invalid."
+	}
+}

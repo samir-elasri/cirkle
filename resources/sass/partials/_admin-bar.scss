@@ -1,0 +1,167 @@
+@use "settings";
+@use "font-awesome";
+
+.admin-bar__edit {
+	color: black;
+	font-size: 14px;
+
+	&::before {
+		@extend .far;
+		content: font-awesome.fa-content(font-awesome.$fa-var-edit);
+	}
+}
+
+.admin-bar {
+
+	font-family: sans-serif;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	font-size: 12px;
+	color: white;
+	background: black;
+	border-bottom: 1px solid white;
+	z-index: 9999; // BrowserSync est a 10000
+
+	overflow: hidden;
+
+	&,
+	& * {
+		outline: none !important;
+	}
+
+	&>.optimal-content-width {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 0 settings.$gutter;
+
+		max-height: 30px;
+		transition: all 500ms ease-out;
+
+		&:hover {
+			max-height: unset;
+		}
+
+		&>div {
+			display: flex;
+			flex-wrap: wrap;
+		}
+	}
+
+	&__resolution {
+		&::before {
+			@extend .fas;
+		}
+
+		@media #{settings.$bp-MENU-MOBILE} {
+			&::before {
+				margin-right: settings.$spacer;
+				content: font-awesome.fa-content(font-awesome.$fa-var-mobile-alt);
+			}
+		}
+
+		@media #{settings.$bp-MENU-DESKTOP} {
+			&::before {
+				margin-right: settings.$spacer;
+				content: font-awesome.fa-content(font-awesome.$fa-var-desktop);
+			}
+		}
+	}
+
+	&__title {
+		text-transform: uppercase;
+		font-weight: bold;
+		padding: settings.$spacer settings.$gutter;
+		white-space: nowrap;
+	}
+
+	&__user {
+		white-space: nowrap;
+
+		padding: settings.$spacer settings.$gutter;
+
+		&::before {
+			@extend .fas;
+			margin-right: settings.$spacer;
+			content: font-awesome.fa-content(font-awesome.$fa-var-user);
+		}
+	}
+
+	&__label {
+		padding: settings.$spacer settings.$gutter;
+	}
+
+	&__button {
+		user-select: none;
+		cursor: pointer;
+		color: white;
+		text-decoration: none;
+		white-space: nowrap;
+		padding: settings.$spacer settings.$gutter;
+
+		&:hover {
+			color: black;
+			background-color: white;
+		}
+
+		&::before {
+			margin-right: settings.$spacer;
+		}
+
+		&--logout::before {
+			@extend .fas;
+			content: font-awesome.fa-content(font-awesome.$fa-var-sign-out-alt);
+		}
+
+		&--clear-cache::before {
+			@extend .fas;
+			content: font-awesome.fa-content(font-awesome.$fa-var-database);
+		}
+
+		&--guides::before {
+			@extend .far;
+			content: font-awesome.fa-content(font-awesome.$fa-var-eye-slash);
+
+			&.active {
+				content: font-awesome.fa-content(font-awesome.$fa-var-eye);
+			}
+		}
+
+		&--inactive-blocs::before {
+			@extend .far;
+			content: font-awesome.fa-content(font-awesome.$fa-var-eye-slash);
+
+			&.active {
+				content: font-awesome.fa-content(font-awesome.$fa-var-eye);
+			}
+		}
+
+		&--edit-page::before {
+			@extend .far;
+			content: font-awesome.fa-content(font-awesome.$fa-var-edit);
+		}
+
+		&--settings::before {
+			@extend .fas;
+			content: font-awesome.fa-content(font-awesome.$fa-var-cog);
+		}
+	}
+}
+
+body.show-guides .admin-bar__button--guides::before {
+	content: font-awesome.fa-content(font-awesome.$fa-var-eye);
+}
+
+body.show-inactive-blocs .admin-bar__button--inactive-blocs::before {
+	content: font-awesome.fa-content(font-awesome.$fa-var-eye);
+}
+
+body:not(.show-inactive-blocs) {
+
+	.bloc--inactive {
+		display: none !important;
+
+	}
+
+}

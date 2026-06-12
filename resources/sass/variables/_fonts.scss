@@ -1,0 +1,27 @@
+//===========================================
+// Police
+//===========================================
+
+// Police de base
+$font-main: 'Poppins',
+sans-serif !default;
+// Police d'entêtes
+$font-headings: 'Montserrat',
+sans-serif !default;
+// Taille de base (échelle grand format)
+$font-size: 14px;
+// Échelle moyen format
+$font-scale-bp-md: .9;
+// Échelle petit format
+$font-scale-bp-sm: .8;
+// Échelle tout petit format
+$font-scale-bp-tn: .6;
+// Taille minimale
+$font-scale-min-size: 12px;
+
+//===========================================
+// Accessibility
+//===========================================
+
+// Coefficent d'agrandissement
+$font-scaled: 1.2;

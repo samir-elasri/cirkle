@@ -1,0 +1,25 @@
+.video-with-legend {
+  margin: 0;
+  border-radius: 4px;
+  overflow: hidden;
+
+  &__container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+  }
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  video {
+    width: 100%;
+  }
+}

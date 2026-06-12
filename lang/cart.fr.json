@@ -1,0 +1,56 @@
+{
+    "buy": "Acheter",
+    "bought": "Votre transaction est passée avec succès. Vous receverez un courriel de confirmation d'ici peu.",
+    "setup": "Merci d'avoir confirmé votre commande. Vous avez une période d'essai gratuite de :length jour(s) et votre transaction passera le :date",
+    "transaction_date": "Votre transaction passera le :date",
+    "unpaid": "La transaction n'est pas passée.",
+    "emptied": "Votre panier a été vidé",
+    "is_empty": "Votre panier est vide",
+    "empty": "Vider le panier",
+    "confirm": "Confirmer",
+    "product_type": "Type de produit",
+    "product_name": "Nom du produit",
+    "product_quantity": "Quantité",
+    "product_unit_price": "Coût unitaire",
+    "total": "Total",
+	"item": {
+		"already_in": "Cet article est déjà dans le panier",
+		"not_in": "Cet article n'est pas dans le panier",
+		"added": "Article ajouté au panier",
+		"remove": "Retirer l'article",
+		"removed": "Article retiré du panier",
+		"price": "Coût unitaire",
+		"location": "Lieu",
+		"duration": "Durée",
+		"quantity": "Quantité"
+	},
+	"totals": {
+		"sub_total": "Sous-total",
+		"discounted": "Avec coupon",
+		"saved": "Économie de",
+		"tps": "TPS",
+		"tvq": "TVQ",
+		"total": "Total",
+		"price": "Coût"
+	},
+	"checkout": {
+		"checkout": "Confirmer",
+		"see-receipt": "Voir le reçu",
+		"Event": "Événement",
+		"Subscription": "Abonnement"
+	},
+	"date": {
+	    "hour": "Heure",
+    	"date": "Date"
+	},
+	"coupon": {
+		"coupon": "Coupon",
+		"your-coupon-is": "Votre coupon est",
+		"add-coupon": "Entrer votre code rabais",
+		"apply": "Appliquer",
+		"remove-coupon": "Retirer le coupon",
+		"removed": "Le coupon a été supprimé.",
+		"added": "Le coupon a bien été ajouté.",
+		"invalid": "Le coupon est invalide."
+	}
+}

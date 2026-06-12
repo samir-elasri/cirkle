@@ -1,0 +1,23 @@
+@use "helpers";
+@use "settings";
+
+.bloc-video {
+
+	.content-writable {
+		@include helpers.font-scale(settings.$font-size);
+
+		*:first-child {
+			margin-top: 0;
+		}
+	}
+
+	.plyr {
+		&__volume {
+			min-width: 100px;
+		}
+
+		&_progress_container {
+			width: 81%;
+		}
+	}
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="55.417" height="70" viewBox="0 0 55.417 70">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Bounding_box" data-name="Bounding box" d="M0,0H55.417V70H0Z" fill="#d9d9d9" style="isolation: isolate"/>
+    </clipPath>
+  </defs>
+  <g id="finance_mode" clip-path="url(#clip-path)" style="isolation: isolate">
+    <path id="finance_mode-2" data-name="finance_mode" d="M14.583,11.667h8.75V33.979L18.958,29.9l-4.375,4.083ZM29.167,0h8.75V29.6l-8.75,8.75ZM0,23.333H8.75V39.667L0,48.417ZM18.813,36.75l10.354,8.9L45.5,29.313H40.833V23.479H55.417V38.063H49.583V33.4L29.458,53.521,19.1,44.625,8.167,55.563H0Z" transform="translate(0 7.2185)" fill="#37937e" style="isolation: isolate"/>
+  </g>
+</svg>

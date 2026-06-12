@@ -1,0 +1,14 @@
+.news {
+	&__date {
+		font-size: 14px;
+		margin-bottom: 1em;
+	}
+
+	&__category:not(:last-child) {
+		content: ', '
+	}
+
+	&__image>img {
+		width: 100%;
+	}
+}

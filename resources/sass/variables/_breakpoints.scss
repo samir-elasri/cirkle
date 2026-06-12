@@ -1,0 +1,17 @@
+$max-width-SM: 520px;
+$max-width-MD: 768px;
+$max-width-BG: 1200px;
+
+$max-width-MENU-MOBILE: 1000px; // must be under 1024
+
+$break-SM: $max-width-SM;
+$break-MD: $max-width-MD;
+$break-BG: $max-width-BG;
+
+$bp-TN: 'screen and (min-width: 0) and (max-width: #{$break-SM}), print'; // TINY and PRINT, Smartphone
+$bp-SM: 'screen and (min-width: #{$break-SM + 1px}) and (max-width: #{$break-MD})'; // SMALL
+$bp-MD: 'screen and (min-width: #{$break-MD + 1px}) and (max-width: #{$break-BG})'; // MEDIUM
+$bp-BG: 'screen and (min-width: #{$break-BG + 1px}) and (max-width: 9999px)'; // BIG
+
+$bp-MENU-MOBILE: 'screen and (min-width: 0) and (max-width: #{$max-width-MENU-MOBILE}),print'; // MENU MOBILE and PRINT
+$bp-MENU-DESKTOP: 'screen and (min-width: #{$max-width-MENU-MOBILE + 1px}) and (max-width: 9999px)'; // MENU MOBILE

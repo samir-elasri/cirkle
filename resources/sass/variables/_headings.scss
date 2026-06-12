@@ -1,0 +1,96 @@
+@use 'fonts';
+@use 'colors';
+
+//===========================================
+// Titre de page (Entête 1)
+//===========================================
+
+// Police
+$h1-font-family: fonts.$font-headings;
+// Taille de la police
+$h1-font-size: 60px;
+// Couleur de texte
+$h1-color: colors.$color-primary;
+// Interligne
+$h1-line-height: 1.1em;
+// Épaisseur de la police
+$h1-font-weight: bold;
+// Lettres en majuscule (true/false)
+$h1-uppercase: false;
+// Lettres en italique (true/false)
+$h1-italic: false;
+// Espacement au-dessus du titre (Ajuster de façon à ce que les lettres majuscules touchent le dessus de la boîte de l'élément)
+$h1-top-margin: 0;
+// Espacement en-dessous du titre
+$h1-bottom-margin: $h1-font-size * .5;
+
+//===========================================
+// Titre de bloc (Entête 2)
+//===========================================
+
+// Police
+$h2-font-family: fonts.$font-headings;
+// Taille de la police
+$h2-font-size: 40px;
+// Couleur de texte
+$h2-color: colors.$color-primary;
+// Interligne
+$h2-line-height: 1.1em;
+// Épaisseur de la police
+$h2-font-weight: 600;
+// Lettres en majuscule (true/false)
+$h2-uppercase: false;
+// Lettres en italique (true/false)
+$h2-italic: false;
+// Espacement au-dessus du titre (Ajuster de façon à ce que les lettres majuscules touchent le dessus de la boîte de l'élément)
+$h2-top-margin: 0;
+// Espacement en-dessous du titre
+$h2-bottom-margin: fonts.$font-size;
+
+//===========================================
+// Titres généraux
+//===========================================
+
+// Entête 3
+//-------------------------------------------
+
+// Police
+$h3-font-family: fonts.$font-headings;
+// Taille de la police
+$h3-font-size: 20px;
+// Couleur de texte
+$h3-color: colors.$color-primary;
+// Interligne
+$h3-line-height: 1.1em;
+// Épaisseur de la police
+$h3-font-weight: 300;
+// Lettres en majuscule (true/false)
+$h3-uppercase: false;
+// Lettres en italique (true/false)
+$h3-italic: false;
+// Espacement au-dessus du titre (Ajuster de façon à ce que les lettres majuscules touchent le dessus de la boîte de l'élément)
+$h3-top-margin: 0;
+// Espacement en-dessous du titre
+$h3-bottom-margin: fonts.$font-size * .5;
+
+// Entête 4
+//-------------------------------------------
+
+// Police
+$h4-font-family: fonts.$font-headings;
+// Taille de la police
+$h4-font-size: 18px;
+// Couleur de texte
+$h4-color: colors.$color-primary;
+// Interligne
+$h4-line-height: 1.2em;
+// Épaisseur de la police
+$h4-font-weight: normal;
+// Lettres en majuscule (true/false)
+$h4-uppercase: false;
+// Lettres en italique (true/false)
+$h4-italic: false;
+// Espacement au-dessus du titre (Ajuster de façon à ce que les lettres majuscules touchent le dessus de la boîte de l'élément)
+$h4-top-margin: 0;
+// Espacement en-dessous du titre
+$h4-bottom-margin: fonts.$font-size * .5;

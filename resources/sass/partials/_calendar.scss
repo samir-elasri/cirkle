@@ -1,0 +1,74 @@
+@use "sass:color";
+@use "settings";
+
+.calendar {
+
+	border: 3px solid #e6e6e6;
+	padding: 10px;
+	margin-bottom: 20px;
+
+	.controls {
+		display: flex;
+		justify-content: space-between;
+
+		a {
+
+			&.pull-left,
+			&.pull-right {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: white;
+				width: 30px;
+				height: 36px;
+				padding-bottom: 3px;
+				background-color: settings.$color-primary; //#636466;
+				text-decoration: none;
+
+				&:hover {
+					background-color: var(--sl-color-primary-400);
+				}
+			}
+		}
+
+		h4 {
+			color: black;
+			position: relative;
+			top: 8px;
+		}
+	}
+
+	hr {
+		border-bottom: 1px solid gray;
+		margin: 18px 0;
+	}
+
+	.days {
+		.day {
+
+			&.active {
+				a {
+					background-color: settings.$color-primary; //#636466;
+					text-decoration: none;
+
+					&:hover {
+						// background-color: color.adjust(settings.$color-primary, $lightness: 10%);
+					}
+
+				}
+			}
+
+			&.today {
+				position: relative;
+				z-index: 2;
+				outline: 1px solid settings.$color-primary; //#2e2c32;
+			}
+
+			.badge {
+				font-size: .8em;
+				color: white;
+				font-weight: bold;
+			}
+		}
+	}
+}

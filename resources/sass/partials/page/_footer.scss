@@ -1,0 +1,56 @@
+@use "helpers";
+@use "settings";
+
+$footerLinkColor: #979797;
+
+.page-footer {
+  background-color: #ECF4EE;
+  color: #979797;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 3.375rem 0 4.5rem 0;
+    gap: 1rem;
+  }
+
+  &__about {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    max-width: 100%;
+    width: 24rem;
+    align-self: flex-end;
+  }
+
+  &__socials {
+    display: flex;
+    gap: .75rem;
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+
+  &__copyright {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid currentColor;
+    padding: 1rem;
+  }
+}

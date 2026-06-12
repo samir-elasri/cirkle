@@ -1,0 +1,16 @@
+@use "fonts";
+
+//===========================================
+// Texte général
+//===========================================
+
+// Police
+$text-font-family: fonts.$font-main;
+// Taille de la police
+$text-font-size: fonts.$font-size;
+// Couleur de texte
+$text-color: black;
+// Interligne
+$text-line-height: 1.33;
+// Espacement de paragraphe
+$text-paragraph-margin: $text-font-size;

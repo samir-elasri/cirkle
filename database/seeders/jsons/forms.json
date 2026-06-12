@@ -1,0 +1,198 @@
+{
+	"Page standard": [{
+			"label": "Prénom",
+			"field_type": "label",
+			"fr": {
+				"title": "Prénom",
+				"explanations": "Votre prénom"
+			},
+			"en": {
+				"title": "First name",
+				"explanations": "Your first name"
+			},
+			"is_essential": true,
+			"active": true
+		}, {
+			"label": "Nom",
+			"field_type": "label",
+			"fr": {
+				"title": "Nom",
+				"explanations": "Votre nom"
+			},
+			"en": {
+				"title": "Last name",
+				"explanations": "Your last name"
+			},
+			"is_essential": true,
+			"active": true
+		},
+		{
+			"label": "Courriel",
+			"field_type": "email",
+			"fr": {
+				"title": "Courriel",
+				"explanations": "Votre courriel"
+			},
+			"en": {
+				"title": "email",
+				"explanations": "Your email"
+			},
+			"is_essential": true,
+			"active": true
+		},
+		{
+			"label": "Téléphone",
+			"field_type": "tel",
+			"fr": {
+				"title": "Téléphone",
+				"explanations": "Votre Téléphone"
+			},
+			"en": {
+				"title": "Phone number",
+				"explanations": "Your phone number"
+			},
+			"is_essential": false,
+			"active": true
+		},
+		{
+			"label": "Montant",
+			"field_type": "money",
+			"fr": {
+				"title": "Montant",
+				"explanations": "Donnez un montant"
+			},
+			"en": {
+				"title": "Amount",
+				"explanations": "Write an amount"
+			},
+			"is_essential": false,
+			"active": true
+		},
+		{
+			"label": "Age",
+			"field_type": "integer",
+			"fr": {
+				"title": "Age",
+				"explanations": "Votre Age"
+			},
+			"en": {
+				"title": "Age",
+				"explanations": "Your age"
+			},
+			"is_essential": true,
+			"active": true
+		},
+		{
+			"label": "choix-unique",
+			"field_type": "choice_unique",
+			"fr": {
+				"title": "Choix unique",
+				"explanations": "Choix unique"
+			},
+			"en": {
+				"title": "Choix unique (en)",
+				"explanations": "Choix unique (en)"
+			},
+			"choices_label": "Liste de choix",
+			"choices": [{
+					"label": "Option 1",
+					"fr": {
+						"title": "Option 1"
+					},
+					"en": {
+						"title": "Option 1"
+					},
+					"code_value": 1,
+					"active": 1
+				},
+				{
+					"label": "Option 2",
+					"fr": {
+						"title": "Option 2"
+					},
+					"en": {
+						"title": "Option 2"
+					},
+					"code_value": 2,
+					"active": 1
+				},
+				{
+					"label": "Option 3",
+					"fr": {
+						"title": "Option 3"
+					},
+					"en": {
+						"title": "Option 3"
+					},
+					"code_value": 3,
+					"active": 1
+				}
+			],
+			"is_essential": false,
+			"active": true
+		},
+		{
+			"label": "choix-multiple",
+			"field_type": "choice_multiple",
+			"fr": {
+				"title": "Choix multiple",
+				"explanations": "Choix multiple"
+			},
+			"en": {
+				"title": "Choix multiple (en)",
+				"explanations": "Choix multiple (en)"
+			},
+			"choices_label": "Liste de choix",
+			"choices": [{
+					"label": "Option 1",
+					"fr": {
+						"title": "Option 1"
+					},
+					"en": {
+						"title": "Option 1"
+					},
+					"code_value": 1,
+					"active": 1
+				},
+				{
+					"label": "Option 2",
+					"fr": {
+						"title": "Option 2"
+					},
+					"en": {
+						"title": "Option 2"
+					},
+					"code_value": 2,
+					"active": 1
+				},
+				{
+					"label": "Option 3",
+					"fr": {
+						"title": "Option 3"
+					},
+					"en": {
+						"title": "Option 3"
+					},
+					"code_value": 3,
+					"active": 1
+				}
+			],
+			"is_essential": false,
+			"active": true
+		},
+		{
+			"label": "description",
+			"field_type": "text",
+			"fr": {
+				"title": "Paragraphe",
+				"explanations": "Exprimez-vous"
+			},
+			"en": {
+				"title": "Paragraphe",
+				"explanations": "Express yourself"
+			},
+			"is_essential": false,
+			"active": true
+		}
+	]
+}

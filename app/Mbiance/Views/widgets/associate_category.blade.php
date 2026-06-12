@@ -1,0 +1,1 @@
+{!! FormUtility::select($field, $label, $value, \App\Models\Core\Category::getSelect($options["identifier"])) !!}

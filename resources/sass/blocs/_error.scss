@@ -1,0 +1,9 @@
+@use "sass:color";
+@use "settings";
+
+.bloc-error {
+	color: white;
+	border: 1px solid settings.$color-error;
+	background-color: color.adjust(settings.$color-error, $lightness: 20%);
+	padding: settings.$padding;
+}

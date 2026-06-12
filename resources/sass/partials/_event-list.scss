@@ -1,0 +1,48 @@
+@use "settings";
+
+.event-list {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	margin-top: settings.$padding;
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		flex-wrap: wrap;
+		flex-shrink: 0;
+		padding: settings.$gutter 0;
+
+		&>h1 {
+			line-height: 1em;
+			font-size: 30px;
+			color: settings.$color-primary;
+			margin: 0;
+		}
+
+		&>.see-more {
+			color: settings.$color-primary;
+		}
+	}
+}
+
+.event-list--home {
+	flex-basis: 66%;
+
+	.event-list__body {
+		display: flex;
+		flex-grow: 1;
+		flex-wrap: wrap;
+		margin: -(settings.$gutter);
+
+		>.event-tile {
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+			min-width: 260px;
+			flex-basis: calc(50% - #{settings.$padding});
+			margin: settings.$gutter;
+		}
+	}
+}

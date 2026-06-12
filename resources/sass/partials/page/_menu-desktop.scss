@@ -1,0 +1,227 @@
+@use "helpers";
+@use "settings";
+@use "font-awesome";
+
+#menu-desktop {
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  position: relative;
+
+  @media #{settings.$bp-MENU-MOBILE} {
+    display: none !important;
+  }
+
+  @media #{settings.$bp-SM} {
+    font-size: .9rem;
+  }
+
+  @media #{settings.$bp-BG} {
+    font-size: 1rem;
+  }
+
+  .font-scaling {
+    @include helpers.font-scale(12px);
+    cursor: pointer;
+  }
+
+  .font-scaling {
+    a {
+      text-decoration: none;
+    }
+
+    span:first-child {
+      @include helpers.font-scale(settings.$font-size);
+    }
+
+    span:last-child {
+      @include helpers.font-scale(settings.$font-size * 0.8);
+    }
+  }
+
+  .menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .locale {
+    font-size: 16px;
+    margin-left: settings.$gutter !important;
+    border-left: 1px solid settings.$color-grey;
+    padding-left: 2px;
+
+    > a {
+      padding-right: 0 !important;
+    }
+  }
+
+  > ul.menu-corpo {
+    display: flex;
+    justify-content: flex-end;
+    @include helpers.font-scale(16px);
+
+    > li {
+      display: flex;
+      align-items: center;
+
+      &:not(:first-child) {
+        margin-left: settings.$gutter;
+      }
+
+      &.spacer {
+        flex-grow: 1;
+      }
+
+      &.social {
+        flex-grow: 0;
+
+        a {
+          padding: 0;
+        }
+      }
+
+      > a {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        text-decoration: none;
+        padding: settings.$gutter;
+        height: 30px;
+        color: inherit;
+        font-size: inherit;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &.search {
+        position: relative;
+        max-height: 36px;
+
+
+        &::after {
+          @extend .fas;
+          position: absolute;
+          font-size: 1.2em;
+          color: settings.$color-grey;
+          right: 10px;
+          content: font-awesome.fa-content(font-awesome.$fa-var-search);
+        }
+
+        > form {
+          height: 100%;
+
+          input {
+            height: 100%;
+            padding: 0 (settings.$padding + settings.$spacer) 0 settings.$gutter;
+            outline: none;
+            border: settings.$color-grey 1px solid;
+            color: black;
+            border-radius: 4px;
+            margin-top: 0;
+
+            &::placeholder {
+              color: settings.$color-grey;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > ul.menu-main {
+    @include helpers.font-scale(16px);
+    display: flex;
+    justify-content: flex-end;
+
+    > li {
+
+      > a {
+        font-size: inherit;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: 600;
+        padding: settings.$padding;
+        text-decoration: none;
+        white-space: nowrap; // needed or we could have different a for each a...
+        height: 32px;
+        color: inherit;
+
+        /* &.open {
+            color: white;
+            background-color: $color-primary
+        } */
+
+        &.active,
+        &:hover {
+          color: settings.$color-primary;
+          text-decoration: underline;
+        }
+
+      }
+
+      &:first-child a {
+        padding-left: 0;
+      }
+
+      &:last-child a {
+        padding-right: 0
+      }
+
+      > ul {
+        display: none
+      }
+
+      .megamenu {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        background-color: settings.$color-primary;
+        padding: 12px 0;
+        top: 112px;
+
+        > ul {
+          display: flex;
+          flex-direction: column;
+          position: relative;
+
+          & > li > a {
+            font-family: settings.$font-main;
+            color: settings.$color-tertiary;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            text-decoration: none;
+            position: relative;
+            padding: 5px 20px;
+
+            &.active,
+            &:hover {
+              text-decoration: underline;
+            }
+
+            &.parent::after {
+              position: absolute;
+              right: settings.$gutter;
+              content: url('/dist/img/sprites/arrow-right-white-18px.png');
+              height: 18px;
+              width: 18px;
+              transition: transform 500ms ease;
+            }
+
+            &.parent.open::after {
+              transform: rotate(90deg);
+            }
+          }
+        }
+      }
+    }
+  }
+}

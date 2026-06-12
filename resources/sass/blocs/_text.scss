@@ -1,0 +1,341 @@
+@use "helpers";
+@use "settings";
+
+.bloc--accordion {
+
+  .bloc-text__accordion-label {
+    align-items: center;
+  }
+
+  .bloc-text__content {
+    padding: 1em 0 !important;
+  }
+
+  .bloc__content {
+    padding: 8px 32px;
+    border-radius: 6px;
+    overflow: hidden;
+
+    &-title {
+      margin: 0 !important;
+    }
+  }
+}
+
+.bloc-text {
+
+  ul > li::before {
+    content: url("../../files/bullet-list-icon.png");
+    left: -22px;
+    z-index: 2;
+  }
+
+  /*.bloc__content {
+      margin-bottom: -.5em;
+  }*/
+
+  .bloc__content-back {
+    overflow: hidden;
+  }
+}
+
+.bloc-text__media {
+
+  .google-maps {
+    pointer-events: none;
+    height: 100%;
+  }
+
+  &:not(.bloc-text__media--back) {
+    .google-maps {
+      border: 1px solid settings.$color-primary;
+    }
+  }
+
+  &--left {
+    > * {
+      float: left;
+      width: 100%;
+      max-width: 50%;
+      margin-right: 1em;
+
+      @media #{settings.$bp-TN} {
+        float: none;
+        max-width: 100%;
+        margin-right: 0;
+
+        img {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
+    }
+
+    img {
+      max-width: 380px;
+    }
+  }
+
+  &--right {
+
+    @media #{settings.$bp-TN} {
+      &.bloc-text__media--over {
+        display: none;
+      }
+    }
+
+    @media #{settings.$bp-SM},
+    #{settings.$bp-MD},
+    #{settings.$bp-BG} {
+      &.bloc-text__media--under {
+        display: none;
+      }
+    }
+
+    > * {
+      float: right;
+      width: 100%;
+      max-width: 50%;
+      margin-left: 1em;
+
+      @media #{settings.$bp-TN} {
+        float: none;
+        max-width: 100%;
+        margin-left: 0;
+
+        img {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
+    }
+
+    img {
+      max-width: 380px;
+    }
+  }
+
+  &--over > * {
+    margin-bottom: .5em;
+  }
+
+  &--under > * {
+    margin-top: .5em;
+  }
+
+  &--back {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+}
+
+@media #{settings.$bp-BG},
+#{settings.$bp-MD} {
+
+  .bloc--left {
+    .bloc-text__media {
+      img {
+        object-position: right;
+      }
+    }
+  }
+
+  .bloc--right {
+    .bloc-text__media {
+      img {
+        object-position: left;
+      }
+    }
+  }
+}
+
+.bloc-text__content {
+
+  & > .content-writable {
+    @include helpers.font-scale(settings.$font-size);
+
+    *:first-child {
+      margin-top: 0;
+    }
+
+    *:last-child {
+      margin-bottom: 0; //.5em;
+    }
+  }
+}
+
+
+// Bouton ouvrir/fermer
+.bloc-text__summary-label span,
+.bloc-text__accordion-label span {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: settings.$color-secondary;
+  float: right;
+  color: white;
+  border-radius: 100%;
+  width: 24px;
+  height: 24px;
+  position: relative;
+
+  &::before {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.bloc-text__summary-label span {
+  margin-top: 1em;
+}
+
+// Retire l'espacement au-dessus du titre de l'accordéon
+.bloc-text__accordion--no-margin-top + .bloc__content-front {
+  margin-top: 0 !important;
+}
+
+// Comportement accordéon
+.bloc-text__accordion-checkbox {
+  //top: 0;
+  //left: 0;
+  //right: 0;
+  //bottom: 0;
+  //width: 100%;
+  //height: 100%;
+  //clip: rect(0, 0, 0, 0);
+
+
+  & ~ .bloc-text__content {
+    display: none;
+  }
+
+  & ~ .bloc-text__accordion-label {
+    display: flex;
+    padding: settings.$spacer 0;
+    width: 100%;
+    clear: both;
+    cursor: pointer;
+    color: white;
+
+    h2 {
+      flex-grow: 1;
+      margin: 0;
+    }
+
+    .bloc-text__accordion--plus {
+      display: flex;
+      border: 2.5px white solid;
+      border-radius: 100%;
+      font-size: 14px;
+
+    }
+
+    .bloc-text__accordion--minus {
+      display: none;
+      border: 2.5px white solid;
+      border-radius: 100%;
+      font-size: 14px;
+
+    }
+  }
+
+  &:checked {
+    & ~ .bloc-text__content {
+      display: block;
+      padding: 1em;
+      overflow: hidden;
+      // background-color: $color-tertiary;
+    }
+
+    & ~ .bloc-text__accordion-content {
+      display: none;
+    }
+
+    & ~ .bloc-text__accordion-label {
+    }
+
+    & ~ .bloc-text__accordion-label .bloc-text__accordion--plus {
+      display: none;
+    }
+
+    & ~ .bloc-text__accordion-label .bloc-text__accordion--minus {
+      display: flex;
+    }
+  }
+}
+
+// Comportement du résumé
+.bloc-text__summary-checkbox {
+  display: none;
+
+  & ~ .bloc-text__content {
+    display: none;
+  }
+
+  & ~ .bloc-text__summary-content {
+    display: block;
+  }
+
+  & ~ .bloc-text__summary-label {
+    clear: both;
+
+    .bloc-text__summary--plus {
+      display: flex;
+    }
+
+    .bloc-text__summary--minus {
+      display: none;
+    }
+  }
+
+  &:checked {
+    & ~ .bloc-text__content {
+      display: block;
+    }
+
+    & ~ .bloc-text__summary-content {
+      display: none;
+    }
+
+    & ~ .bloc-text__summary-label .bloc-text__summary--plus {
+      display: none;
+    }
+
+    & ~ .bloc-text__summary-label .bloc-text__summary--minus {
+      display: flex;
+    }
+  }
+}
+
+
+.bloc-text__call {
+  text-decoration: none;
+}
+
+.bloc-text__button {
+  margin: 0 auto;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  background-color: #ffc20e;
+  height: 30px;
+  color: #404040;
+}

@@ -1,0 +1,24 @@
+{
+  "buy": "Buy",
+  "title": "Title",
+  "description": "Description",
+  "subscriptionPrices": "Prices",
+  "zone_serviced": "Service area",
+  "price": {
+    "free": "FREE",
+    "month": "month",
+    "years": "years",
+    "year": "year"
+  },
+  "subscriber-intro": "Here is the text that explains the process (subscription.subscriber-intro)",
+  "no-active-subscription": "You don't have an active subscription at the moment",
+  "no-active-subscription-renew": "Renew your subscription",
+  "no-active-subscription-subscribe": "Please choose a subscription to get started",
+  "subscription-details": "Your subscription is valid until :date inclusively",
+  "cta": {
+    "pause": "Pause my subscription",
+    "unpause": "Reactivate my subscription",
+    "cancel": "Cancel my subscription",
+    "pick": "Please choose a subscription to get started"
+  }
+}

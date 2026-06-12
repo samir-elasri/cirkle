@@ -1,0 +1,58 @@
+@use "settings";
+@use "font-awesome";
+
+// =======================================================
+// breadcrumb
+// =======================================================
+.breadcrumb {
+	margin: 0;
+	padding: 0 !important;
+
+	background-color: settings.$color-tertiary;
+	color: white;
+
+	>ul {
+		display: flex;
+		align-items: center;
+		margin: 0;
+
+		>li {
+			display: flex;
+			align-items: center;
+			margin: 0;
+			padding: 0;
+
+			&:last-of-type {
+
+				&::after {
+					content: '';
+				}
+			}
+
+			&::after {
+				@extend .fas;
+				content: font-awesome.fa-content(font-awesome.$fa-var-chevron-right);
+				display: inline-block;
+			}
+
+			>a {
+				color: inherit;
+				padding: settings.$gutter;
+				margin-left: -(settings.$spacer);
+			}
+
+			>span {
+				padding: settings.$gutter;
+			}
+		}
+	}
+
+	.home {
+		&::before {
+			@extend .fas;
+			content: font-awesome.fa-content(font-awesome.$fa-var-home) !important;
+			font-size: 1.2rem !important;
+			color: inherit;
+		}
+	}
+}

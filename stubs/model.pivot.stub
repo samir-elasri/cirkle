@@ -1,0 +1,47 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Models\Core\Pivot;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class {{ class }} extends Pivot
+{
+    public string $order_default = 'id';
+    public string $order_direction = 'asc';
+	public $incrementing = true;
+
+    protected bool $bigData = true;
+
+    protected $fillable = [
+    ];
+
+    public array $positionParentFields = [];
+
+    protected array $grid = [
+        'id',
+    ];
+
+    protected array $niceNames = [];
+
+    protected array $enum = [];
+
+    protected array $customFields = [];
+
+    //	/**
+    //	 * @return BelongsTo|TODOClass
+    //	 */
+    //	public function parent()
+    //	{
+    //		return $this->belongsTo('#TODO');
+    //	}
+    //
+    //	/**
+    //	 * @return HasMany|ChildClass[]|ChildClass
+    //	 */
+    //	public function children()
+    //	{
+    //		return $this->hasMany('#TODO');
+    //	}
+}

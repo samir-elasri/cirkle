@@ -1,0 +1,51 @@
+.bloc-audio {
+
+    &__image {
+        display: flex;
+        justify-content: center;
+
+        img {
+            max-width: 600px;
+        }
+    }
+
+    .plyr {
+        border-radius: 4px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, .1);
+        margin: 16px auto;
+
+        &__controls {
+            justify-content: flex-start;
+
+            &__item {
+                margin-right: unset !important;
+            }
+        }
+
+        &__progress {
+            &__container {
+                width: 81%;
+            }
+        }
+
+        &__volume {
+            @media (min-width: 480px) {
+                max-width: unset;
+            }
+
+            input {
+                min-width: 70px;
+            }
+        }
+    }
+
+    .half-content-width {
+        .plyr {
+            &__progress {
+                &__container {
+                    width: 64%;
+                }
+            }
+        }
+    }
+}
