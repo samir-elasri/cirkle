@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CirkleServices.com — Project Blueprint &amp; Action Plan (v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14181f;
+    --ink-2:#1d242e;
+    --paper:#f6f7f4;
+    --surface:#ffffff;
+    --line:#e2e6df;
+    --line-2:#eef1ec;
+    --green:#1b9c5a;
+    --green-deep:#157a47;
+    --green-soft:#e8f5ec;
+    --muted:#69716b;
+    --muted-2:#929a92;
+    --amber:#a85c14;
+    --amber-soft:#fbf0e2;
+    --blue:#2563a8;
+    --blue-soft:#e9f0f9;
+    --radius:14px;
+    --maxw:980px;
+    --display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+    --body:'Inter',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:84px;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--green-deep);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;background:rgba(246,247,244,.86);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:var(--maxw);margin:0 auto;padding:13px 24px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .mark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:-.01em;}
+  .ring{width:22px;height:22px;border-radius:50%;border:3px solid var(--green);position:relative;flex:none;}
+  .ring::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--green);transform:scale(.42);}
+  .topbar nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;}
+  .topbar nav a{
+    font-size:13px;color:var(--muted);padding:6px 10px;border-radius:8px;font-weight:500;
+  }
+  .topbar nav a:hover{background:var(--green-soft);color:var(--green-deep);text-decoration:none;}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  section{padding:54px 0;border-bottom:1px solid var(--line-2);}
+  section:last-of-type{border-bottom:0;}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--green-deep);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:14px;
+  }
+  .eyebrow .n{
+    display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;
+    border:1.5px solid var(--green);color:var(--green-deep);font-size:11px;
+  }
+  h1{font-family:var(--display);font-weight:700;letter-spacing:-.025em;line-height:1.04;margin:0;}
+  h2{font-family:var(--display);font-weight:600;letter-spacing:-.02em;font-size:30px;line-height:1.12;margin:0 0 18px;}
+  h3{font-family:var(--display);font-weight:600;letter-spacing:-.01em;font-size:19px;margin:30px 0 10px;}
+  h4{font-family:var(--display);font-weight:600;font-size:15px;margin:20px 0 6px;letter-spacing:-.005em;}
+  p{margin:0 0 14px;}
+  .lead{font-size:18px;color:var(--ink-2);}
+  .muted{color:var(--muted);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:64px 0 50px;border-bottom:1px solid var(--line);
+    position:relative;overflow:hidden;
+  }
+  .hero h1{font-size:clamp(34px,6vw,58px);max-width:14ch;}
+  .hero .sub{font-size:19px;color:var(--muted);max-width:60ch;margin-top:18px;}
+  .hero .url{font-family:var(--mono);font-size:13px;color:var(--green-deep);margin-top:8px;display:inline-block;}
+  .hero-ring{
+    position:absolute;right:-120px;top:-90px;width:360px;height:360px;border-radius:50%;
+    border:1px solid var(--line);pointer-events:none;
+  }
+  .hero-ring::before{content:"";position:absolute;inset:42px;border-radius:50%;border:1px solid var(--line);}
+  .hero-ring::after{content:"";position:absolute;inset:96px;border-radius:50%;border:1.5px dashed var(--green);opacity:.5;}
+
+  /* ---------- summary grid ---------- */
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:34px;}
+  .fact{background:var(--surface);padding:18px 18px 20px;}
+  .fact .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);}
+  .fact .v{font-family:var(--display);font-weight:600;font-size:17px;margin-top:6px;letter-spacing:-.01em;}
+  .fact .v small{display:block;font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--muted);letter-spacing:0;margin-top:2px;}
+
+  /* ---------- cards & callouts ---------- */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:16px 0;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .callout{border-left:3px solid var(--green);background:var(--green-soft);border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0;font-size:15px;}
+  .callout.warn{border-color:var(--amber);background:var(--amber-soft);}
+  .callout.warn b{color:var(--amber);}
+  .callout.blue{border-color:var(--blue);background:var(--blue-soft);}
+  .callout.blue .lbl{color:var(--blue);}
+  .callout .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-deep);display:block;margin-bottom:4px;}
+  .callout.warn .lbl{color:var(--amber);}
+
+  /* ---------- diff pills ---------- */
+  .diff{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px;}
+  .pill{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:3px 10px;border-radius:20px;border:1px solid var(--line);background:var(--surface);}
+  .pill.add{background:var(--green-soft);color:var(--green-deep);border-color:#cfe8d8;}
+  .pill.cut{background:var(--amber-soft);color:var(--amber);border-color:#f0d9bd;}
+  .pill.fix{background:var(--blue-soft);color:var(--blue);border-color:#cdddf0;}
+  .strike{text-decoration:line-through;color:var(--muted-2);}
+
+  /* ---------- flow ---------- */
+  .flow{display:flex;align-items:stretch;gap:0;margin:22px 0;flex-wrap:wrap;}
+  .step{flex:1;min-width:150px;text-align:center;padding:0 10px;position:relative;}
+  .step:not(:last-child)::after{content:"→";position:absolute;right:-8px;top:24px;color:var(--green);font-size:20px;}
+  .step .dot{width:54px;height:54px;border-radius:50%;border:2px solid var(--green);color:var(--green-deep);font-family:var(--display);font-weight:700;font-size:20px;display:grid;place-items:center;margin:0 auto 12px;background:var(--surface);}
+  .step .t{font-family:var(--display);font-weight:600;font-size:14px;margin-bottom:4px;}
+  .step .d{font-size:13px;color:var(--muted);line-height:1.5;}
+
+  /* ---------- tables ---------- */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);margin:18px 0;}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px;}
+  th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line-2);vertical-align:top;}
+  th{background:var(--ink);color:#fff;font-family:var(--display);font-weight:500;font-size:12.5px;letter-spacing:.02em;}
+  tr:last-child td{border-bottom:0;}
+  tbody tr:hover{background:var(--green-soft);}
+  td .file{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .price{font-family:var(--mono);font-weight:500;white-space:nowrap;}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:20px;background:var(--green-soft);color:var(--green-deep);border:1px solid #cfe8d8;}
+  .tag.rec{background:var(--amber-soft);color:var(--amber);border-color:#f0d9bd;}
+  .tag.cut{background:#f1f0ee;color:var(--muted);border-color:var(--line);}
+  tr.deferred td{opacity:.55;}
+
+  /* ---------- lists ---------- */
+  ul.clean{list-style:none;padding:0;margin:10px 0;}
+  ul.clean li{padding:7px 0 7px 26px;position:relative;border-bottom:1px solid var(--line-2);}
+  ul.clean li:last-child{border-bottom:0;}
+  ul.clean li::before{content:"";position:absolute;left:4px;top:15px;width:8px;height:8px;border-radius:50%;border:2px solid var(--green);}
+  ol.steps{margin:10px 0;padding-left:0;counter-reset:s;list-style:none;}
+  ol.steps li{position:relative;padding:6px 0 6px 34px;counter-increment:s;}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-family:var(--mono);font-size:11px;display:grid;place-items:center;}
+
+  /* ---------- phases ---------- */
+  .phase{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin:16px 0;overflow:hidden;}
+  .phase-head{display:flex;align-items:center;gap:14px;padding:16px 22px;background:linear-gradient(180deg,#fff, #fbfcfa);border-bottom:1px solid var(--line-2);}
+  .phase-head .pn{flex:none;width:40px;height:40px;border-radius:50%;background:var(--green);color:#fff;font-family:var(--display);font-weight:700;display:grid;place-items:center;}
+  .phase-head .pt{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em;}
+  .phase-head .meta{margin-left:auto;text-align:right;font-size:12px;color:var(--muted);font-family:var(--mono);}
+  .phase-body{padding:18px 22px;}
+  .deliv{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin:14px 0 6px;}
+
+  /* ---------- prompt blocks ---------- */
+  .prompt{background:var(--ink);color:#e8ebe6;border-radius:12px;padding:16px 18px;margin:12px 0;font-family:var(--mono);font-size:13px;line-height:1.6;position:relative;border:1px solid #2a323d;}
+  .prompt .pl{display:block;color:var(--green);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .prompt code{color:#cfe8d8;}
+
+  .footer{padding:40px 0 60px;color:var(--muted);font-size:13px;}
+  .footer .ring{width:16px;height:16px;border-width:2px;}
+  .footer .mark{margin-bottom:10px;}
+
+  @media (max-width:720px){
+    .facts{grid-template-columns:1fr 1fr;}
+    .grid-2{grid-template-columns:1fr;}
+    h2{font-size:25px;}
+    .topbar nav{display:none;}
+    .step:not(:last-child)::after{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+
+  /* ---------- theme toggle + dark mode (added) ---------- */
+  .theme-toggle{
+    display:inline-grid;place-items:center;flex:none;
+    width:34px;height:34px;margin-left:10px;padding:0;
+    border:1px solid var(--line);border-radius:9px;background:var(--surface);
+    color:var(--muted);cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .theme-toggle:hover{background:var(--green-soft);color:var(--green-deep);border-color:#cfe8d8;}
+  .theme-toggle svg{width:17px;height:17px;display:block;}
+  .theme-toggle .ico-sun{display:none;}
+  [data-theme="dark"] .theme-toggle .ico-moon{display:none;}
+  [data-theme="dark"] .theme-toggle .ico-sun{display:block;}
+  @media (max-width:720px){ .theme-toggle{margin-left:auto;} }
+
+  [data-theme="dark"]{
+    --ink:#e8ebe6;
+    --ink-2:#cdd3cc;
+    --paper:#0f1216;
+    --surface:#171c22;
+    --line:#2a313a;
+    --line-2:#222831;
+    --green:#34b676;
+    --green-deep:#5fd198;
+    --green-soft:#15281e;
+    --muted:#9aa39b;
+    --muted-2:#79817a;
+    --amber:#e0a05a;
+    --amber-soft:#2c2114;
+    --blue:#6ba6e6;
+    --blue-soft:#13202f;
+  }
+  [data-theme="dark"] .topbar{background:rgba(15,18,22,.86);}
+  [data-theme="dark"] th{background:#0b0e12;color:#fff;}
+  [data-theme="dark"] .prompt{background:#0b0e12;border-color:#2a313a;}
+  [data-theme="dark"] ol.steps li::before{background:#2b333d;color:#fff;}
+  [data-theme="dark"] .phase-head{background:linear-gradient(180deg,#1b212a,#171c22);}
+  [data-theme="dark"] .tag.cut{background:#222831;color:var(--muted-2);border-color:var(--line);}
+</style>
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('cirkle-theme');
+      if(!t){ t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
+      if(t === 'dark'){ document.documentElement.setAttribute('data-theme','dark'); }
+    }catch(e){}
+  })();
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="mark"><span class="ring"></span> CirkleServices</div>
+    <nav>
+      <a href="#reframe">Reframe</a>
+      <a href="#access">Access</a>
+      <a href="#objectives">Objectives</a>
+      <a href="#flow">User flow</a>
+      <a href="#revenue">Revenue</a>
+      <a href="#docs">Documents</a>
+      <a href="#risks">Open questions</a>
+      <a href="#arch">Architecture</a>
+      <a href="#plan">Action plan</a>
+      <a href="#prompts">Build with Claude</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-ring"></div>
+  <div class="wrap">
+    <div class="eyebrow"><span class="n">★</span> Project blueprint &amp; build plan · v2 (updated)</div>
+    <h1>CirkleServices.com</h1>
+    <p class="sub">A bilingual, two-sided service marketplace for Canada — connecting clients with local suppliers, the way Bark.com does. <b>Access confirmed:</b> the Adiciel-built Laravel 10 app is fully accessible on node14 via SSH key. We're extending the existing codebase, not rebuilding.</p>
+    <a class="url" href="https://cirkleservices.com/fr" target="_blank" rel="noopener">https://cirkleservices.com/fr ↗ (live Laravel app — extend it, don't rebuild)</a>
+
+    <div class="facts">
+      <div class="fact"><div class="k">Model</div><div class="v">Lead-gen directory<small>Supplier subscriptions, not transaction fees</small></div></div>
+      <div class="fact"><div class="k">Scope</div><div class="v">4 platforms<small>Residential / B2B × FR / EN</small></div></div>
+      <div class="fact"><div class="k">Target launch</div><div class="v">Aug 1, 2026<small>Per homepage notice</small></div></div>
+      <div class="fact"><div class="k">Codebase</div><div class="v">Laravel 10.48<small>Adiciel build · 103 migrations · ~Nov 2025</small></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ REFRAME ============ -->
+<section id="reframe" class="wrap">
+  <div class="eyebrow"><span class="n">00</span> What's confirmed since v1</div>
+  <h2>Access secured — we extend, not rebuild</h2>
+  <p class="lead">After a long detour (wrong credentials, IP bans, an empty sandbox on node22), we finally have SSH key access to the real app on node14 and can inspect everything.</p>
+
+  <div class="callout"><span class="lbl">Confirmed</span>
+    The Adiciel-built <b>Laravel 10.48.29</b> app lives at <code>/home/yymcsmwb/</code> on <b>node14-ca.n0c.com</b>. The codebase is substantial: <b>103 migrations</b>, properly split routes (frontend/backend/core/api), and the controllers/models for the core features already exist. Last build: <b>Nov 2025</b>.</p>
+  </div>
+
+  <h3>What we now know is built (and what isn't)</h3>
+  <ul class="clean">
+    <li><b>Models present:</b> <code>Subscriber</code>, <code>Service</code>, <code>ServiceCategory</code>, <code>SubscriberService</code>, <code>SubscriberServiceCategory</code>, <code>Evaluation</code>, <code>LikedSubscriber</code> (favoris), <code>ContactedProvider</code>, <code>PostalCode</code>, <code>ProfileOption</code>, <code>Promotion</code>, <code>PurchasedSubRecord</code>, <code>SavedSearch</code>, <code>SubscriptionPrice</code>.</li>
+    <li><b>Controllers wired:</b> <code>SearchController</code>, <code>ProviderController</code> (contact, update, like), <code>SubscriptionController</code> (pause/unpause/cancel), <code>ProfileOptionController</code>, <code>SavedSearchController</code>, <code>PageController</code> (incl. recaptcha-protected contact).</li>
+    <li><b>Frontend stack present:</b> Gulp, Babel, Semantic UI (from <code>semantic.json</code>), PWA service worker, FR/EN webmanifests.</li>
+    <li><b>Multi-env setup:</b> <code>.env</code>, <code>.env.local</code>, <code>.env.prod</code>, <code>.env.stage</code> — Adiciel set up proper environment separation.</li>
+    <li><b>The "ContactedProvider" model exists</b> — built before the video session where Denis agreed to drop it. We'll deprecate or repurpose it.</li>
+    <li><b>Subscription lifecycle is already coded</b> — pause/unpause/cancel routes exist; "pause" is interesting and not in our spec — worth checking.</li>
+  </ul>
+
+  <div class="callout blue"><span class="lbl">Net effect</span> Our job is clearly <b>extend &amp; finish</b>. Far more is built than the live site suggests — many features are coded but apparently not wired into the public homepage yet. Phase 0 = get this running locally and produce an exact gap map vs. the v1 feature set.</div>
+</section>
+
+<!-- ============ ACCESS & CREDENTIALS ============ -->
+<section id="access" class="wrap">
+  <div class="eyebrow"><span class="n">00b</span> Build environment</div>
+  <h2>Access &amp; credentials</h2>
+  <p>Working setup: clone the live app locally on Windows via Laragon, develop with Git, deploy to the server with a manual rsync script (no auto-deploy on commit). Below is everything we need; treat this section as the source of truth.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Production server (node14)</h4>
+      <ul class="clean">
+        <li><b>Host</b> · <code>node14-ca.n0c.com</code></li>
+        <li><b>Port</b> · <code>5022</code> (N0C SSH)</li>
+        <li><b>User</b> · <code>yymcsmwb</code></li>
+        <li><b>Auth</b> · SSH key (<code>~/.ssh/cirkle_n0c</code>) · password fallback exists but key is preferred</li>
+        <li><b>App path</b> · <code>/home/yymcsmwb/</code> (Laravel root, with <code>public_html/</code> as <code>public/</code>)</li>
+        <li><b>Domain</b> · <code>cirkleservices.com</code> · resolves to <code>199.16.129.222</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Production database</h4>
+      <ul class="clean">
+        <li><b>Engine</b> · MySQL (N0C-included)</li>
+        <li><b>Host/port</b> · <code>127.0.0.1:3306</code> (local to node14)</li>
+        <li><b>Database</b> · <code>yymcsmwb_db</code></li>
+        <li><b>User</b> · <code>yymcsmwb_user</code></li>
+        <li><b>Password</b> · <code>,S[ej4M?@O</code> (contains special chars — quote carefully in shell)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Local environment</h4>
+      <ul class="clean">
+        <li><b>OS</b> · Windows + Git Bash</li>
+        <li><b>Stack</b> · <b>Laragon</b> (Apache + PHP 8.1+ + MySQL) — match server PHP version</li>
+        <li><b>VCS</b> · Git + <b>private</b> GitHub repo (client IP)</li>
+        <li><b>Editor</b> · VS Code with Claude Code extension</li>
+        <li><b>SSH config</b> · add <code>Host node14</code> alias in <code>~/.ssh/config</code> so <code>ssh node14</code> + <code>scp node14:…</code> just work</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Sandbox / preview server (node22)</h4>
+      <ul class="clean">
+        <li><b>Host</b> · <code>node22-ca.n0c.com</code> · user <code>mfjwfhdbbx</code> · pass <code>m59QDZn2uBFcU8CjpaqbMGeJ</code></li>
+        <li><b>Domain</b> · <code>groupesanimax.ca</code> (auxiliary preview only — placeholder served)</li>
+        <li><b>Use</b> · optional staging if we ever need it; the real work lives on node14</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Deployment model — manual rsync, not auto-deploy</h3>
+  <p>Per requirement: Git is for version control only. Deployment to node14 happens <b>only when explicitly run</b>. Recommended pattern (script in <code>scripts/deploy.sh</code>):</p>
+  <ul class="clean">
+    <li><b>1. Pre-flight</b> — ensure clean working tree, run tests, build assets (<code>npm run build</code>).</li>
+    <li><b>2. Rsync over SSH</b> — push <code>app/ bootstrap/ config/ database/ lang/ resources/ routes/ public_html/ artisan composer.json composer.lock</code>; <i>exclude</i> <code>.env</code>, <code>storage/</code>, <code>vendor/</code>, <code>node_modules/</code>, <code>.git/</code>.</li>
+    <li><b>3. Remote post-deploy</b> — over SSH, run <code>composer install --no-dev --optimize-autoloader</code>, <code>php artisan migrate --force</code>, <code>php artisan view:clear &amp;&amp; php artisan config:cache &amp;&amp; php artisan route:cache</code>.</li>
+    <li><b>4. Smoke check</b> — hit the homepage, verify HTTP 200.</li>
+  </ul>
+  <p class="muted">Triggered with a single command: <code>./scripts/deploy.sh</code> (or <code>bash scripts/deploy.sh</code> on Windows). No CI, no webhooks, no surprises.</p>
+</section>
+
+<!-- ============ OBJECTIVES ============ -->
+<section id="objectives" class="wrap">
+  <div class="eyebrow"><span class="n">01</span> What we're building</div>
+  <h2>Project objectives</h2>
+  <p class="lead">Cirkle is a directory that introduces clients to service providers, then steps out of the way. It does not process bookings or payments between the two parties — once a client reaches a supplier's email, the relationship is off-platform. Cirkle earns revenue from suppliers who pay to be listed and to unlock profile add-ons.</p>
+
+  <h3>1. Four platforms, one site</h3>
+  <p>The homepage opens in <b>English</b> as a landing page. The visitor must choose one of four platforms before anything else loads. The chosen platform is highlighted in yellow, and the catalogue of categories &amp; professions is filtered to match it. <b>Confirmed in the video:</b> the four platforms differ in their <b>categories and professions</b>, not just language — a B2B mechanic and a residential mechanic are different listings with different competence sheets, and some professions exist in one platform only.</p>
+  <ul class="clean">
+    <li><b>Residential — English</b> · everyday consumers looking for a tradesperson or service</li>
+    <li><b>Residential — Français</b> · same, French interface</li>
+    <li><b>B2B — English</b> · businesses sourcing other businesses (different category &amp; profession set)</li>
+    <li><b>B2B — Français</b> · same, French interface</li>
+  </ul>
+
+  <h3>2. Membership &amp; numbering</h3>
+  <p>Every member gets a sequential ID shared across clients and suppliers: <span class="price">C02350, F02351, C02352…</span> The number (without the letter) is shown top-right of the homepage as a live <b>member counter</b> (Denis: surface it once there are ~5–6k members). Critically: <b>every supplier is automatically also created as a client</b>, with a second, distinct number — so the two roles can be managed independently.</p>
+  <div class="callout warn"><span class="lbl">Cost landmine — confirmed in the video</span> Denis insists on the auto-client-from-supplier rule purely to inflate his member count and give suppliers two entries in his draws. The previous agency <b>flatly warned him it's conceptually broken</b> (a supplier is a company, not a person — who is the "client"?) and said it <b>"va te coûter une fortune."</b> Scope it explicitly or carve it out of v1; don't let it silently bloat Milestone&nbsp;1.</div>
+
+  <h3>3. Supplier registration</h3>
+  <p>Step 1 captures the legal basics — legal name, juridical form (travailleur autonome / société / association / coopérative / OBNL), <b>federal tax number only</b> (no corporation/business number, no driver's licence for suppliers), business address, city, postal code, business phone, fax, business email, business hours, business start date, <b>owner names</b>, and a password (with a show/hide eye toggle Denis asked for). Step 2 is the competence flow: pick <b>Residential or B2B</b>, then drill <b>Category → Profession</b> via the recursive list. A per-profession fee is then shown with an <b>Accept</b> gate.</p>
+  <div class="callout"><span class="lbl">Refined in the video</span> The "Accept the fee" gate moves to the <b>very top</b> of the competence flow — right after platform → category → profession, before any of the form renders. Refuse → the rest stays hidden with a "you must accept to continue" message.</div>
+
+  <h3>4. The supplier profile ("fiche")</h3>
+  <p>Each supplier gets a profile page with tabbed navigation:</p>
+  <ul class="clean">
+    <li><b>Profil</b> — identity / contact, with a <span class="price">mailto</span> "Contacter le fournisseur" button</li>
+    <li><b>Compétence</b> — the default tab; the services checklist they filled in at registration</li>
+    <li><b>Conditional paid tabs</b> — appear <b>only if the supplier paid</b>: Diplomas, Photos, Permits, Estimation, Recruitment. <b>5 in v1</b> — the Promotion tab is deferred (see Revenue).</li>
+  </ul>
+
+  <h3>5. The MASTER 2350 competence form — the heart of the site</h3>
+  <div class="callout"><span class="lbl">Client's words</span> "Toute la programmation de mon formulaire représente 90% de mon site." This one form is the core deliverable.</div>
+  <p>Confirmed against the file: <span class="price">1_WEB_MASTER_2350</span> is one sheet (<span class="price">0001RF</span>), ~1,324 rows. <b>Column A</b> = internal/programming labels (TITRE INTERNE "0001 RF 75/100/100", CATÉGORIE, PROFESSION, section markers) — never shown. <b>Column B</b> = the clickable "O" the supplier ticks to include a service. <b>Column C</b> = the service text shown. <b>Column D</b> = "X" flags. Only <b>B &amp; C</b> are ever shown; unticked rows disappear from the public fiche. Denis fills these as Excel "fiches d'importation" that get imported; <b>red markers vanish on save, blue text persists, and Excel spacing/indentation is rendered literally</b> (he must trim leading spaces). The same template is cloned per profession (~200).</p>
+
+  <h3>6. Evaluations &amp; favourites — re-specced in the video</h3>
+  <p>Evaluations were re-designed to work like Google reviews: <b>only logged-in clients can rate</b> (1–5 stars + a free-text comment); the fiche shows an average + count. Scores of <b>1–2 route to Cirkle</b> (file <span class="price">00_CLIENT_14F</span>). The supplier can <b>reply, but the reply needs admin approval</b> before it publishes. New supporting pieces: a <b>heart "favoris"</b> system (clients manually favourite suppliers <i>and</i> professions, stored in their profile) and an <b>"historique des consultations"</b> — these replace the abandoned "contacted" tracking (see User flow).</p>
+
+  <h3>7. Legal &amp; privacy</h3>
+  <p>Terms of Use / Privacy Policy to comply with <b>Québec Law 25</b> — consent, access/rectification/deletion, breach notice to the CAI, automated-decision disclosure (file <span class="price">00_FOURN_20F</span>). The video adds two facts: the live <b>Terms page is currently empty</b>, and a paid <b>cookie-consent tool (~$200/yr)</b> is mandatory and is a separate external dependency the client must fund.</p>
+
+  <div class="diff">
+    <span class="pill cut">cut · contacted-tracking</span>
+    <span class="pill cut">cut · cost-preview page</span>
+    <span class="pill cut">cut · membership-rate preview</span>
+    <span class="pill cut">cut · "page de connexion" (05F)</span>
+    <span class="pill cut">deferred · promotion (13F)</span>
+    <span class="pill add">add · favoris (suppliers + professions)</span>
+    <span class="pill add">add · consultation history</span>
+    <span class="pill fix">change · Google-style reviews, admin-approved replies</span>
+    <span class="pill fix">change · accept-gate at top of competence flow</span>
+  </div>
+</section>
+
+<!-- ============ FLOW ============ -->
+<section id="flow" class="wrap">
+  <div class="eyebrow"><span class="n">02</span> The core experience</div>
+  <h2>The 3-click client journey</h2>
+  <p>This is the single most important interaction on the site. Everything on the client side exists to serve it.</p>
+  <div class="flow">
+    <div class="step">
+      <div class="dot">1</div>
+      <div class="t">Enter postal code</div>
+      <div class="d">Client types their postal code (or nearby). Available professions turn <b style="color:var(--green-deep)">green</b>, clickable, shown <b>in columns with member numbers</b>. The full black "liste récursive" (category-left, professions-right) is always present but never clickable.</div>
+    </div>
+    <div class="step">
+      <div class="dot">2</div>
+      <div class="t">Pick a profession</div>
+      <div class="d">Clicking a green profession returns the list of member suppliers active in that sector — presented in random order for fairness.</div>
+    </div>
+    <div class="step">
+      <div class="dot">3</div>
+      <div class="t">Reach the supplier</div>
+      <div class="d">Clicking "Contacter le fournisseur" opens a <b>mailto</b> to the supplier. The conversation is off-platform — Cirkle states it is no longer responsible past this point.</div>
+    </div>
+  </div>
+  <div class="callout"><span class="lbl">Dropped in the video</span> "Fournisseur contacté" auto-tracking is <b>removed</b> — the site can't know if a client called by phone, so the data would be false. Replaced by the manual <b>heart/favoris</b>: a client clicks the heart on a supplier's fiche to save it, then reaches it later via profile → favoris (no need to re-search).</div>
+  <div class="callout warn"><span class="lbl">Still open — confirm before Milestone 1</span> <b>How is "available in this postal code" decided?</b> By the supplier's registered address, or a service-radius / the up-to-10 postal codes a supplier enters at registration? This single decision shapes the data model and search logic.</div>
+</section>
+
+<!-- ============ REVENUE ============ -->
+<section id="revenue" class="wrap">
+  <div class="eyebrow"><span class="n">03</span> How the site makes money</div>
+  <h2>Revenue model &amp; paid add-ons</h2>
+  <p>Three layers, all confirmed in the video: a one-time <b>competence-fiche fee</b> (default $75, but Denis wants it <b>variable per profession</b> — accepted at the top of the flow), a <b>listing subscription / "website connection"</b> in 1 / 3 / 6 / 12-month tiers (e.g. ~$100 / month up to ~$1,000 / year, plus per-postal-code and per-province options), and the optional <b>add-ons</b> below. Codes &amp; prices are quoted verbatim from the form files.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Add-on / tab</th><th>Source file</th><th>Internal code</th><th>Price</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Academic diplomas &amp; training</td><td class="file">WEB_11F</td><td class="file">PDIPOMECK</td><td class="price">$50</td><td><span class="tag">one-time</span></td></tr>
+        <tr><td>Photos (12)</td><td class="file">WEB_08F</td><td class="file">P12PICCK</td><td class="price">$100</td><td><span class="tag">one-time</span></td></tr>
+        <tr><td>Permits / licenses / unions</td><td class="file">WEB_12F</td><td class="file">PPERMITCK</td><td class="price">$50</td><td><span class="tag">one-time</span></td></tr>
+        <tr><td>Supplier estimation form</td><td class="file">WEB_10F</td><td class="file">PESTCK2</td><td class="price">$50</td><td><span class="tag">one-time</span></td></tr>
+        <tr><td>Employee recruitment</td><td class="file">WEB_09F</td><td class="file">PHIRECK</td><td class="price">$100</td><td><span class="tag">one-time</span></td></tr>
+        <tr class="deferred"><td>Promotion block (3 colours, photo space)</td><td class="file">WEWB_13F</td><td class="file">PPROMOCK50</td><td class="price">$100 / mo</td><td><span class="tag cut">deferred</span></td></tr>
+        <tr><td>Listing subscription / website connection</td><td class="file">cahier de charges</td><td class="file">—</td><td class="price">1/3/6/12 mo</td><td><span class="tag rec">recurring</span></td></tr>
+        <tr><td>Competence-fiche fee</td><td class="file">MASTER 2350</td><td class="file">—</td><td class="price">$75+ varies</td><td><span class="tag">per profession</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Each add-on is a linked form: the supplier opens it, the price is shown, they accept → it's marked "Accepté" → redirected to payment → on success the tab unlocks. Add-ons are managed later from the profile (add / remove / renew). <b>Promotion (PPROMOCK50) is deferred to post-launch</b> by mutual agreement in the video — it's a large, custom chunk — so v1 ships with <b>5 add-ons</b>. Its sub-options (3 photos $50 / 6 photos $80) come with it later.</p>
+  <div class="callout"><span class="lbl">Billing, per the video</span> Stripe for cards (Interac via Stripe confirmed possible in Canada). Subscriptions are recurring: 7 days before expiry → automated email → pay or cancel in-profile; no action → auto-charge; card fails → 7-day grace to update. Cancellation takes effect only at term end, no refund. Invoices are emailed as a PDF + email body; a receipt follows payment (not an invoice before). All subscription/option management lives in the profile, not via email-to-support.</div>
+</section>
+
+<!-- ============ DOCS ============ -->
+<section id="docs" class="wrap">
+  <div class="eyebrow"><span class="n">04</span> What the client sent</div>
+  <h2>Document inventory</h2>
+  <p>Eleven form files, the homepage &amp; MASTER spreadsheets, plus the 7-hour video. <b>Important:</b> the video is a set of <b>prior-agency working sessions</b>, not a briefing for you — and Denis admits the cahier de charges was signed with an earlier agency without him understanding it. So the <b>video + the live app are more authoritative than the spec doc.</b></p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>File</th><th>What it is</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td class="file">cirkleservices.com/fr (live)</td><td>The actual Laravel app. Source of truth for what already exists. <b>Audit first.</b></td><td><span class="tag rec">audit</span></td></tr>
+        <tr><td class="file">video transcript (≈7h)</td><td>Prior-agency working sessions with Denis. Authoritative on intent, dropped/added features, and billing. <b>Read.</b></td><td><span class="tag rec">authoritative</span></td></tr>
+        <tr><td class="file">CIRKLE_CAHIER_DE_CHARGES</td><td>Old spec — useful, but signed without understanding; trust the video where they conflict.</td><td><span class="tag">core</span></td></tr>
+        <tr><td class="file">CIRKLE_PAGE_ACCUEIL.xlsx</td><td>Homepage mockup + 3-click flow + member benefits copy. Confirms Aug 1 2026 launch.</td><td><span class="tag">core</span></td></tr>
+        <tr><td class="file">1_WEB_MASTER_2350.xlsx</td><td>Competence template (sheet 0001RF, ~1,324 rows). A=internal, B=tick, C=text, D=flag. Reused ~200×.</td><td><span class="tag">core</span></td></tr>
+        <tr><td class="file">WEB_08F … WEB_13F</td><td>Six add-on forms. v1 uses five (08/09/10/11/12); 13F promotion is deferred.</td><td><span class="tag">feature</span></td></tr>
+        <tr><td class="file">WEB04F_PAGE_CONCLUSION</td><td>Post-registration thank-you + the auto-create-client rule.</td><td><span class="tag">feature</span></td></tr>
+        <tr><td class="file">00_CLIENT_14F_ÉVALUATION</td><td>Client-rates-supplier review (1–5 + comment); 1–2 routed to Cirkle.</td><td><span class="tag">feature</span></td></tr>
+        <tr><td class="file">00_FOURN_20F_ENTENTE</td><td>Terms / Privacy — Law 25. Note: live Terms page is currently empty.</td><td><span class="tag">legal</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><span class="lbl">Note</span> Cirkle supplies, on request, <b>one mini-fiche</b> and <b>mini caricatures per profession</b> — profession artwork/content is the client's responsibility, not yours.</div>
+</section>
+
+<!-- ============ RISKS ============ -->
+<section id="risks" class="wrap">
+  <div class="eyebrow"><span class="n">05</span> Before you commit the scope</div>
+  <h2>Open questions &amp; risks</h2>
+  <p>The client is non-technical, has been through two agencies over ~2 years, pays the second $350 only "after approval," and is relying on your judgment. Lock these in writing so "approval" isn't a moving target.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Which codebase do you get?</h4>
+      <p class="muted">The MBiance zip, or SSH/git access to the live Adiciel-modified app? They can differ a lot. Demand the <b>running</b> version + its database — that's the whole ballgame. Denis has already said he'll give you the server link.</p>
+    </div>
+    <div class="card">
+      <h4>Auto-client-from-supplier</h4>
+      <p class="muted">Denis's "two numbers per supplier" rule was flagged by the prior agency as conceptually broken and expensive. Scope it explicitly or exclude it from v1; it's the most likely silent budget-killer.</p>
+    </div>
+    <div class="card">
+      <h4>Scope vs. $700 / 1 month</h4>
+      <p class="muted">Two agencies didn't finish this. The remaining work (2350 engine, fiche tabs, 5 options, Google-style reviews, Stripe recurring, Law 25) is realistically more than a month. Define what v1 <b>excludes</b> — the ~200 data-entered fiches, the promotion module, and the auto-client rule if it bloats.</p>
+    </div>
+    <div class="card">
+      <h4>External paid dependencies</h4>
+      <p class="muted">Loi 25 cookie tool (~$200/yr), Stripe account + Interac, and the Law 25 legal text itself (live Terms page is empty). These carry cost/liability the client must own, not you.</p>
+    </div>
+  </div>
+
+  <div class="callout warn"><span class="lbl">Questions to confirm in writing</span>
+    <b>1.</b> Postal availability = registered address, or service-radius / the up-to-10 codes entered at registration?&nbsp;
+    <b>2.</b> <span class="strike">Client↔supplier = mailto only?</span> — answered: <b>yes, mailto only</b>, no in-app messaging.&nbsp;
+    <b>3.</b> Are the ~200 fiches to be data-entered, or only the display system? (Data-entry quoted separately.)&nbsp;
+    <b>4.</b> Who owns Stripe/merchant setup, the cookie tool, and the Law 25 legal text?&nbsp;
+    <b>5.</b> <span class="strike">What's already built?</span> — largely answered by recon; confirm exact state on access.&nbsp;
+    <b>6.</b> Is auto-client-from-supplier in v1 or deferred?
+  </div>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="arch" class="wrap">
+  <div class="eyebrow"><span class="n">06</span> Inherit &amp; extend</div>
+  <h2>Working architecture</h2>
+  <p>You're extending a live Laravel app, not choosing a stack. Confirmed signals: Laravel <span class="price">csrf-token</span> meta, <span class="price">__()</span>-style i18n with incomplete lang files, and existing <span class="price">/sinscrire</span>, <span class="price">/profil</span>, <span class="price">/panier</span> routes. The shape below is what to <b>reconcile against</b> on access — keep what works, fill the gaps.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Inherited stack (verify on access)</h4>
+      <ul class="clean">
+        <li><b>Laravel (PHP)</b> + Blade views (MBiance → Adiciel build)</li>
+        <li><b>MySQL</b> — get a dump; reconcile the existing schema before adding migrations</li>
+        <li><b>Laravel localization</b> — FR/EN lang files exist but are incomplete (leaking keys)</li>
+        <li><b>Cart/checkout</b> — a <span class="price">/panier</span> flow already exists; map it before wiring Stripe</li>
+        <li><b>Stripe</b> + <b>Cashier</b> for one-time + recurring billing (recurring is the gap)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Data model to reconcile</h4>
+      <ul class="clean">
+        <li><b>members</b> — id (C/F + number), role, language, postal code</li>
+        <li><b>suppliers</b> — category, profession, platform (res/b2b), subscription status</li>
+        <li><b>categories / professions</b> — bilingual labels, <b>platform-specific sets</b></li>
+        <li><b>competences</b> — ticked services imported from MASTER 2350</li>
+        <li><b>addons / supplier_addons</b> — type, code, price, recurring?, unlocked?</li>
+        <li><b>evaluations</b> — client→supplier, stars, comment, reply+approval, flag&lt;3</li>
+        <li><b>favorites</b> — client→supplier <i>and</i> client→profession; <b>consultation_history</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <h4>Gaps to fill on top of the existing app</h4>
+  <ul class="clean">
+    <li>The MASTER 2350 import → tick → hide-unticked → render-B/C engine (the "90%")</li>
+    <li>Supplier fiche tabs with the 5 conditional paid add-on tabs</li>
+    <li>The 5 add-on forms + accept → payment → unlock pattern (promotion deferred)</li>
+    <li>Google-style evaluations restricted to logged-in clients + admin-approved replies</li>
+    <li>Heart favoris (suppliers + professions) + consultation history; remove "contacted" tracking</li>
+    <li>Stripe recurring subscriptions, 7-day renewal/grace logic, PDF invoices</li>
+    <li>Law 25 Terms/Privacy text (page exists but empty) + cookie-tool install</li>
+    <li>Finish FR/EN lang files (kill the leaking keys) and the 4-platform category/profession split</li>
+  </ul>
+</section>
+
+<!-- ============ ACTION PLAN ============ -->
+<section id="plan" class="wrap">
+  <div class="eyebrow"><span class="n">07</span> The roadmap</div>
+  <h2>Phase-by-phase action plan</h2>
+  <p>Milestone titles and amounts are unchanged from the Upwork offer. The steps are updated to reflect that you're <b>completing &amp; fixing an existing app</b>, not building from zero. Phase 0 protects you up front.</p>
+
+  <div class="phase">
+    <div class="phase-head"><div class="pn">0</div><div class="pt">Take it local &amp; audit</div><div class="meta">before any milestone</div></div>
+    <div class="phase-body">
+      <ol class="steps">
+        <li><b>Dump the DB:</b> SSH to node14, run <code>mysqldump --no-tablespaces --defaults-file=$HOME/.my.cnf yymcsmwb_db &gt; ~/cirkle_db.sql</code> (using a <code>.my.cnf</code> to handle the password's special characters). Then <code>scp node14:~/cirkle_db.sql .</code> locally.</li>
+        <li><b>Pull the code:</b> <code>rsync -avz --exclude=vendor --exclude=node_modules --exclude=storage/framework/cache -e "ssh -p 5022 -i ~/.ssh/cirkle_n0c" yymcsmwb@node14-ca.n0c.com:~/ ./cirkle/</code>. Initialize as a Git repo in a <b>private</b> GitHub.</li>
+        <li><b>Run it in Laragon:</b> create local DB <code>cirkle_local</code>, import the dump, copy <code>.env</code> → adjust DB creds + <code>APP_URL</code>, <code>composer install</code>, <code>npm install &amp;&amp; npm run dev</code>, <code>php artisan key:generate</code> (only if no key in env), <code>php artisan serve</code>. Hit it in the browser.</li>
+        <li><b>Produce the gap map:</b> open <code>routes/routes_frontend.php</code>, <code>routes_backend.php</code>, the models, and the blade views; document what's built vs. what the v1 feature list needs. Focus on: MASTER 2350 import engine, fiche tabs, 5 add-on flows, evaluations with admin approval, recurring Stripe, Law 25 pages, postal-code logic, leaking i18n keys.</li>
+        <li><b>Write the deploy script:</b> <code>scripts/deploy.sh</code> for manual push to node14 (rsync + remote composer install + migrate + cache).</li>
+      </ol>
+      <div class="deliv">Deliverable</div>
+      <p class="muted">Local working copy of the existing app + DB, in a Git repo, with a deploy script and a written gap map.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><div class="pn">1</div><div class="pt">Analysis, data model &amp; setup</div><div class="meta">milestone · $75</div></div>
+    <div class="phase-body">
+      <ol class="steps">
+        <li>Reconcile the existing MySQL schema; add only the missing tables (favoris, consultation history, evaluations, addons).</li>
+        <li>Confirm the running Laravel + MySQL + FR/EN localization scaffold; finish the leaking lang keys.</li>
+        <li>Build/verify the member-numbering logic (shared C/F sequence; auto client-on-supplier — only if kept in scope).</li>
+        <li>Approve homepage &amp; fiche mockups with the client.</li>
+      </ol>
+      <div class="deliv">Deliverable</div>
+      <p class="muted">A reconciled schema + running app, with the data-model decisions signed off.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><div class="pn">2</div><div class="pt">Homepage &amp; postal-code search</div><div class="meta">milestone · $125</div></div>
+    <div class="phase-body">
+      <ol class="steps">
+        <li>Finish the EN landing page + 4-platform selector (yellow highlight) + live member counter.</li>
+        <li>Implement postal-code search: black recursive catalogue always shown; available professions go green, in columns, with member numbers.</li>
+        <li>Wire profession click → randomised supplier list → mailto handoff; add the heart/favoris on the fiche.</li>
+      </ol>
+      <div class="deliv">Deliverable</div>
+      <p class="muted">A working end-to-end 3-click journey with seed data.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><div class="pn">3</div><div class="pt">Registration &amp; accounts</div><div class="meta">milestone · $150</div></div>
+    <div class="phase-body">
+      <ol class="steps">
+        <li>Finish bilingual registration (Step 1 legal basics + password/eye toggle; Step 2 Residential/B2B → category → profession).</li>
+        <li>Per-profession fee shown with the <b>Accept gate at the top</b> of the competence flow (no accept → form stays hidden).</li>
+        <li>Auth + the conclusion page; auto client-account creation (if in scope).</li>
+      </ol>
+      <div class="deliv">Deliverable</div>
+      <p class="muted">A supplier can register, accept the fee, and land on the conclusion page.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><div class="pn">4</div><div class="pt">MASTER 2350 form, fiche &amp; add-ons</div><div class="meta">milestone · $200</div></div>
+    <div class="phase-body">
+      <ol class="steps">
+        <li>Build the MASTER 2350 import/competence engine (tick to include; unticked hidden; only cols B&amp;C shown; spacing/colour preserved).</li>
+        <li>Build the supplier fiche tabs; show the 5 paid add-on tabs conditionally on purchase.</li>
+        <li>Build the <b>5</b> add-on forms (promotion deferred) + accept→payment→unlock; build the Google-style evaluation flow with admin-approved replies.</li>
+      </ol>
+      <div class="deliv">Deliverable</div>
+      <p class="muted">A complete supplier profile driven by the competence form and unlocked add-ons.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><div class="pn">5</div><div class="pt">Payments, legal, test &amp; launch</div><div class="meta">milestone · $150</div></div>
+    <div class="phase-body">
+      <ol class="steps">
+        <li>Integrate Stripe: one-time add-ons + recurring listing subscriptions with 7-day renewal/grace logic + PDF invoices.</li>
+        <li>Add Law 25 Terms/Privacy text (page exists, empty) + install the cookie-consent tool.</li>
+        <li>Cross-browser + mobile QA, fix, then deploy to cirkleservices.com.</li>
+      </ol>
+      <div class="deliv">Deliverable</div>
+      <p class="muted">A live, billable, legally-papered v1.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROMPTS ============ -->
+<section id="prompts" class="wrap">
+  <div class="eyebrow"><span class="n">08</span> Execution with Claude</div>
+  <h2>How to build each phase with me</h2>
+  <p>Bring me one slice at a time with the relevant file(s). Since this is a takeover, the first task isn't a schema design — it's a <b>gap map</b> of the existing code so we fix the real holes instead of rebuilding what's there.</p>
+
+  <div class="prompt"><span class="pl">Phase 0 · gap map (do this first, on access)</span>
+    Here is the existing CirkleServices Laravel codebase. Read composer.json, routes/web.php, the migrations, and resources/lang/{fr,en}. Produce a gap map: what already works (registration, login, profile, cart, FR/EN search), what's partial, and what's missing versus this feature list — MASTER 2350 competence engine, supplier fiche tabs, 5 paid add-ons, Google-style reviews with admin-approved replies, Stripe recurring subscriptions, Law 25 pages, favoris + consultation history. Flag the auto-client-from-supplier rule's data-model impact. <code>[paste composer.json + routes + migrations]</code>
+  </div>
+
+  <div class="prompt"><span class="pl">Phase 1 · data model (reconcile, don't recreate)</span>
+    Given the existing schema dump below, add only the missing pieces for a bilingual (FR/EN) Residential/B2B lead-gen marketplace: shared sequential C/F member numbering from 2350, platform-specific categories/professions, competences imported from a master checklist, paid add-ons (one-time + recurring), evaluations with supplier replies + admin approval, and favorites (suppliers + professions) + consultation history. Output only the new migrations and model changes, matching the existing conventions. <code>[paste schema dump]</code>
+  </div>
+
+  <div class="prompt"><span class="pl">Phase 4 · MASTER 2350 engine</span>
+    Here is the master competence template (sheet 0001RF) and an example rendered fiche from the live profile. Build the Laravel import + form so a supplier ticks (col B) the services they offer; unticked rows must NOT appear on the public fiche; only columns B and C are shown; colour and spacing from the sheet are preserved. Reusable across ~200 professions. Generate the importer, storage, and the public-fiche rendering. <code>[paste 1_WEB_MASTER_2350 + a live fiche]</code>
+  </div>
+
+  <div class="prompt"><span class="pl">Phase 4 · add-on flow (5 in v1)</span>
+    Using this add-on form, build the reusable Laravel flow: open the form, show the price, capture an "Accept" that redirects to payment, and on success unlock the matching tab on the supplier's fiche. Apply it to the five v1 add-ons (PDIPOMECK, P12PICCK, PPERMITCK, PESTCK2, PHIRECK). Promotion (PPROMOCK50) is deferred — leave a clean extension point for it. <code>[paste e.g. WEB_08F]</code>
+  </div>
+
+  <div class="callout"><span class="lbl">Tip</span> Always ask me to do one vertical slice first, review it, then iterate. I can generate seed data so each phase is demoable without waiting on the client's 200 professions.</div>
+</section>
+
+<footer class="footer wrap">
+  <div class="mark"><span class="ring"></span> CirkleServices.com — internal build blueprint · v2</div>
+  <p>Compiled from the Upwork thread, 11 client documents, the 7-hour video transcript, and a live inspection of cirkleservices.com. The video (prior-agency sessions) and the live Laravel app are the authoritative sources; the cahier de charges was signed without full understanding and yields to them where they conflict. Prices and internal codes are quoted verbatim from the source files. Treat all timeline/cost figures as provisional pending the Phase 0 audit.</p>
+</footer>
+
+<script>
+  // scroll-spy: highlight current section in the top nav
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('.topbar nav a'));
+    var map = {};
+    links.forEach(function(a){ var id=a.getAttribute('href').slice(1); var el=document.getElementById(id); if(el) map[id]=a; });
+    var ids = Object.keys(map);
+    if(!ids.length || !('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){ l.style.background=''; l.style.color=''; });
+          var a = map[e.target.id];
+          if(a){ a.style.background='var(--green-soft)'; a.style.color='var(--green-deep)'; }
+        }
+      });
+    }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+    ids.forEach(function(id){ obs.observe(document.getElementById(id)); });
+  })();
+</script>
+<script>
+  (function(){
+    var btn = document.getElementById('themeToggle');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if(dark){ document.documentElement.removeAttribute('data-theme'); }
+      else { document.documentElement.setAttribute('data-theme','dark'); }
+      try{ localStorage.setItem('cirkle-theme', dark ? 'light' : 'dark'); }catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>
