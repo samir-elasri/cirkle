@@ -128,6 +128,7 @@ class SubscriberController extends Controller
 
 		$params['profileOptions'] = [
 			'license',
+			'diploma',
 			'promotion',
 			'image',
 			'estimation',
@@ -481,7 +482,7 @@ class SubscriberController extends Controller
 
 		// Get list of active profile options
 		$activeOptions = [];
-		$allOptions = ['license', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
+		$allOptions = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
 		
 		foreach ($allOptions as $option) {
 			$activeField = "profile_{$option}_active";
@@ -526,7 +527,7 @@ class SubscriberController extends Controller
 
 		// Get list of active profile options
 		$activeOptions = [];
-		$allOptions = ['license', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
+		$allOptions = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
 		
 		foreach ($allOptions as $option) {
 			$activeField = "profile_{$option}_active";
@@ -614,6 +615,16 @@ class SubscriberController extends Controller
 				}
 			}
 
+			// Diplomas
+			if (in_array('diploma', $activeOptions) && isset($sessionData['profile_diplomas'])) {
+				$subscriber->diplomas()->delete();
+				foreach ($sessionData['profile_diplomas'] as $diplomaData) {
+					$diploma = new \App\Models\Diploma($diplomaData);
+					$diploma->subscriber_id = $subscriber->id;
+					$diploma->save();
+				}
+			}
+
 			// Promotions
 			if (in_array('promotion', $activeOptions) && isset($sessionData['profile_promotions'])) {
 				$subscriber->promotions()->delete();
@@ -656,6 +667,7 @@ class SubscriberController extends Controller
 			// Clear any temporary session data for profile options
 			$request->session()->forget([
 				'profile_licenses',
+				'profile_diplomas',
 				'profile_promotions',
 				'profile_subscriber_images',
 				'profile_job_offers'
@@ -1062,6 +1074,7 @@ class SubscriberController extends Controller
 
 		$data = $request->all([
 			'license',
+			'diploma',
 			'promotion',
 			'image',
 			'estimation',
@@ -1096,6 +1109,7 @@ class SubscriberController extends Controller
 			$data,
 			[
 				'license' => 'nullable|in:on',
+				'diploma' => 'nullable|in:on',
 				'promotion' => 'nullable|in:on',
 				'image' => 'nullable|string',  // Now expects a file path string, not UploadedFile
 				'estimation' => 'nullable|in:on',
@@ -1106,6 +1120,7 @@ class SubscriberController extends Controller
 
 		$validator->setAttributeNames([
 			'license' =>  setting("license_title", "license_title"),
+			'diploma' =>  setting("diploma_title", "diploma_title"),
 			'promotion' =>  setting("promotion_title", "promotion_title"),
 			'image' =>  setting("image_title", "image_title"),
 			'estimation' =>  setting("estimation_title", "estimation_title"),
@@ -1130,6 +1145,10 @@ class SubscriberController extends Controller
 		if (!empty($cleanedData['license'])) {
 			$cleanedData['profile_license_active'] = true;
 			$cleanedData['profile_license_activation_datetime'] = now();
+		}
+		if (!empty($cleanedData['diploma'])) {
+			$cleanedData['profile_diploma_active'] = true;
+			$cleanedData['profile_diploma_activation_datetime'] = now();
 		}
 		if (!empty($cleanedData['promotion'])) {
 			$cleanedData['profile_promotion_active'] = true;
@@ -1235,6 +1254,26 @@ class SubscriberController extends Controller
 					$purchase->fill([
 						'purchase_type' => 'Option profil',
 						'item_name'     => 'license',
+						'quantity'      => 1,
+						'unit_price'    => $price,
+						'total_price'   => $price,
+					]);
+					Cart::add($purchase);
+				}
+
+				if ($subscriber->profile_diploma_activation_datetime) {
+					$diplomasData = $request->session()->get('profile_diplomas', []);
+					foreach ($diplomasData as $diplomaData) {
+						$diploma = new \App\Models\Diploma();
+						$diplomaData['subscriber_id'] = $subscriber->id;
+						$diploma->saveElement($diplomaData);
+					}
+
+					$purchase = new Purchase();
+					$price = setting("diploma_price") ?? 0;
+					$purchase->fill([
+						'purchase_type' => 'Option profil',
+						'item_name'     => 'diploma',
 						'quantity'      => 1,
 						'unit_price'    => $price,
 						'total_price'   => $price,
@@ -1357,7 +1396,8 @@ class SubscriberController extends Controller
 				'postal_codes',
 				'registerFormData',
 				'profile_licenses',
-				'profile_promotions', 
+				'profile_diplomas',
+				'profile_promotions',
 				'profile_subscriber_images',
 				'profile_job_offers'
 			]);

@@ -76,10 +76,13 @@ class ProviderController extends Controller
                 ->sortBy('title');
         }
 
-        // Diplômes (option PDIPOMECK, feature #9) : affichés dès qu'il y en a.
-        $diplomas = $provider->diplomas()
-            ->orderBy('position')
-            ->get();
+        // Diplômes (option PDIPOMECK, feature #9) : affichés si l'option est active.
+        $diplomas = collect();
+        if ($provider->profile_diploma_active) {
+            $diplomas = $provider->diplomas()
+                ->orderBy('position')
+                ->get();
+        }
 
         $images = collect();
         if ($provider->profile_image_active) {

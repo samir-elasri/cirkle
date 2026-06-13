@@ -30,6 +30,23 @@
                     <label for="image[]">@lang('profile.options.fields.images')</label>
                     <input name="images[]" type="file" multiple>
                 </div>
+            @elseif($optionName === 'diploma')
+                <div class="form__column">
+                    <label for="fr[title]">@lang('fiche.diploma.course') (FR)</label>
+                    <input name="fr[title]">
+                </div>
+                <div class="form__column">
+                    <label for="en[title]">@lang('fiche.diploma.course') (EN)</label>
+                    <input name="en[title]">
+                </div>
+                <div class="form__column">
+                    <label for="school">@lang('fiche.diploma.school')</label>
+                    <input name="school">
+                </div>
+                <div class="form__column">
+                    <label for="graduated_at">@lang('fiche.diploma.date')</label>
+                    <input name="graduated_at" placeholder="2020/06">
+                </div>
             @else
             <div class="form__column">
                 <label for="fr[title]">@lang('profile.options.fields.fr_title')</label>

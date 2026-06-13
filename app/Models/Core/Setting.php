@@ -263,6 +263,11 @@ class Setting extends Model implements TranslatableContract
 		'registration_fee',
 		'registration_fee_title',
 
+		'diploma_title',
+		'diploma_description',
+		'diploma_price',
+		'diploma_order',
+
 		'@Courriel admin nouvel proposition de service',
 		'new_service_proposition_title',
 		'new_service_proposition_text',
@@ -344,6 +349,8 @@ class Setting extends Model implements TranslatableContract
 		'estimation_description',
 		'job_offer_title',
 		'job_offer_description',
+		'diploma_title',
+		'diploma_description',
 		'url_title',
 		'url_description',
 		'sender_email_name',
@@ -453,6 +460,10 @@ class Setting extends Model implements TranslatableContract
 		'license_description'           => 'Description option profil permis',
 		'license_price'                 => 'Prix option profil $ permis',
 		'license_order'                 => 'Ordre option de profil permis',
+		'diploma_title'                 => 'Titre option profil diplômes',
+		'diploma_description'           => 'Description option profil diplômes',
+		'diploma_price'                 => 'Prix option profil $ diplômes',
+		'diploma_order'                 => 'Ordre option de profil diplômes',
 		'promotion_title'               => 'Titre option profil promotion',
 		'promotion_description'         => 'Description option profil promotion',
 		'promotion_price'               => 'Prix option profil $ promotion',
@@ -616,6 +627,7 @@ class Setting extends Model implements TranslatableContract
 	{
 		$profileOptions = [
 			'license',
+			'diploma',
 			'promotion',
 			'image',
 			'estimation',

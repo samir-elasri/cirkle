@@ -34,6 +34,8 @@
                                 <div>
                                     @if ($option === 'license')
                                         @include('pages.profile-options.licenses', ['data' => $subscriber->licenses ?? []])
+                                    @elseif ($option === 'diploma')
+                                        @include('pages.profile-options.diplomas', ['data' => $subscriber->diplomas ?? []])
                                     @elseif ($option === 'promotion')
                                         @include('pages.profile-options.promotions', ['data' => $subscriber->promotions ?? []])
                                     @elseif ($option === 'image')

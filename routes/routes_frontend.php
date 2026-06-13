@@ -61,6 +61,11 @@ function createRoutes($locale)
         'uses' => 'ProfileOptionController@getLicenseList'
     ]);
 
+    Route::get('diploma-list',[
+        'as' => 'diploma-list',
+        'uses' => 'ProfileOptionController@getDiplomaList'
+    ]);
+
     Route::get('promotion-list',[
         'as' => 'promotion-list',
         'uses' => 'ProfileOptionController@getPromotionList'

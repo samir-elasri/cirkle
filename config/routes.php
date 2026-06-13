@@ -352,6 +352,30 @@ return array_replace_recursive(
                     ]
                 ]
             ],
+            'edit-profile-options-diplomas' => [
+                'uri' => [
+                    'fr' => 'modifier-option-profil/diplomes',
+                    'en' => 'edit-profile-options/diplomas',
+                ],
+                'view' => 'pages.profile-options.diplomas',
+                'uses' => 'App\\Http\\Controllers\\ProfileOptionController@editDiplomas',
+                'admin' => [
+                    'title'        => true,
+                    'metas'        => true,
+                    'customs'      => true,
+                    'right_column' => true,
+                    'blocs'        => true,
+                    'sharing'      => true,
+                ],
+                'page'  => [
+                    'fr' => [
+                        'title' => 'Modification des options de profils'
+                    ],
+                    'en' => [
+                        'title' => 'Edit profile options'
+                    ]
+                ]
+            ],
             'edit-profile-options-estimations' => [
                 'uri' => [
                     'fr' => 'modifier-option-profil/estimations',

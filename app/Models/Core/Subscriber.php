@@ -154,6 +154,9 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		'profile_license_active',
 		'profile_license_activation_datetime',
 
+		'profile_diploma_active',
+		'profile_diploma_activation_datetime',
+
 		'profile_promotion_active',
 		'profile_promotion_activation_datetime',
 

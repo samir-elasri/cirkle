@@ -135,6 +135,12 @@ class ProfileOptionController extends Controller
 		return $params;
 	}
 
+	public function editDiplomas($params, Request $request)
+	{
+		$params['data'] = $this->edit('diplomas');
+		return $params;
+	}
+
 	public function editPromotions($params, Request $request)
 	{
 		$params['data'] = $this->edit('promotions');
@@ -183,6 +189,17 @@ class ProfileOptionController extends Controller
 						$license = new License();
 						$license->fill($data);
 						return $license;
+					});
+				}
+			case 'diplomas':
+				if ($sub->id) {
+					return $sub->diplomas->sortBy('position');
+				} else {
+					$rawData = request()->session()->get('profile_diplomas', []);
+					return collect($rawData)->map(function($data) {
+						$diploma = new \App\Models\Diploma();
+						$diploma->fill($data);
+						return $diploma;
 					});
 				}
 			case 'promotions':
@@ -267,6 +284,27 @@ class ProfileOptionController extends Controller
 			
 			$view = View::make('partials.profile-options.license-list')->with(['data' => $licenses])->render();
 			return response()->json(['view' => $view, 'licenses' => $licenses], 200);
+		}
+		return response()->json([], 200);
+	}
+
+	public function getDiplomaList(Request $request)
+	{
+		$sub = $this->getSubscriber();
+		if ($sub) {
+			if ($sub->id) {
+				$diplomas = \App\Models\Diploma::where('subscriber_id', $sub->id)->orderBy('position')->get();
+			} else {
+				$rawData = request()->session()->get('profile_diplomas', []);
+				$diplomas = collect($rawData)->map(function($data) {
+					$diploma = new \App\Models\Diploma();
+					$diploma->fill($data);
+					return $diploma;
+				});
+			}
+
+			$view = View::make('partials.profile-options.diploma-list')->with(['data' => $diplomas])->render();
+			return response()->json(['view' => $view, 'data' => $diplomas], 200);
 		}
 		return response()->json([], 200);
 	}

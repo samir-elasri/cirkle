@@ -112,6 +112,9 @@ class DemoFicheSeeder extends Seeder
 		$demo->save();
 
 		// Diplômes (option PDIPOMECK, feature #9) : deux exemples bilingues.
+		$demo->profile_diploma_active = true;
+		$demo->profile_diploma_activation_datetime = now();
+		$demo->save();
 		$demo->diplomas()->delete();
 		$demoDiplomas = [
 			['fr' => 'DEP Arboriculture', 'en' => 'Arboriculture diploma', 'school' => 'Centre de formation horticole de Laval', 'date' => '2015/06'],
