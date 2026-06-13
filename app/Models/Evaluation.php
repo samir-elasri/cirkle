@@ -71,6 +71,9 @@ class Evaluation extends Model
 		'communication_grade',
 		'hourly_rate_grade',
 		'comment',
+		'reply',
+		'reply_approved',
+		'reply_created_at',
 		'insulting',
 		'validated',
 		'treated',
@@ -83,6 +86,8 @@ class Evaluation extends Model
 		'id',
 		'provider.name',
 		'client.name',
+		'global_grade',
+		'reply_approved',
 		'insulting',
 		'validated',
 		'treated',
@@ -99,6 +104,9 @@ class Evaluation extends Model
 		'communication_grade' => 'Note donnée Communication et réactivité',
 		'hourly_rate_grade' => 'Note donnée Taux horaire',
 		'comment' => 'Commentaire',
+		'reply' => 'Réponse du fournisseur',
+		'reply_approved' => 'Réponse approuvée',
+		'reply_created_at' => 'Date de la réponse',
 		'insulting' => 'Injurieux',
 		'validated' => 'Validé',
 		'treated' => 'Traité',
@@ -134,13 +142,19 @@ class Evaluation extends Model
 		return $this->belongsTo(Subscriber::class, 'provider_id', 'id');
 	}
 
+	/**
+	 * Note façon Google : une seule note (global_grade). Les avis de 1–2 sont
+	 * acheminés à Cirkle (spec). Tolère les anciens avis multi-critères.
+	 */
 	public function getHasLessThanTwoAttribute() {
-		return min(
+		$grades = array_filter([
 			$this->global_grade,
 			$this->service_quality_grade,
 			$this->reliability_grade,
 			$this->communication_grade,
 			$this->hourly_rate_grade,
-		) < 2;
+		], static fn ($g) => $g !== null);
+
+		return !empty($grades) && min($grades) <= 2;
 	}
 }

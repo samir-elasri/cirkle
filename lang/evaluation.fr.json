@@ -9,5 +9,17 @@
 	"hourly_rate_grade":  "Taux horaire du fournisseur",
 	"comment": "Votre commentaire",
 	"for-provider": "Fournisseur",
-	"contact-date": "Date du contact"
+	"contact-date": "Date du contact",
+	"rating": "Votre note",
+	"leave-review": "Laisser un avis",
+	"login-required": "Vous devez être connecté comme client pour laisser un avis.",
+	"no-self": "Vous ne pouvez pas évaluer votre propre fiche.",
+	"average": "Note moyenne",
+	"provider-reply": "Réponse du fournisseur",
+	"reply-placeholder": "Répondre à cet avis…",
+	"reply-submit": "Publier ma réponse",
+	"reply-submitted": "Réponse envoyée — elle sera publiée après approbation.",
+	"reply-pending": "Réponse en attente d'approbation.",
+	"reply-forbidden": "Vous ne pouvez répondre qu'aux avis de votre fiche.",
+	"reply-pending-admin": "Une réponse de fournisseur attend votre approbation"
 }

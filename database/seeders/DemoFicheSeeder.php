@@ -133,10 +133,34 @@ class DemoFicheSeeder extends Seeder
 			$diploma->save();
 		}
 
+		// 5. Évaluations façon Google (feature #10) : un client démo + 2 avis
+		//    (un avec réponse approuvée, un sans réponse).
+		$demoClient = Subscriber::firstOrNew(['email' => 'demo-client@cirkleservices.com']);
+		$demoClient->fill([
+			'first_name' => 'Client', 'last_name' => 'Démo',
+			'preference_language' => 'fr', 'is_provider' => false,
+			'active' => true, 'registration_completed' => true, 'accept_condition' => true,
+		]);
+		$demoClient->save();
+
+		\App\Models\Evaluation::where('provider_id', $demo->id)->delete();
+		\App\Models\Evaluation::create([
+			'provider_id' => $demo->id, 'client_id' => $demoClient->id,
+			'global_grade' => 5, 'comment' => 'Travail impeccable, ponctuel et professionnel.',
+			'reply' => 'Merci beaucoup pour votre confiance !',
+			'reply_approved' => true, 'reply_created_at' => now(),
+			'validated' => true, 'treated' => true, 'active' => true,
+		]);
+		\App\Models\Evaluation::create([
+			'provider_id' => $demo->id, 'client_id' => $demoClient->id,
+			'global_grade' => 4, 'comment' => 'Bon service, je recommande.',
+			'validated' => true, 'treated' => true, 'active' => true,
+		]);
+
 		$this->command?->info(
 			"Fournisseur démo #{$demo->id} ({$demo->formatted_member_number}) : "
 			. $demo->subscriberServices()->count() . ' lignes cochées sur ' . $services->count()
-			. ' ; onglets payants démo : Permis + Estimation'
+			. ' ; onglets payants démo : Permis + Estimation ; 2 avis démo'
 		);
 	}
 }

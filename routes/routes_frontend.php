@@ -138,6 +138,11 @@ function createRoutes($locale)
 		'uses' => 'EvaluationController@store'
 	])->middleware('recaptcha');
 
+	Route::post('evaluation-reply', [
+		'as' => 'evaluation.reply',
+		'uses' => 'EvaluationController@reply'
+	])->middleware('recaptcha');
+
 	if (config('app.allow_user_registration', false)) {
 		/**
 		 * Subscribers routes > Add a subscriber prefix to all call

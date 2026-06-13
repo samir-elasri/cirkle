@@ -323,52 +323,82 @@
                 </div>
             @endif
 
-            {{-- ===================== Évaluations (toujours visible, sous les onglets) ===================== --}}
-            @if (logged_in())
-                <div style="margin-top: 32px; border-top: 1px solid #e2e6df; padding-top: 24px;">
-                    <div class="evaluations-list__header">
-                        <h3>{{ __('providers.evaluation') }}</h3>
-                        <div>
-                            <span class="label-style">{{ __('providers.evaluations_average') }}</span>
-                            @include('partials.starDisplayer', ['stars' => $provider->evaluations_average])
-                        </div>
-                    </div>
-                    <div class="evaluations-list item-spacer__container @if($evaluations->count() > 5) evaluations-list--scrollbar @endif">
-                        @foreach ($evaluations as $evaluation)
-                            <div>
-                                <div class="evaluations-list__item-title">
-                                    <div>{{ $evaluation->client->name }}</div>
-                                    <div>{{ prettyDate($evaluation->created_at) }}</div>
-                                </div>
-                                <div class="evaluations-list__comment label-style">{{ $evaluation->comment }}</div>
-                                <div class="evaluations-list__star-row service-list">
-                                    <div>
-                                        @include('partials.starDisplayer', ['stars' => $evaluation->global_grade])
-                                        <label>{{ __('evaluation.global_grade') }}</label>
-                                    </div>
-                                    <div>&nbsp;</div>
-                                    <div>
-                                        @include('partials.starDisplayer', ['stars' => $evaluation->service_quality_grade])
-                                        <label>{{ __('evaluation.service_quality_grade') }}</label>
-                                    </div>
-                                    <div>
-                                        @include('partials.starDisplayer', ['stars' => $evaluation->communication_grade])
-                                        <label>{{ __('evaluation.communication_grade') }}</label>
-                                    </div>
-                                    <div>
-                                        @include('partials.starDisplayer', ['stars' => $evaluation->reliability_grade])
-                                        <label>{{ __('evaluation.reliability_grade') }}</label>
-                                    </div>
-                                    <div>
-                                        @include('partials.starDisplayer', ['stars' => $evaluation->hourly_rate_grade])
-                                        <label>{{ __('evaluation.hourly_rate_grade') }}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+            {{-- ===================== Évaluations façon Google (feature #10) ===================== --}}
+            @php($me = auth('subscribers')->user())
+            <div style="margin-top: 32px; border-top: 1px solid #e2e6df; padding-top: 24px;">
+                <style>
+                    .review { padding: 1em 0; border-bottom: 1px solid #eef1ec; }
+                    .review__head { display: flex; justify-content: space-between; font-weight: 600; }
+                    .review__comment { margin: .35em 0; }
+                    .review__reply { margin: .6em 0 0 1.25em; padding: .6em .9em; background: #f3f6f2; border-left: 3px solid #1b9c5a; border-radius: 0 6px 6px 0; }
+                    .review__reply-label { font-weight: 700; color: #157a47; font-size: .9em; }
+                    .review__pending { color: #a85c14; font-style: italic; font-size: .9em; }
+                    .review-form { margin: 1em 0 1.5em; padding: 1em 1.25em; background: #fafbf9; border: 1px solid #e2e6df; border-radius: 8px; }
+                </style>
+
+                <div class="evaluations-list__header">
+                    <h3>{{ __('providers.evaluation') }}</h3>
+                    <div>
+                        <span class="label-style">{{ __('evaluation.average') }}</span>
+                        @include('partials.starDisplayer', ['stars' => $provider->evaluations_average])
+                        <span class="label-style">({{ $evaluations->count() }})</span>
                     </div>
                 </div>
-            @endif
+
+                {{-- Formulaire d'avis : clients connectés uniquement, jamais sur sa propre fiche --}}
+                @if ($me && (int) $me->id !== (int) $provider->id)
+                    <div class="review-form">
+                        {{ Form::open(['url' => urlRouteName('evaluation.store')]) }}
+                            {{ Form::hidden('provider_id', $provider->id) }}
+                            <div class="form__column">
+                                <label>{{ __('evaluation.rating') }}</label>
+                                @include('partials.starSelector', ['name' => 'global_grade'])
+                            </div>
+                            <div class="form__column">
+                                <label>{{ __('evaluation.comment') }}</label>
+                                {{ Form::textarea('comment', null, ['rows' => 3]) }}
+                            </div>
+                            <button type="submit" class="call-to-action">{{ __('evaluation.leave-review') }}</button>
+                        {{ Form::close() }}
+                    </div>
+                @elseif (!$me)
+                    <p class="label-style">{{ __('evaluation.login-required') }}</p>
+                @endif
+
+                <div class="evaluations-list @if($evaluations->count() > 5) evaluations-list--scrollbar @endif">
+                    @foreach ($evaluations as $evaluation)
+                        <div class="review">
+                            <div class="review__head">
+                                <div>{{ $evaluation->client?->name }}</div>
+                                <div>{{ prettyDate($evaluation->created_at) }}</div>
+                            </div>
+                            @include('partials.starDisplayer', ['stars' => $evaluation->global_grade])
+                            <div class="review__comment label-style">{{ $evaluation->comment }}</div>
+
+                            {{-- Réponse du fournisseur : visible publiquement seulement si approuvée --}}
+                            @if ($evaluation->reply && $evaluation->reply_approved)
+                                <div class="review__reply">
+                                    <div class="review__reply-label">{{ __('evaluation.provider-reply') }}</div>
+                                    <div class="label-style">{{ $evaluation->reply }}</div>
+                                </div>
+                            @endif
+
+                            {{-- Le fournisseur évalué peut répondre (en attente d'approbation admin) --}}
+                            @if ($me && (int) $me->id === (int) $provider->id)
+                                @if ($evaluation->reply && !$evaluation->reply_approved)
+                                    <div class="review__pending">{{ __('evaluation.reply-pending') }}</div>
+                                @elseif (!$evaluation->reply)
+                                    {{ Form::open(['url' => urlRouteName('evaluation.reply'), 'style' => 'margin-top:.5em']) }}
+                                        {{ Form::hidden('evaluation_id', $evaluation->id) }}
+                                        {{ Form::textarea('reply', null, ['rows' => 2, 'placeholder' => __('evaluation.reply-placeholder')]) }}
+                                        <button type="submit" class="call-to-action">{{ __('evaluation.reply-submit') }}</button>
+                                    {{ Form::close() }}
+                                @endif
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 </section>

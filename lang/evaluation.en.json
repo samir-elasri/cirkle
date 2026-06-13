@@ -9,5 +9,17 @@
 	"hourly_rate_grade": "Provider's hourly rate",
 	"comment": "Your comment",
 	"for-provider": "Provider",
-	"contact-date": "Contact date"
+	"contact-date": "Contact date",
+	"rating": "Your rating",
+	"leave-review": "Leave a review",
+	"login-required": "You must be logged in as a client to leave a review.",
+	"no-self": "You cannot review your own profile.",
+	"average": "Average rating",
+	"provider-reply": "Provider's reply",
+	"reply-placeholder": "Reply to this review…",
+	"reply-submit": "Post my reply",
+	"reply-submitted": "Reply sent — it will be published after approval.",
+	"reply-pending": "Reply awaiting approval.",
+	"reply-forbidden": "You can only reply to reviews on your own profile.",
+	"reply-pending-admin": "A supplier reply is awaiting your approval"
 }
