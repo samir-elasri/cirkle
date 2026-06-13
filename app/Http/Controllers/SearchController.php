@@ -49,6 +49,7 @@ class SearchController extends Controller
             'nonPresentProfessions' => $this->searchService->getProfessionsNotInPostalCode($postalCode, $providerType),
             'presentCategories'     => $this->searchService->getCategoriesInPostalCode($postalCode, $providerType),
             'nonPresentCategories'  => $this->searchService->getCategoriesNotInPostalCode($postalCode, $providerType),
+            'professionCounts'      => $this->searchService->getProfessionSupplierCountsInPostalCode($postalCode, $providerType),
         ]);
     }
 

@@ -90,6 +90,28 @@ class SearchService
             ->pluck('subscriber_id');
     }
 
+    /**
+     * Nombre de fournisseurs visibles par profession dans un code postal
+     * (pour afficher le « nombre de membres » à côté des professions vertes).
+     *
+     * @return array<int,int> [profession_id => count]
+     */
+    public function getProfessionSupplierCountsInPostalCode(string $postalCode, $providerType): array
+    {
+        $subscriberIds = $this->getSubscriberIdsInPostalCode($postalCode);
+
+        return Subscriber::whereIn('id', $subscriberIds)
+            ->where('active', true)
+            ->where('is_public', true)
+            ->where('registration_completed', true)
+            ->whereIn('provider_type', $this->getProviderTypesForSearch($providerType))
+            ->whereNotNull('service_category_id')
+            ->selectRaw('service_category_id, COUNT(*) as total')
+            ->groupBy('service_category_id')
+            ->pluck('total', 'service_category_id')
+            ->toArray();
+    }
+
 
 
     private function getProfessionIdsInPostalCode(string $postalCode, $providerType): array

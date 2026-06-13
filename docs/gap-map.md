@@ -8,14 +8,14 @@
 >
 > _Generated 2026-06-12, last updated 2026-06-13. Forward-only migrations; never edit a shipped migration._
 >
-> **Progress: 6/14 done** — ✅ #1 #4 #6 #7 #8 #9 · 🟡 #2 #3 #5 #10 #11 #12 #14 · 🔴 #13. All shipped to prod.
+> **Progress: 7/14 done** — ✅ #1 #2 #4 #6 #7 #8 #9 · 🟡 #3 #5 #10 #11 #12 #14 · 🔴 #13. All shipped to prod.
 
 ## Summary table
 
 | # | v1 feature | Status | Where it lives (code) | Effort to finish |
 |---|------------|:------:|-----------------------|:----------------:|
 | 1 | Bilingual FR/EN homepage + 4-platform selector (res/B2B × FR/EN, **distinct category/profession sets**) | ✅ | `partials/platform-selector.blade.php` (4 tiles, yellow active), `SearchController@home` (session via SearchDataService), `routes_core.php` (`/` → `/en`), search radios synced. Distinct sets per platform feed from each fiche's «Clientèle cible» (`service_categories.provider_type`) through the search pipeline. | done 2026-06-12 |
-| 2 | Postal-code search: black recursive catalogue always shown; available professions green, in columns, with member #s | 🟡 | `app/Http/Controllers/SearchController.php`, `app/Services/SearchService.php`, `app/Services/SearchDataService.php`, `resources/views/partials/search/search.blade.php` | **M** |
+| 2 | Postal-code search: black recursive catalogue always shown; available professions green, in columns, with member #s | ✅ | `partials/search/search.blade.php` — recursive catalogue (category-left → professions-right in auto-fill columns), **always visible in black**; professions with suppliers in the postal code render **green + clickable + (supplier count)**, platform-aware. `SearchService::getProfessionSupplierCountsInPostalCode` feeds the counts. Category dropdown filter (frozen JS) preserved. | done 2026-06-13 |
 | 3 | Profession → **randomized** supplier list → fiche → mailto handoff | 🟡 | `SearchController@profession`, `app/Http/Controllers/ProviderController.php` (`show`, `contact`), `resources/views/pages/providers/show.blade.php`, `partials/providers/single.blade.php` | **S–M** |
 | 4 | Member numbering: shared C/F sequence from **2350** + live counter top-right | ✅ | `subscribers.member_number` (unique, backfilled from 2350), `Subscriber::boot()` auto-assign, `formatted_member_number` (C02350/F02351), live counter in `core/partials/page/header.blade.php`, shown on fiches + admin grid. | done 2026-06-12 |
 | 5 | Supplier registration: juridical form, federal tax #, owner names, password + eye toggle | 🟡 | `app/Http/Controllers/SubscriberController.php` (`storeStep1–6`), `resources/views/pages/register/step-1..6.blade.php`, `routes/routes_frontend.php` | **S** |

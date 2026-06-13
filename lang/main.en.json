@@ -1,5 +1,8 @@
 {
 	"companyName": "CIRKLE",
+	"catalogueTitle": "Service catalogue",
+	"catalogueLegend": "In green: professions with suppliers in your postal code (the number shows available members).",
+	"membersShort": "member(s)",
 	"memberCounter": "Members",
 	"memberCounterTitle": "Number of the most recent Cirkle member",
 	"platformSelectorTitle": "Clients and suppliers: please click on the platform of your choice before continuing",
