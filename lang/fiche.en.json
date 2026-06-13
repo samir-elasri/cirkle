@@ -1,6 +1,10 @@
 {
 	"title": "Form",
 	"services": "Services",
+	"tab": {
+		"profile": "Profile",
+		"competence": "Competence"
+	},
 	"label": {
 		"label": "Internal title",
 		"category": "Category",

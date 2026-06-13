@@ -94,9 +94,27 @@ class DemoFicheSeeder extends Seeder
 			]);
 		}
 
+		// 4. Active deux options payantes (texte seulement, sans fichier) pour que la
+		//    fiche démo montre des onglets payants : Permis et Estimation (feature #8).
+		$demo->licenses()->delete();
+		$license = new \App\Models\License(['subscriber_id' => $demo->id]);
+		$license->translateOrNew('fr')->title = 'RBQ 1234-5678-90 (démo)';
+		$license->translateOrNew('fr')->description = 'Licence d\'entrepreneur — exemple de démonstration.';
+		$license->translateOrNew('en')->title = 'RBQ 1234-5678-90 (demo)';
+		$license->translateOrNew('en')->description = 'Contractor licence — demonstration example.';
+		$license->save();
+		$demo->profile_license_active = true;
+
+		$demo->profile_estimation_active = true;
+		$demo->estimation_cost = 95;
+		$demo->accepts_cash = true;
+		$demo->accepts_debit = true;
+		$demo->save();
+
 		$this->command?->info(
 			"Fournisseur démo #{$demo->id} ({$demo->formatted_member_number}) : "
 			. $demo->subscriberServices()->count() . ' lignes cochées sur ' . $services->count()
+			. ' ; onglets payants démo : Permis + Estimation'
 		);
 	}
 }

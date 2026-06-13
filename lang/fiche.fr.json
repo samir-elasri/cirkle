@@ -1,6 +1,10 @@
 {
 	"title": "Fiche",
 	"services": "Services",
+	"tab": {
+		"profile": "Profil",
+		"competence": "Compétence"
+	},
 	"label": {
 		"label": "Titre interne",
 		"category": "Catégorie",
