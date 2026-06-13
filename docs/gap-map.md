@@ -8,7 +8,7 @@
 >
 > _Generated 2026-06-12, last updated 2026-06-13. Forward-only migrations; never edit a shipped migration._
 >
-> **Progress: 12/14 done** — ✅ #1 #2 #3 #4 #5 #6 #7 #8 #9 #10 #11 #14 · 🟡 #12 · 🔴 #13. All shipped to prod.
+> **Progress: 12/14 done + #13 scaffolded** — ✅ #1 #2 #3 #4 #5 #6 #7 #8 #9 #10 #11 #14 · 🟢 #13 (scaffold; awaits client legal copy) · 🟡 #12 (Stripe recurring — last). All shipped to prod.
 
 ## Summary table
 
@@ -26,7 +26,7 @@
 | 10 | Google-style evaluations: logged-in clients, 1–5 + comment; reply needs admin approval; 1–2 → Cirkle | ✅ | Reworked to single rating (`global_grade`) + comment on the fiche; `EvaluationController@store` gates on **logged-in client** (client_id from auth, no self-review); avg + count shown; **1–2 → Cirkle** email (`has_less_than_two ≤ 2`). Supplier **reply** (`EvaluationController@reply`, `evaluations.reply/_approved/_created_at`) shown publicly **only once admin-approved**. Demo seeds 2 reviews. | done 2026-06-13 |
 | 11 | Favorites (heart) for suppliers **and** professions + consultation history | ✅ | Supplier hearts existed; added **profession favorites** (`LikedProfession` + `like-profession` route + heart on the profession page, reusing the generic `like` JS) and **consultation history** (`ConsultationHistory` recorded on fiche view by a logged-in client). Profile (`my-space`) gains a **Professions favorites** tab; the old "contacted" tab now shows **consultation history** (ContactedProvider auto-tracking retired). | done 2026-06-13 |
 | 12 | Stripe (Cashier): one-time **+ recurring** (1/3/6/12 mo), 7-day pre-expiry email + 7-day grace, PDF invoices | 🟡 | `Cart/BasicCartController.php` (one-time Checkout, raw `StripeClient`, `mode=payment`, CAD+TPS/TVQ), `SubscriptionController.php` (pause/unpause/cancel **stubs**), `SubscriptionPrice`/`PurchasedSub`. **Cashier NOT installed.** `barryvdh/laravel-dompdf` available for invoices. | **L** |
-| 13 | Law 25 Terms/Privacy (scaffold now; client supplies text) | 🔴 | `resources/views/pages/term-of-use.blade.php` exists but is **empty (0 lines)**; route `term-of-use`. No privacy page. | **S** + client text |
+| 13 | Law 25 Terms/Privacy (scaffold now; client supplies text) | 🟢 scaffolded | `pages/term-of-use.blade.php` now renders a structured **Law 25 Terms** draft (FR/EN); new **Privacy Policy** page + route (`privacy-policy`) with all Law 25 sections (consent, access/rectification/deletion, CAI breach notice, automated decisions, cookies). Both **defer to CMS blocs** once Denis adds final text. **Client-owned:** final legal copy + the paid cookie-consent tool. | scaffold done 2026-06-13 |
 | 14 | Admin panel: approve evaluation replies + manage categories/professions | ✅ | Admin evaluations CRUD (`admin/evaluations/{id}/edit`) now exposes `reply_approved` (grid + fillable) → admin toggles to **approve a supplier reply**. Categories/professions managed via the same generic CRUD + `AdminFicheController`/`AdminExcelController` (MASTER import). | done 2026-06-13 |
 
 ## What's genuinely already done (don't rebuild)

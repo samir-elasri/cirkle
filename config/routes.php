@@ -168,6 +168,29 @@ return array_replace_recursive(
 					]
 				]
 			],*/
+			'privacy-policy' => [
+				'uri'   => [
+					'fr' => '/politique-de-confidentialite',
+					'en' => '/privacy-policy',
+				],
+				'view'  => 'pages.privacy-policy',
+				'admin' => [
+					'title'        => true,
+					'metas'        => true,
+					'customs'      => true,
+					'right_column' => true,
+					'blocs'        => true,
+					'sharing'      => true,
+				],
+				'page'  => [
+					'fr' => [
+						'title' => 'Politique de confidentialité'
+					],
+					'en' => [
+						'title' => 'Privacy policy'
+					]
+				]
+			],
 			'term-of-use'    => [
 				'uri'   => [
 					'fr' => '/conditions-d-utilisation',
