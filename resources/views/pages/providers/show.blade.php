@@ -10,7 +10,10 @@
 
             {{-- Styles inline temporaires : la rebuild SCSS est gelée (voir docs/gap-map.md) --}}
             <style>
-                .fiche-literal { white-space: pre-wrap; line-height: 1.7; }
+                /* pre-wrap sur la LIGNE seulement : sinon l'indentation du template Blade
+                   entre les lignes serait rendue littéralement elle aussi */
+                .fiche-literal { line-height: 1.7; }
+                .fiche-literal__row { white-space: pre-wrap; }
                 .fiche-literal__row--gap { margin-top: 1.1em; }
                 .fiche-literal__custom { font-style: italic; color: #1a7a3a; }
             </style>
@@ -50,7 +53,7 @@
 
             <p>
                 {{ $provider->number }} {{ $provider->street }}, @if($provider->app) {{ $provider->app }}, @endif
-                {{ $provider->city }}, {{ $provider->state?->title }}, {{ $provider->postal_code }}
+                {{ $provider->city }}, @if($provider->state?->title){{ $provider->state->title }}, @endif{{ $provider->postal_code }}
             </p>
 
 
@@ -92,7 +95,7 @@
                     <div class="fiche-section__title">
                         {{ __('auth.register.provider_type') }}
                     </div>
-                    <div class="fiche-section__content pre">{{ $provider->provider_type }}</div>
+                    <div class="fiche-section__content pre">{{ __('providers.provider-type.' . $provider->provider_type) }}</div>
                 </div>
             @endif
 

@@ -25,6 +25,11 @@ class DemoFicheSeeder extends Seeder
 
 	public function run(): void
 	{
+		// 0. Délie d'abord le fournisseur démo : l'import purge les services non liés
+		//    de la fiche — sinon les lignes encore cochées survivent et se dupliquent.
+		Subscriber::where('email', self::DEMO_EMAIL)->first()
+			?->subscriberServices()->delete();
+
 		// 1. Importe (ou ré-importe) la fiche maître ARBORISTE
 		$stats = (new ExcelImport())->import(
 			database_path('seeders/data/master-2350-0001-rf-arboriste.xlsx')
@@ -55,6 +60,12 @@ class DemoFicheSeeder extends Seeder
 			'email_validated' => true,
 		]);
 		$demo->service_category_id = $profession->id;
+
+		// Province (Québec) : évite l'adresse avec virgule vide sur la fiche
+		$demo->state_id = \App\Models\Core\State::all()
+			->first(fn ($state) => str_starts_with(mb_strtolower($state->title ?? ''), 'q'))
+			?->id;
+
 		$demo->save();
 
 		if (!PostalCode::where('subscriber_id', $demo->id)->count()) {
