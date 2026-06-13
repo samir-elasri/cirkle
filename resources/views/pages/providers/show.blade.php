@@ -8,8 +8,15 @@
 
         <div class="content-card">
 
+            {{-- Styles inline temporaires : la rebuild SCSS est gelée (voir docs/gap-map.md) --}}
+            <style>
+                .fiche-literal { white-space: pre-wrap; line-height: 1.7; }
+                .fiche-literal__row--gap { margin-top: 1.1em; }
+                .fiche-literal__custom { font-style: italic; color: #1a7a3a; }
+            </style>
+
             <div style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:flex-start;margin-bottom:24px">
-                <div>{{ __('main.member') }} {{ $provider->id }}</div>
+                <div>{{ __('main.member') }} {{ $provider->formatted_member_number ?? $provider->id }}</div>
                 <div style="display:flex; gap:10px; flex-wrap: wrap">
                     @if ($promotions->count())
                         <a class="call-to-action" href="#promotions">{{ setting("promotion_title") }}</a>
@@ -162,26 +169,13 @@
             </div>
 
 
+            {{-- Compétence MASTER 2350 : rendu littéral (cols B+C, lignes cochées seulement) --}}
             <div class="fiche-section">
                 <div class="fiche-section__title">
                     {{ __('auth.register.services') }}
                 </div>
                 <div class="fiche-section__content">
-                    <div class="service-list">
-                        @foreach ($services as $service)
-                            <div class="service-single">
-                                <div class="service-single__content">
-                                    <div class="service-single__title">
-                                        {{ $service->service?->title }}
-                                    </div>
-                                    <div class="label-style small-label service-single__description">
-                                        {{ $service->service?->description }}
-                                        {{ $service->custom_value }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                    @include('partials.fiche-competence-literal', ['rows' => $services, 'gapRows' => $gapRows ?? []])
                 </div>
             </div>
 
@@ -190,21 +184,7 @@
                     {{ __('auth.register.capabilities') }}
                 </div>
                 <div class="fiche-section__content">
-                    <div class="service-list">
-                        @foreach ($capabilities as $service)
-                            <div class="service-single">
-                                <div class="service-single__content">
-                                    <div class="service-single__title">
-                                        {{ $service->service?->title }}
-                                    </div>
-                                    <div class="label-style small-label service-single__description">
-                                        {{ $service->service?->description }}
-                                        {{ $service->custom_value }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                    @include('partials.fiche-competence-literal', ['rows' => $capabilities, 'gapRows' => $gapRows ?? []])
                 </div>
             </div>
 

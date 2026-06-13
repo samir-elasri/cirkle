@@ -32,6 +32,22 @@ class ExcelImport
 
     public function import(string $path): array
     {
+        // Lecture sur une COPIE temporaire : la détection de format (ZipArchive)
+        // peut réécrire/normaliser silencieusement le fichier source (+quelques octets).
+        $tmp = tempnam(sys_get_temp_dir(), 'master2350_');
+        if ($tmp === false || !copy($path, $tmp)) {
+            throw new \RuntimeException("Impossible de copier le fichier d'import : {$path}");
+        }
+
+        try {
+            return $this->importFromCopy($tmp);
+        } finally {
+            @unlink($tmp);
+        }
+    }
+
+    private function importFromCopy(string $path): array
+    {
         $reader = IOFactory::createReaderForFile($path);
         $worksheet = $reader->load($path)->getSheet(0);
         $highestRow = $worksheet->getHighestDataRow();
@@ -48,6 +64,7 @@ class ExcelImport
 
         $state = 'preamble';
         $blankStreak = 0;
+        $blankSinceLastO = false; // une ligne vide vue depuis la dernière ligne « O » (espacement littéral)
 
         for ($row = 1; $row <= $highestRow; $row++) {
             $a = $this->plainText($worksheet->getCell("A{$row}"));
@@ -57,6 +74,11 @@ class ExcelImport
             $d = trim($this->plainText($worksheet->getCell("D{$row}")));
 
             $aFlat = $this->flatten($a);
+
+            // Ligne entièrement vide : marque un saut de bloc dans le fichier
+            if (trim($a) === '' && $b === '' && trim($c) === '' && $d === '') {
+                $blankSinceLastO = true;
+            }
 
             // Notes au programmeur : jamais importées
             if (str_contains($aFlat, 'PROGRAMM')) {
@@ -86,6 +108,7 @@ class ExcelImport
             }
             if (str_contains($aFlat, 'SECTION SERVICES')) {
                 $state = 'services';
+                $blankSinceLastO = false; // pas d'espace avant la première ligne d'une section
                 // la ligne du marqueur porte déjà un service (B=O) : ne pas sauter
             } elseif (str_contains($aFlat, 'TEXT') && preg_match('/C[OU]STU?OMERS|CONSTOMERS/', $aFlat)) {
                 $state = 'customers';
@@ -93,6 +116,7 @@ class ExcelImport
                 $state = 'capabilities_text';
             } elseif (str_contains($aFlat, 'CAPABILITIES')) {
                 $state = 'capabilities';
+                $blankSinceLastO = false;
             } elseif (str_contains($aFlat, 'KEYMORD') || str_contains($aFlat, 'KEYWORD')) {
                 $state = 'keywords';
                 $blankStreak = 0;
@@ -121,7 +145,9 @@ class ExcelImport
                             'formatted_title' => $html,
                             'has_input' => ($d === 'X'),
                             'source_row' => $row,
+                            'gap_before' => $blankSinceLastO,
                         ];
+                        $blankSinceLastO = false;
                         if ($state === 'services') {
                             $services[] = $entry;
                         } else {

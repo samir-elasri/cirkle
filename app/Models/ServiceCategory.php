@@ -162,12 +162,15 @@ class ServiceCategory extends Model implements TranslatableContract
 
 	public function services()
 	{
-		return $this->hasMany(Service::class)->where('type', 'service');
+		// source_row : ordre littéral du fichier MASTER 2350 (null en dernier pour l'ancien contenu)
+		return $this->hasMany(Service::class)->where('type', 'service')
+			->orderByRaw('source_row IS NULL, source_row')->orderBy('id');
 	}
 
 	public function capabilities()
 	{
-		return $this->hasMany(Service::class)->where('type', 'capability');
+		return $this->hasMany(Service::class)->where('type', 'capability')
+			->orderByRaw('source_row IS NULL, source_row')->orderBy('id');
 	}
 
 	public function getUrlAttribute() {

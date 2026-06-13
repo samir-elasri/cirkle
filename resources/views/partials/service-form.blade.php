@@ -4,6 +4,12 @@
     </div>
 @endif
 
+{{-- Rendu littéral MASTER 2350 (couleurs/espaces du fichier Excel) — styles inline : rebuild SCSS gelée --}}
+<style>
+    .service-literal { white-space: pre-wrap; }
+    .form__column--gap-before { margin-top: 1.1em; }
+</style>
+
 <div class="form__column">
     <div class="registration-title">{{ __('auth.register.services') }}</div>
     <div class="form__row--error">
@@ -13,20 +19,20 @@
     </div>
     @foreach ($serviceCategory->services as $service)
         @if (!$service->title) @continue @endif
-        <div class="form__column">
-            <div class="form__row" @if (!empty($service->input_label)) data-component="step2ConditionnalCheckboxInput" @endif>
+        <div class="form__column {{ $service->gap_before ? 'form__column--gap-before' : '' }}">
+            <div class="form__row" @if ($service->has_input || !empty($service->input_label)) data-component="step2ConditionnalCheckboxInput" @endif>
                 <sl-checkbox
                     name="services[]"
                     value="{{ $service->id }}"
                     @if (in_array($service->id, old('services') ?? $existingServices ?? (session('registerFormData.services') ?? []))) checked @endif
                 >
-                    {{ $service->title }}
+                    <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
-                @if (!empty($service->input_label))
-                    <input type="text" 
-                           name="service_input[{{ $service->id }}]" 
+                @if ($service->has_input || !empty($service->input_label))
+                    <input type="text"
+                           name="service_input[{{ $service->id }}]"
                            value="{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}"
-                           placeholder="{{ $service->input_label }}"
+                           placeholder="{{ $service->input_label ?: __('form.specify') }}"
                     >
                 @endif
             </div>
@@ -65,20 +71,20 @@
 
     @foreach ($serviceCategory->capabilities as $service)
         @if (!$service->title) @continue @endif
-        <div class="form__column">
-            <div class="form__row" @if (!empty($service->input_label)) data-component="step2ConditionnalCheckboxInput" @endif>
+        <div class="form__column {{ $service->gap_before ? 'form__column--gap-before' : '' }}">
+            <div class="form__row" @if ($service->has_input || !empty($service->input_label)) data-component="step2ConditionnalCheckboxInput" @endif>
                 <sl-checkbox
                     name="capabilities[]"
                     value="{{ $service->id }}"
                     @if (in_array($service->id, old('capabilities') ?? $existingCapabilities ?? (session('registerFormData.capabilities') ?? []))) checked @endif
                 >
-                    {{ $service->title }}
+                    <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
-                @if (!empty($service->input_label))
-                    <input type="text" 
-                           name="capability_input[{{ $service->id }}]" 
+                @if ($service->has_input || !empty($service->input_label))
+                    <input type="text"
+                           name="capability_input[{{ $service->id }}]"
                            value="{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}"
-                           placeholder="{{ $service->input_label }}"
+                           placeholder="{{ $service->input_label ?: __('form.specify') }}"
                     >
                 @endif
             </div>

@@ -36,7 +36,9 @@ class ProviderController extends Controller
                     ->where('type', '=', 'service');
             })
             ->with(['service'])
-            ->get();
+            ->get()
+            ->sortBy(fn ($row) => $row->service->source_row ?? PHP_INT_MAX)
+            ->values();
 
         $capabilities = $provider->subscriberServices()
             ->whereHas('service',  function ($query) {
@@ -44,7 +46,19 @@ class ProviderController extends Controller
                     ->where('type', '=', 'capability');
             })
             ->with(['service'])
-            ->get();
+            ->get()
+            ->sortBy(fn ($row) => $row->service->source_row ?? PHP_INT_MAX)
+            ->values();
+
+        // Sauts de bloc du fichier MASTER (toutes lignes de la fiche, cochées ou non) :
+        // un saut reste visible même si la ligne qui le portait n'est pas cochée.
+        $gapRows = $provider->service_category_id
+            ? Service::where('service_category_id', $provider->service_category_id)
+                ->where('gap_before', true)
+                ->pluck('source_row')
+                ->filter()
+                ->all()
+            : [];
 
         $promotions = collect();
         if ($provider->profile_promotion_active) {
@@ -95,6 +109,7 @@ class ProviderController extends Controller
             'subcategories',
             'services',
             'capabilities',
+            'gapRows',
             'promotions',
             'licenses',
             'images',
