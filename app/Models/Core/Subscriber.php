@@ -598,6 +598,16 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		return $this->hasMany(LikedSubscriber::class);
 	}
 
+	public function likedProfessions(): HasMany
+	{
+		return $this->hasMany(\App\Models\LikedProfession::class);
+	}
+
+	public function consultationHistory(): HasMany
+	{
+		return $this->hasMany(\App\Models\ConsultationHistory::class)->latest();
+	}
+
     public function likedBySubscribers(): HasMany {
         return $this->hasMany(LikedSubscriber::class, 'liked_subscriber_id');
     }

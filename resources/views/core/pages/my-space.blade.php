@@ -11,6 +11,7 @@
                'profile',
                'contacted-suppliers',
                'favorited-suppliers',
+               'favorited-professions',
                'saved-searches',
                'profile-options',
                // 'invoices',
@@ -48,6 +49,7 @@
                 <div class="nested-tab tab-item active" data-tab="profile">@lang('profile.tabs.profile')</div>
                 <div class="nested-tab tab-item" data-tab="contacted-suppliers">@lang('profile.tabs.contacted-suppliers')</div>
                 <div class="nested-tab tab-item" data-tab="favorited-suppliers">@lang('profile.tabs.favorited-suppliers')</div>
+                <div class="nested-tab tab-item" data-tab="favorited-professions">@lang('profile.tabs.favorited-professions')</div>
                 <div class="nested-tab tab-item" data-tab="supplier-profile">@lang('profile.tabs.supplier-profile')</div>
                 {{-- <div class="nested-tab tab-item" data-tab="saved-searches">@lang('profile.tabs.saved-searches')</div> --}}
             </div>
@@ -55,11 +57,12 @@
                  data-tab="profile">
                 @include('core.pages.profile')
             </div>
+            {{-- Historique des consultations (feature #11) : fiches récemment consultées --}}
             <div class="nested-tabcontent tab-window"
                  data-tab="contacted-suppliers">
-                @forelse($subscriber->contactedProviders as $contacted)
-                    @isset($contacted->provider)
-                        @include('partials.providers.single', ['provider' => $contacted->provider])
+                @forelse($subscriber->consultationHistory as $consultation)
+                    @isset($consultation->viewedSubscriber)
+                        @include('partials.providers.single', ['provider' => $consultation->viewedSubscriber])
                     @endisset
                 @empty
                     {{ __('main.no-results') }}
@@ -68,10 +71,27 @@
             <div class="nested-tabcontent tab-window"
                  data-tab="favorited-suppliers">
                 @forelse($subscriber->likedSubscribers as $liked)
-                    @include('partials.providers.single', ['provider' => $liked->likedSubscriber])
+                    @isset($liked->likedSubscriber)
+                        @include('partials.providers.single', ['provider' => $liked->likedSubscriber])
+                    @endisset
                 @empty
                     {{ __('main.no-results') }}
                 @endforelse
+            </div>
+            {{-- Professions favorites (feature #11) --}}
+            <div class="nested-tabcontent tab-window"
+                 data-tab="favorited-professions">
+                <div class="single-list">
+                    @forelse($subscriber->likedProfessions as $likedProfession)
+                        @isset($likedProfession->serviceCategory)
+                            <div class="single-list__item" style="padding:14px 20px">
+                                <a href="{{ $likedProfession->serviceCategory->url }}">{{ $likedProfession->serviceCategory->title }}</a>
+                            </div>
+                        @endisset
+                    @empty
+                        {{ __('main.no-results') }}
+                    @endforelse
+                </div>
             </div>
             <div class="nested-tabcontent tab-window"
                  data-tab="saved-searches">

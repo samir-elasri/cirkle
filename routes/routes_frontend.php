@@ -56,6 +56,11 @@ function createRoutes($locale)
         'uses' => 'ProviderController@like'
     ]);
 
+    Route::get('like-profession',[
+        'as' => 'like-profession',
+        'uses' => 'ProviderController@likeProfession'
+    ]);
+
     Route::get('license-list',[
         'as' => 'license-list',
         'uses' => 'ProfileOptionController@getLicenseList'

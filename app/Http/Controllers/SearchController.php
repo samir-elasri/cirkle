@@ -89,6 +89,7 @@ class SearchController extends Controller
 
         return array_merge($params, [
             'title' => $profession->title,
+            'profession' => $profession,
             'subscribers' => $subscribers,
         ]);
     }

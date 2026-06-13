@@ -26,6 +26,20 @@ class ProviderController extends Controller
             ->where('id', '=', $id)
             ->firstOrFail();
 
+        // Historique des consultations (feature #11) : un client connecté consulte une fiche.
+        // On évite les doublons consécutifs (rafraîchissements).
+        $viewer = auth('subscribers')->user();
+        if ($viewer && (int) $viewer->id !== (int) $provider->id) {
+            $last = \App\Models\ConsultationHistory::where('subscriber_id', $viewer->id)
+                ->latest()->first();
+            if (!$last || (int) $last->viewed_subscriber_id !== (int) $provider->id) {
+                \App\Models\ConsultationHistory::create([
+                    'subscriber_id' => $viewer->id,
+                    'viewed_subscriber_id' => $provider->id,
+                ]);
+            }
+        }
+
         $subcategories = $provider->subscriberServiceCategories()
             ->with('serviceCategory')
             ->get();
@@ -145,6 +159,33 @@ class ProviderController extends Controller
         else {
             LikedSubscriber::where('subscriber_id', $subscriber->id)
                 ->where('liked_subscriber_id', '=', $providerId)
+                ->delete();
+        }
+
+        return response()->noContent();
+    }
+
+    /**
+     * Cœur « favori profession » (feature #11). Réutilise le composant JS `like`
+     * (générique : url + id), pointé sur cette route avec l'id de la profession.
+     */
+    public function likeProfession(Request $request) {
+        $like = $request->input('like');
+        $professionId = $request->input('id');
+        $subscriber = auth('subscribers')->user();
+
+        if (!$subscriber) {
+            abort(400);
+        }
+
+        if ($like) {
+            \App\Models\LikedProfession::firstOrCreate([
+                'subscriber_id' => $subscriber->id,
+                'service_category_id' => $professionId,
+            ]);
+        } else {
+            \App\Models\LikedProfession::where('subscriber_id', $subscriber->id)
+                ->where('service_category_id', '=', $professionId)
                 ->delete();
         }
 

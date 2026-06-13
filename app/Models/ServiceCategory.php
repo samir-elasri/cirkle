@@ -183,4 +183,13 @@ class ServiceCategory extends Model implements TranslatableContract
 		}
 		return urlRouteName('category', ['id' => $this->id], true);
 	}
+
+	/**
+	 * Favori « profession » du client connecté (feature #11) — pour l'état initial du cœur.
+	 */
+	public function likedByLoggedInUser(): \Illuminate\Database\Eloquent\Relations\HasOne
+	{
+		return $this->hasOne(\App\Models\LikedProfession::class, 'service_category_id')
+			->where('subscriber_id', '=', auth('subscribers')->user()?->id);
+	}
 }
