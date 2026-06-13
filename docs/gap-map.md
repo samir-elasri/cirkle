@@ -6,7 +6,9 @@
 >
 > Legend: ✅ built · 🟡 partial · 🔴 missing · effort S (≤0.5d) / M (1–2d) / L (3–5d+)
 >
-> _Generated 2026-06-12. Forward-only migrations; never edit a shipped migration._
+> _Generated 2026-06-12, last updated 2026-06-13. Forward-only migrations; never edit a shipped migration._
+>
+> **Progress: 5/14 done** — ✅ #1 #4 #6 #7 #8 · 🟡 #2 #3 #5 #9 #10 #11 #12 #14 · 🔴 #13. All shipped to prod.
 
 ## Summary table
 
@@ -51,10 +53,8 @@
 - **Add-on ↔ spec mapping** (existing → v1 code): Photos→`image` (P12PICCK $100), Permits→`license` (PPERMITCK $50), Estimation→`estimation` (PESTCK2 $50), Recruitment→`job_offer` (PHIRECK $100), Promotion→`promotion` (**deferred**, PPROMOCK50). **Diplomas (PDIPOMECK $50) is new** — no existing option. Prices are currently flat `setting('{option}_price')`, not the per-code values.
 - **Known-issue (do not touch yet):** `resources/sass/vendor/` missing ⇒ `npm run prod` fails; committed `public_html/dist/compiled/*.min.css|js` are authoritative. Deploy does **not** rebuild assets.
 
-## Suggested build order (milestone-aligned)
+## Build order — progress
 
-1. **M1 ($75)** — member numbering (C/F 2350 + counter), reconcile schema, finish leaking lang keys, lock data-model decisions (platform_id vs provider_type; postal logic).
-2. **M2 ($125)** — homepage 4-platform selector + counter; postal-code search styling (black catalogue / green available / columns / member #s); profession → **randomized** list → mailto; supplier heart.
-3. **M3 ($150)** — registration polish (owner names, eye toggle), **accept-fee gate at top of competence flow**, per-profession fee, **auto-create paired client account (C-number) on supplier registration**, conclusion page.
-4. **M4 ($200)** — MASTER 2350 fidelity (literal B+C render), fiche **tabs**, 5 add-on accept→pay→unlock, Google-style evaluations + admin-approved replies.
-5. **M5 ($150)** — Stripe recurring + 7-day renewal/grace + PDF invoices, Law 25 text + cookie tool, QA, deploy.
+- ✅ **Done & deployed:** member numbering + counter (#4), homepage 4-platform selector (#1), accept-fee gate + per-profession fee (#6), MASTER 2350 engine — importer + literal fiche render + tick UI (#7), fiche tabs (#8).
+- ⏭️ **Next:** the 5 add-ons accept→pay→unlock incl. the missing Diplomas option (#9) → postal-search green/black styling + columns + member #s (#2) → randomized supplier list (#3) → registration polish: owner names, eye toggle, **auto-create paired client account / C-number** (#5).
+- 🔜 **Later (M5-ish):** Google-style evaluations + admin-approved replies (#10), favorites for professions + consultation history (#11), Stripe recurring + 7-day renewal/grace + PDF invoices (#12), Law 25 text + cookie tool (#13), admin reply-approval (#14).
