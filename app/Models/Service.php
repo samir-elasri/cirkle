@@ -70,7 +70,10 @@ class Service extends Model implements TranslatableContract
 	protected $fillable = [
 		'label',
 		'type',
+		'has_input',
+		'source_row',
 		'title',
+		'formatted_title',
 		'input_label',
 		'description',
 		'image',
@@ -82,6 +85,7 @@ class Service extends Model implements TranslatableContract
 	public array $positionParentFields = [];
 	public array $translatedAttributes = [
 		'title',
+		'formatted_title',
 		'description',
 		'input_label',
 	];
@@ -105,6 +109,9 @@ class Service extends Model implements TranslatableContract
 	protected array $niceNames = [
 		'label'                => 'Titre interne',
 		'title'                => 'Libellé',
+		'formatted_title'      => 'Libellé formaté (colonne C littérale)',
+		'has_input'            => 'Saisie fournisseur (X colonne D)',
+		'source_row'           => 'Ligne Excel d\'origine',
 		'image'                => 'Image',
 		'legend'               => 'Légende',
 		'description'          => 'Définition',

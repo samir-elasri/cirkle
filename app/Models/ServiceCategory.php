@@ -81,6 +81,7 @@ class ServiceCategory extends Model implements TranslatableContract
 
 	protected $fillable = [
 		'label',
+		'provider_type',
 		'title',
 		'image',
 		'legend',
@@ -120,6 +121,7 @@ class ServiceCategory extends Model implements TranslatableContract
 
 	protected array $niceNames = [
 		'label'                => 'Titre interne',
+		'provider_type'        => 'Clientèle cible',
 		'title'                => 'Libellé',
 		'image'                => 'Image',
 		'legend'               => 'Légende',
