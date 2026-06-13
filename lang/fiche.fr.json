@@ -3,7 +3,13 @@
 	"services": "Services",
 	"tab": {
 		"profile": "Profil",
-		"competence": "Compétence"
+		"competence": "Compétence",
+		"diplomas": "Diplômes"
+	},
+	"diploma": {
+		"course": "Cours / formation",
+		"school": "École / université",
+		"date": "Date (an/mois)"
 	},
 	"label": {
 		"label": "Titre interne",

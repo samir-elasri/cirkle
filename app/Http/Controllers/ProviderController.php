@@ -76,6 +76,11 @@ class ProviderController extends Controller
                 ->sortBy('title');
         }
 
+        // Diplômes (option PDIPOMECK, feature #9) : affichés dès qu'il y en a.
+        $diplomas = $provider->diplomas()
+            ->orderBy('position')
+            ->get();
+
         $images = collect();
         if ($provider->profile_image_active) {
             $images = $provider->subscriberImages()
@@ -112,6 +117,7 @@ class ProviderController extends Controller
             'gapRows',
             'promotions',
             'licenses',
+            'diplomas',
             'images',
             'jobOffers',
             'evaluations',

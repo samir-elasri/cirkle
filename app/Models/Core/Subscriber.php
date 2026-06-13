@@ -583,6 +583,11 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		return $this->hasMany(License::class);
 	}
 
+	public function diplomas(): HasMany
+	{
+		return $this->hasMany(\App\Models\Diploma::class);
+	}
+
 	public function likedSubscribers(): HasMany
 	{
 		return $this->hasMany(LikedSubscriber::class);

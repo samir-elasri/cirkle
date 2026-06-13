@@ -45,6 +45,9 @@
                 @if ($licenses->count())
                     <button type="button" class="fiche-tabs__btn" data-tab-target="permis">{{ setting('license_title') }}</button>
                 @endif
+                @if ($diplomas->count())
+                    <button type="button" class="fiche-tabs__btn" data-tab-target="diplomes">{{ __('fiche.tab.diplomas') }}</button>
+                @endif
                 @if ($provider->profile_estimation_active)
                     <button type="button" class="fiche-tabs__btn" data-tab-target="estimation">{{ setting('estimation_title') }}</button>
                 @endif
@@ -202,6 +205,35 @@
                                     </div>
                                 @endforeach
                             </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- ===================== Onglet Diplômes (option PDIPOMECK) ===================== --}}
+            @if ($diplomas->count())
+                <div class="fiche-tabs__panel" data-tab-panel="diplomes">
+                    <div class="fiche-section">
+                        <div class="fiche-section__title">{{ __('fiche.tab.diplomas') }}</div>
+                        <div class="fiche-section__content">
+                            <table class="diploma-table" style="width:100%;border-collapse:collapse">
+                                <thead>
+                                    <tr style="text-align:left;border-bottom:2px solid #e2e6df">
+                                        <th style="padding:.5em .75em">{{ __('fiche.diploma.course') }}</th>
+                                        <th style="padding:.5em .75em">{{ __('fiche.diploma.school') }}</th>
+                                        <th style="padding:.5em .75em">{{ __('fiche.diploma.date') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($diplomas as $diploma)
+                                        <tr style="border-bottom:1px solid #eef1ec">
+                                            <td style="padding:.5em .75em">{{ $diploma->title }}</td>
+                                            <td style="padding:.5em .75em">{{ $diploma->school }}</td>
+                                            <td style="padding:.5em .75em">{{ $diploma->graduated_at }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

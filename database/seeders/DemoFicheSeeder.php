@@ -111,6 +111,24 @@ class DemoFicheSeeder extends Seeder
 		$demo->accepts_debit = true;
 		$demo->save();
 
+		// Diplômes (option PDIPOMECK, feature #9) : deux exemples bilingues.
+		$demo->diplomas()->delete();
+		$demoDiplomas = [
+			['fr' => 'DEP Arboriculture', 'en' => 'Arboriculture diploma', 'school' => 'Centre de formation horticole de Laval', 'date' => '2015/06'],
+			['fr' => 'Certificat — Abattage sécuritaire', 'en' => 'Certificate — Safe felling', 'school' => 'CNESST', 'date' => '2019/03'],
+		];
+		foreach ($demoDiplomas as $i => $d) {
+			$diploma = new \App\Models\Diploma([
+				'subscriber_id' => $demo->id,
+				'school' => $d['school'],
+				'graduated_at' => $d['date'],
+				'position' => $i + 1,
+			]);
+			$diploma->translateOrNew('fr')->title = $d['fr'];
+			$diploma->translateOrNew('en')->title = $d['en'];
+			$diploma->save();
+		}
+
 		$this->command?->info(
 			"Fournisseur démo #{$demo->id} ({$demo->formatted_member_number}) : "
 			. $demo->subscriberServices()->count() . ' lignes cochées sur ' . $services->count()
