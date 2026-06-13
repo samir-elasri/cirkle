@@ -27,6 +27,10 @@
     "login-disconnected": "Vous avez été déconnecté"
   },
   "register"                    : {
+    "fee_title"            : "Frais de la fiche de compétence",
+    "fee_accept"           : "J'accepte ces frais",
+    "fee_accepted_badge"   : "Frais acceptés",
+    "fee_not_accepted"     : "Vous devez accepter les frais de la fiche de compétence pour continuer.",
     "last_name"            : "Nom",
     "first_name"           : "Prénom",
     "email"                : "Courriel",

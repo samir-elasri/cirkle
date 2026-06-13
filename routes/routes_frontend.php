@@ -220,6 +220,13 @@ function createRoutes($locale)
 			'as'   => 'subscriber.register.step2-service-form',
 			'uses' => 'SubscriberController@step2ServiceForm'
 		]);
+
+		// Porte d'acceptation des frais de la fiche (feature #6) — AJAX, sans recaptcha
+		// (appel programmatique; protégé par le jeton CSRF de la page)
+		Route::post('register-accept-fiche-fee', [
+			'as'   => 'subscriber.register.accept-fee',
+			'uses' => 'SubscriberController@acceptFee'
+		]);
 	}
 
 	if (config('cart.cart_type', null) === 'basic') {

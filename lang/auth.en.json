@@ -27,6 +27,10 @@
     "login-disconnected": "You have been disconnected"
   },
   "register": {
+    "fee_title": "Competence fiche fee",
+    "fee_accept": "I accept these fees",
+    "fee_accepted_badge": "Fees accepted",
+    "fee_not_accepted": "You must accept the competence fiche fee to continue.",
     "last_name": "Last name",
     "first_name": "First name",
     "email": "Email",

@@ -1,0 +1,38 @@
+{{--
+    Porte d'acceptation des frais de la fiche de compétence (feature #6).
+    S'affiche en tête du flux de compétence — juste après le choix de la profession,
+    AVANT que le formulaire de services ne soit rendu (spec : refus → le reste reste caché).
+
+    Le bouton « J'accepte » appelle window.cirkleAcceptFee(id) défini dans pages/register/step-2 :
+    enregistre l'acceptation en session puis recharge ce conteneur avec le vrai formulaire.
+
+    $serviceCategory : la profession choisie (porte fiche_fee + fiche_fee_text du fichier MASTER)
+--}}
+{{-- Styles inline temporaires : la rebuild SCSS est gelée (voir docs/gap-map.md) --}}
+<style>
+    .fee-gate { border: 2px solid #e6b800; background: #fff9e6; border-radius: 6px; padding: 1.25em 1.5em; margin-top: 1em; }
+    .fee-gate__title { font-weight: 700; text-transform: uppercase; margin-bottom: .5em; }
+    .fee-gate__amount { font-size: 1.6em; font-weight: 700; margin: .35em 0 .75em; }
+    .fee-gate__text { white-space: pre-wrap; line-height: 1.6; margin-bottom: 1em; }
+    .fee-gate__error { color: #b00020; margin-top: .6em; display: none; }
+</style>
+
+<div class="fee-gate" data-fee-gate>
+    <div class="fee-gate__title">{{ __('auth.register.fee_title') }}</div>
+
+    @if (!is_null($serviceCategory->fiche_fee))
+        <div class="fee-gate__amount">{{ prettyPrice($serviceCategory->fiche_fee) }}</div>
+    @endif
+
+    @if (!empty($serviceCategory->fiche_fee_text))
+        <div class="fee-gate__text">{!! nl2br(e($serviceCategory->fiche_fee_text)) !!}</div>
+    @endif
+
+    <button type="button"
+            class="call-to-action"
+            onclick="cirkleAcceptFee({{ (int) $serviceCategory->id }}, this)">
+        {{ __('auth.register.fee_accept') }}
+    </button>
+
+    <div class="fee-gate__error" data-fee-gate-error>{{ __('main.errorOccurred') }}</div>
+</div>

@@ -59,6 +59,7 @@ class ExcelImport
         $capabilities = [];  // lignes « O » de SECTION PERSONALISE CAPABILITIES
         $customersText = []; // SECTION CUSTOMERS TEXT (formulaire standard)
         $capabilitiesText = [];
+        $feeText = [];       // bloc OBLIGATOIRE … FRAIS POUR LA FICHE … (porte d'acceptation)
         $prices = [];        // 4 forfaits code postal : durée => coût
         $keywords = [];
 
@@ -126,9 +127,9 @@ class ExcelImport
                 continue;
             } elseif (str_starts_with($this->flatten($c), 'OBLIGATOIRE')) {
                 // Bloc « FRAIS POUR LA FICHE DE COMPETENCE » : c'est la porte d'acceptation
-                // des frais (feature #6), pas une capacité — traité dans sa propre tranche.
-                $state = 'skip';
-                continue;
+                // des frais (feature #6). On capture son texte; les lignes « O » de ce bloc
+                // ne sont PAS des services.
+                $state = 'fee';
             }
 
             // ── Collecte selon la section courante ──
@@ -167,6 +168,13 @@ class ExcelImport
                         } else {
                             $capabilitiesText[] = $c;
                         }
+                    }
+                    break;
+
+                case 'fee':
+                    // Texte brut (on garde l'avertissement de refus même s'il est rouge)
+                    if (trim($c) !== '' && !str_starts_with(trim($c), '…')) {
+                        $feeText[] = trim($c);
                     }
                     break;
 
@@ -224,6 +232,8 @@ class ExcelImport
         $categoryModel->service_category_id = $parentModel->id;
         $categoryModel->title = $profession;
         $categoryModel->provider_type = $this->providerType($clientele);
+        $categoryModel->fiche_fee = $this->ficheFee($titreInterne);
+        $categoryModel->fiche_fee_text = $feeText ? implode('<br>', $feeText) : null;
         $categoryModel->customers_text = implode('<br>', $customersText);
         $categoryModel->capabilities_text = implode('<br>', $capabilitiesText);
         $categoryModel->keywords_json = json_encode($keywords, JSON_UNESCAPED_UNICODE);
@@ -260,6 +270,7 @@ class ExcelImport
         return [
             'profession' => $profession,
             'provider_type' => $categoryModel->provider_type,
+            'fiche_fee' => $categoryModel->fiche_fee,
             'locale' => app()->getLocale(),
             'services' => count($services),
             'capabilities' => count($capabilities),
@@ -267,6 +278,19 @@ class ExcelImport
             'keywords' => count($keywords),
             'warnings' => $this->warnings,
         ];
+    }
+
+    /**
+     * Frais de la fiche, lus dans le TITRE INTERNE : « 0001 RF 75/100/100 » → 75.
+     * Premier nombre situé APRÈS le code alpha (RF/B2B/…), pour ne pas prendre l'identifiant.
+     */
+    private function ficheFee(string $titreInterne): ?float
+    {
+        if (preg_match('/[A-Za-zÀ-ÿ]{1,5}\s+(\d+(?:[.,]\d+)?)/u', $titreInterne, $m)) {
+            return (float)str_replace(',', '.', $m[1]);
+        }
+
+        return null;
     }
 
     /**

@@ -82,6 +82,8 @@ class ServiceCategory extends Model implements TranslatableContract
 	protected $fillable = [
 		'label',
 		'provider_type',
+		'fiche_fee',
+		'fiche_fee_text',
 		'title',
 		'image',
 		'legend',
@@ -122,6 +124,8 @@ class ServiceCategory extends Model implements TranslatableContract
 	protected array $niceNames = [
 		'label'                => 'Titre interne',
 		'provider_type'        => 'Clientèle cible',
+		'fiche_fee'            => 'Frais de la fiche ($)',
+		'fiche_fee_text'       => 'Texte des frais (porte d\'acceptation)',
 		'title'                => 'Libellé',
 		'image'                => 'Image',
 		'legend'               => 'Légende',

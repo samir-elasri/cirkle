@@ -149,20 +149,52 @@ class SubscriberController extends Controller
 
 	public function step2ServiceForm(Request $request) {
 		$serviceCategory = ServiceCategory::findOrFail($request->input('service_category_id'));
-		
+
 		// Check if we're in edit mode by looking for subscriber data in request
 		$isEdit = $request->has('subscriber_id') || $request->has('is_edit');
+
+		// Porte d'acceptation des frais (feature #6) : à l'inscription, avant que le
+		// formulaire ne se rende. Refus / pas encore accepté → seule la porte s'affiche.
+		// En édition (membre déjà payant), on ne re-bloque pas.
+		if (!$isEdit && !$this->ficheFeeAccepted($request, $serviceCategory->id)) {
+			return View::make('partials.fee-gate', compact('serviceCategory'));
+		}
+
 		$existingData = [];
-		
+
 		if ($isEdit && auth('subscribers')->check()) {
 			$subscriber = auth('subscribers')->user();
 			$existingData = $this->extractSubscriberServiceData($subscriber);
 		}
-		
+
 		return View::make('partials.service-form', array_merge(
 			compact('serviceCategory'),
 			$existingData
 		));
+	}
+
+	/**
+	 * Enregistre l'acceptation des frais de la fiche pour une profession (porte feature #6).
+	 * Appelé en AJAX par le bouton « J'accepte » de la porte.
+	 */
+	public function acceptFee(Request $request) {
+		$categoryId = (int) $request->input('service_category_id');
+
+		if (!$categoryId || !ServiceCategory::whereKey($categoryId)->exists()) {
+			return response()->json(['accepted' => false], 422);
+		}
+
+		$request->session()->put("fee_accepted.{$categoryId}", true);
+
+		return response()->json(['accepted' => true]);
+	}
+
+	/**
+	 * Les frais de la fiche ont-ils été acceptés pour cette profession ?
+	 */
+	private function ficheFeeAccepted(Request $request, $categoryId): bool
+	{
+		return (bool) $request->session()->get("fee_accepted.{$categoryId}");
 	}
 
 	/**
@@ -852,6 +884,13 @@ class SubscriberController extends Controller
 				->withErrors($validator);
 		}
 
+		// Porte d'acceptation des frais (feature #6) : garde côté serveur.
+		if (!$this->ficheFeeAccepted($request, $data['service_category_id'])) {
+			return redirect()->back()
+				->withInput()
+				->with('error', __('auth.register.fee_not_accepted'));
+		}
+
 		$data['step-2-validated'] = true;
 
 		$request->session()->put('registerFormData', array_merge($request->session()->get('registerFormData'), $data));
@@ -1166,8 +1205,9 @@ class SubscriberController extends Controller
 				Cart::empty();
 				Cart::add(Cart::getItem($request->session()->get('registerFormData.subscription_id'), Subscription::class));
 
-				// Add registration fee
-				$registrationFee = setting('registration_fee') ?? 0;
+				// Frais de la fiche : variables par profession (feature #6), repli sur le réglage global
+				$ficheCategory = ServiceCategory::find($request->session()->get('registerFormData.service_category_id'));
+				$registrationFee = $ficheCategory?->fiche_fee ?? setting('registration_fee') ?? 0;
 				if ($registrationFee > 0) {
 					$purchase = new Purchase();
 					$purchase->fill([

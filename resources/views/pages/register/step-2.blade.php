@@ -66,9 +66,51 @@
 
                 <div id="service-container">
                     @if($serviceCategoryID = old('service_category_id') ?? (isset($subscriber) ? $subscriber->service_category_id : (session('registerFormData.service_category_id') ?? '')))
-                        @include('partials.service-form', ['serviceCategory' => \App\Models\ServiceCategory::find($serviceCategoryID)])
+                        @php($ficheCategory = \App\Models\ServiceCategory::find($serviceCategoryID))
+                        @if($ficheCategory)
+                            @if(empty($isEdit) && !session("fee_accepted.{$ficheCategory->id}"))
+                                @include('partials.fee-gate', ['serviceCategory' => $ficheCategory])
+                            @else
+                                @include('partials.service-form', ['serviceCategory' => $ficheCategory])
+                            @endif
+                        @endif
                     @endif
                 </div>
+
+                @if(empty($isEdit))
+                    {{-- Porte d'acceptation des frais (feature #6) : enregistre l'acceptation
+                         puis recharge le conteneur avec le vrai formulaire. Vanilla JS (build gelée). --}}
+                    <script>
+                        window.cirkleAcceptFee = function (categoryId, button) {
+                            var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                            var container = document.getElementById('service-container');
+                            var errorEl = document.querySelector('[data-fee-gate-error]');
+                            if (button) { button.disabled = true; }
+
+                            fetch(@json(urlRouteName('subscriber.register.accept-fee')), {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': token,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: 'service_category_id=' + encodeURIComponent(categoryId)
+                            })
+                            .then(function (r) { if (!r.ok) { throw new Error('accept failed'); } return r.json(); })
+                            .then(function () {
+                                return fetch(@json(urlRouteName('subscriber.register.step2-service-form')) + '?service_category_id=' + encodeURIComponent(categoryId), {
+                                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                                });
+                            })
+                            .then(function (r) { return r.text(); })
+                            .then(function (html) { container.innerHTML = html; })
+                            .catch(function () {
+                                if (button) { button.disabled = false; }
+                                if (errorEl) { errorEl.style.display = 'block'; }
+                            });
+                        };
+                    </script>
+                @endif
 
                 <div class="content-card__footer">
                     @if(isset($isEdit) && $isEdit)
