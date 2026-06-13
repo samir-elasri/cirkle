@@ -68,6 +68,8 @@ class PurchasedSub extends Model
 		'order_id',
 		'start_date',
 		'end_date',
+		'renewal_reminder_sent_at',
+		'cancel_at_period_end',
 		'pause_start_date',
 		'pause_end_date',
 		'on_pause',

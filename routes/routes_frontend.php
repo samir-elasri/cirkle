@@ -61,6 +61,11 @@ function createRoutes($locale)
         'uses' => 'ProviderController@likeProfession'
     ]);
 
+    Route::get('invoice/{token}',[
+        'as' => 'invoice',
+        'uses' => 'InvoiceController@download'
+    ]);
+
     Route::get('license-list',[
         'as' => 'license-list',
         'uses' => 'ProfileOptionController@getLicenseList'

@@ -31,6 +31,72 @@ class DailyCron extends Command
         set_time_limit(0);
         $this->sendSurveys();
         $this->searchNotifications();
+        $this->subscriptionLifecycle();
+    }
+
+    /**
+     * Cycle de vie des abonnements (feature #12) :
+     *  - 7 jours avant expiration : courriel de rappel (payer ou annuler dans le profil)
+     *  - délai de grâce de 7 jours après l'expiration (la fiche reste visible)
+     *  - après la grâce, ou si annulé en fin de terme : désactivation + fiche masquée
+     *
+     * Note : la charge récurrente AUTOMATIQUE (abonnement Stripe + webhooks) dépend du
+     * compte Stripe du client; ici on gère les rappels, la grâce et la fin de terme.
+     */
+    private function subscriptionLifecycle(): void
+    {
+        $now = now();
+
+        // 1) Rappel 7 jours avant expiration (une seule fois)
+        $expiringSoon = \App\Models\Core\PurchasedSub::query()
+            ->where('active', true)
+            ->where('cancel_at_period_end', false)
+            ->whereNull('renewal_reminder_sent_at')
+            ->whereDate('end_date', '>=', $now->toDateString())
+            ->whereDate('end_date', '<=', $now->copy()->addDays(7)->toDateString())
+            ->with('subscriber')
+            ->get();
+
+        $this->info($expiringSoon->count() . ' subscription(s) expiring within 7 days');
+
+        foreach ($expiringSoon as $sub) {
+            try {
+                if ($sub->subscriber?->email) {
+                    \Mail::to($sub->subscriber->email)->send(new \App\Mail\AdminMail(
+                        __('subscription.renewal_email_body', [
+                            'date' => $sub->end_date,
+                            'url'  => urlRouteName('profile', [], true),
+                        ]),
+                        __('subscription.renewal_email_title')
+                    ));
+                }
+                $sub->update(['renewal_reminder_sent_at' => $now]);
+            } catch (\Throwable $e) {
+                $this->error('renewal reminder failed for sub ' . $sub->id . ': ' . $e->getMessage());
+            }
+        }
+
+        // 2) Fin de terme : expiré au-delà de la grâce de 7 jours, OU annulé en fin de terme
+        $graceCutoff = $now->copy()->subDays(7)->toDateString();
+
+        $toDeactivate = \App\Models\Core\PurchasedSub::query()
+            ->where('active', true)
+            ->where(function ($q) use ($now, $graceCutoff) {
+                $q->whereDate('end_date', '<', $graceCutoff) // grâce écoulée
+                  ->orWhere(function ($q2) use ($now) {
+                      $q2->where('cancel_at_period_end', true)
+                         ->whereDate('end_date', '<', $now->toDateString());
+                  });
+            })
+            ->with('subscriber')
+            ->get();
+
+        $this->info($toDeactivate->count() . ' subscription(s) to deactivate (term ended)');
+
+        foreach ($toDeactivate as $sub) {
+            $sub->update(['active' => false]);
+            $sub->subscriber?->update(['is_public' => false]);
+        }
     }
 
     private function sendSurveys(): void

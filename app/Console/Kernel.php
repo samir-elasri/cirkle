@@ -24,8 +24,10 @@ class Kernel extends ConsoleKernel
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		// $schedule->command('inspire')
-		//          ->hourly();
+		// Cron quotidien : sondages, notifications de recherche, et cycle de vie des
+		// abonnements (rappels 7 jours avant expiration, grâce, fin de terme — feature #12).
+		// Requiert un cron serveur (N0C) : * * * * * php artisan schedule:run
+		$schedule->command('app:daily-cron')->dailyAt('06:00');
 	}
 
 	/**

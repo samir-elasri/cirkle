@@ -5,7 +5,6 @@
                'supplier-profile',
                'saved-searches',
                'profile-options',
-               // 'invoices',
            ] : [];
    $clientVisible = [
                'profile',
@@ -14,7 +13,7 @@
                'favorited-professions',
                'saved-searches',
                'profile-options',
-               // 'invoices',
+               'invoices',
            ];
 @endphp
 
@@ -50,6 +49,7 @@
                 <div class="nested-tab tab-item" data-tab="contacted-suppliers">@lang('profile.tabs.contacted-suppliers')</div>
                 <div class="nested-tab tab-item" data-tab="favorited-suppliers">@lang('profile.tabs.favorited-suppliers')</div>
                 <div class="nested-tab tab-item" data-tab="favorited-professions">@lang('profile.tabs.favorited-professions')</div>
+                <div class="nested-tab tab-item" data-tab="invoices">@lang('subscription.invoices')</div>
                 <div class="nested-tab tab-item" data-tab="supplier-profile">@lang('profile.tabs.supplier-profile')</div>
                 {{-- <div class="nested-tab tab-item" data-tab="saved-searches">@lang('profile.tabs.saved-searches')</div> --}}
             </div>
@@ -88,6 +88,26 @@
                                 <a href="{{ $likedProfession->serviceCategory->url }}">{{ $likedProfession->serviceCategory->title }}</a>
                             </div>
                         @endisset
+                    @empty
+                        {{ __('main.no-results') }}
+                    @endforelse
+                </div>
+            </div>
+            {{-- Factures PDF (feature #12) --}}
+            <div class="nested-tabcontent tab-window"
+                 data-tab="invoices">
+                <div class="single-list">
+                    @forelse($subscriber->orders()->where('is_cart', false)->latest()->get() as $order)
+                        <div class="single-list__item" style="padding:14px 20px;display:flex;justify-content:space-between;gap:1em;align-items:center">
+                            <div>
+                                <strong>#{{ $order->id }}</strong>
+                                <span class="muted">{{ prettyDate($order->created_at) }}</span>
+                            </div>
+                            <div>{{ prettyPrice($order->total_price) }}</div>
+                            <a class="call-to-action" href="{{ urlRouteName('invoice', ['token' => $order->token]) }}" target="_blank">
+                                {{ __('subscription.invoice-download') }}
+                            </a>
+                        </div>
                     @empty
                         {{ __('main.no-results') }}
                     @endforelse

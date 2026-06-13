@@ -15,6 +15,11 @@
   "no-active-subscription-renew": "Renew your subscription",
   "no-active-subscription-subscribe": "Please choose a subscription to get started",
   "subscription-details": "Your subscription is valid until :date inclusively",
+  "renewal_email_title": "Your CIRKLE subscription expires soon",
+  "renewal_email_body": "Your subscription expires on :date. To renew or cancel it, go to your profile: :url",
+  "cancel-at-term-end": "Your subscription stays active until the end of the term, with no renewal and no refund.",
+  "invoices": "My invoices",
+  "invoice-download": "Download invoice",
   "cta": {
     "pause": "Pause my subscription",
     "unpause": "Reactivate my subscription",

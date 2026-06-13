@@ -51,15 +51,16 @@ class SubscriptionController extends Controller
 	public function cancel() {
 		$sub = Auth::guard('subscribers')->user();
 
+		// Annulation effective à la FIN DU TERME, sans remboursement (spec #12).
+		// L'abonnement reste actif et la fiche visible jusqu'à end_date; le cron
+		// (DailyCron) le désactive ensuite et ne le renouvelle pas.
 		if ($subscription = $sub->getLatestSubscription()) {
-			$sub->update([
-				'is_public' => false,
-			]);
 			$subscription->update([
-				'active' => false,
+				'cancel_at_period_end' => true,
 			]);
-//			TODO STRIPE
 			return back()->with('success', trans('auth.subscription.canceled'));
 		}
+
+		return back();
 	}
 }
