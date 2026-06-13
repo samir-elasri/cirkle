@@ -86,6 +86,12 @@
                         <div class="fiche-section__content pre">{{ $provider->legalForm->title }}</div>
                     </div>
                 @endif
+                @if ($provider->owner_names)
+                    <div class="fiche-section">
+                        <div class="fiche-section__title">{{ __('auth.register.owner_names') }}</div>
+                        <div class="fiche-section__content pre">{{ $provider->owner_names }}</div>
+                    </div>
+                @endif
                 @if ($provider->federal_tax_number)
                     <div class="fiche-section">
                         <div class="fiche-section__title">{{ __('auth.register.federal_tax_number') }}</div>

@@ -39,11 +39,22 @@
 
                 <div class="form__column ">
                     <div class="form__row--error">
+                        @foreach($errors->get('owner_names', '<small style="color: red">:message</small>') as $error)
+                            {!! $error !!}
+                        @endforeach
+                    </div>
+                    <input type="text" name="owner_names" id="owner_names"
+                           value="{{ old('owner_names') ?? (isset($subscriber) ? $subscriber->owner_names : (session('registerFormData.owner_names') ?? '')) }}"
+                           placeholder="{{ __('auth.register.owner_names') }}">
+                </div>
+
+                <div class="form__column ">
+                    <div class="form__row--error">
                         @foreach($errors->get('legal_form_id', '<small style="color: red">:message</small>') as $error)
                             {!! $error !!}
                         @endforeach
                     </div>
-                    <sl-select name="legal_form_id" 
+                    <sl-select name="legal_form_id"
                                value="{{ old('legal_form_id') ?? (isset($subscriber) ? $subscriber->legal_form_id : (session('registerFormData.legal_form_id') ?? '')) }}" 
                                placeholder="{{ __('auth.register.legal_form_id') }}">
                         @foreach ($legalForms as $category)

@@ -54,3 +54,5 @@
         </div>
     </div>
 </section>
+
+@include('partials.password-eye')

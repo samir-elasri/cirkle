@@ -39,6 +39,8 @@
     "password_confirmation": "Répétez le mot de passe",
     "company"              : "Compagnie",
     "company_name" : "Nom légal",
+    "owner_names": "Noms des propriétaires",
+    "toggle_password": "Afficher / masquer le mot de passe",
     "legal_form_id": "Forme juridique de l'entreprise",
     "federal_tax_number": "No. taxe de vente fédéral",
     "phone" : "Téléphone",

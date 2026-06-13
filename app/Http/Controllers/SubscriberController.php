@@ -199,6 +199,37 @@ class SubscriberController extends Controller
 	}
 
 	/**
+	 * Crée le compte CLIENT jumeau d'un fournisseur (règle auto-client, feature #5).
+	 * Coquille sans login : email null (aucune collision avec l'email du fournisseur,
+	 * la colonne email n'ayant pas d'index unique en base). Le hook boot du modèle lui
+	 * attribue le prochain numéro de la séquence partagée → un numéro C. Idempotent.
+	 */
+	private function createPairedClient(Subscriber $supplier): void
+	{
+		if (Subscriber::where('parent_subscriber_id', $supplier->id)->exists()) {
+			return;
+		}
+
+		$client = new Subscriber();
+		$client->fill([
+			'preference_language'     => $supplier->preference_language,
+			'first_name'              => $supplier->owner_names ?: $supplier->company_name,
+			'last_name'               => '',
+			'is_provider'             => false,
+			'is_public'               => false,
+			'active'                  => true,
+			'registration_completed'  => true,
+			'accept_condition'        => true,
+			'parent_subscriber_id'    => $supplier->id,
+			'street'                  => $supplier->street,
+			'city'                    => $supplier->city,
+			'postal_code'             => $supplier->postal_code,
+		]);
+		$client->email = null; // coquille sans connexion
+		$client->save();
+	}
+
+	/**
 	 * Show step 1 editing form
 	 */
 	public function editStep1($params) {
@@ -253,6 +284,7 @@ class SubscriberController extends Controller
 		$data = $request->all([
 			'preference_language',
 			'company_name',
+			'owner_names',
 			'legal_form_id',
 			'federal_tax_number',
 			'street',
@@ -765,6 +797,7 @@ class SubscriberController extends Controller
 		$data = $request->all([
 			'preference_language',
 			'company_name',
+			'owner_names',
 			'legal_form_id',
 			'federal_tax_number',
 			'street',
@@ -1219,6 +1252,11 @@ class SubscriberController extends Controller
 			DB::transaction(function() use ($subscriber, $subscriberServices, $postalCodes, $request) {
 				$subscriber->save();
 				$this->moveTemporaryFilesToFinalLocation($subscriber, $request);
+
+				// Règle « auto-client-from-supplier » (feature #5, confirmée par Denis) :
+				// chaque fournisseur (numéro F) génère un compte client jumeau (numéro C)
+				// juste après, pour gonfler le décompte des membres + les tirages.
+				$this->createPairedClient($subscriber);
 
 				Auth::guard('subscribers')->loginUsingId($subscriber->id);
 				Cart::empty();

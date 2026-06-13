@@ -39,6 +39,8 @@
     "password_confirmation": "Repeat password",
     "company": "Company",
     "company_name": "Legal name",
+    "owner_names": "Owners' names",
+    "toggle_password": "Show / hide password",
     "legal_form_id": "Legal form of company",
     "federal_tax_number": "Federal tax number",
     "phone": "Phone",

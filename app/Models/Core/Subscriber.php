@@ -134,6 +134,8 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		'service_category_id',
 		'profile_image',
 		'company_name',
+		'owner_names',
+		'parent_subscriber_id',
 		'legal_form_id',
 		'federal_tax_number',
 		'fax',

@@ -45,6 +45,7 @@ class DemoFicheSeeder extends Seeder
 			'first_name' => 'Démo',
 			'last_name' => 'Cirkle',
 			'company_name' => 'DÉMO — Arboriste Exemple Inc.',
+			'owner_names' => 'Jean Tremblay, Marie Lévesque',
 			'main_description' => 'Fiche de démonstration du formulaire de compétence MASTER 2350.',
 			'is_provider' => true,
 			'provider_type' => 'residential',
