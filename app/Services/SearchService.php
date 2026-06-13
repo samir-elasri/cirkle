@@ -47,6 +47,7 @@ class SearchService
             ->where('registration_completed', true)
             ->whereIn('provider_type', $this->getProviderTypesForSearch($providerType))
             ->where('service_category_id', $professionId)
+            ->inRandomOrder() // équité : ordre aléatoire à chaque consultation (spec)
             ->get();
     }
 

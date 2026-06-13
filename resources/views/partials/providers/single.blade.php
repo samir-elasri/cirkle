@@ -8,7 +8,7 @@
     </div>
 
     <h3>
-        <span style="color:black">{{ __('main.member') }} {{ $provider->id }}</span>
+        <span style="color:black">{{ __('main.member') }} {{ $provider->formatted_member_number ?? $provider->id }}</span>
         <br>
         {{ $provider->company_name }}
     </h3>
@@ -17,6 +17,7 @@
         <p>
             @if ($provider->profile_promotion_active
                 || $provider->profile_license_active
+                || $provider->profile_diploma_active
                 || $provider->profile_image_active
                 || $provider->profile_estimation_active
                 || $provider->profile_job_offer_active)
@@ -29,6 +30,10 @@
 
                     @if ($provider->profile_license_active)
                         <li>{{ setting('license_title') }}</li>
+                    @endif
+
+                    @if ($provider->profile_diploma_active)
+                        <li>{{ setting('diploma_title') }}</li>
                     @endif
 
                     @if ($provider->profile_image_active)
