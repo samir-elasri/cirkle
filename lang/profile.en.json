@@ -75,12 +75,16 @@
     }
   },
   "step1": {
-    "edit": "Update my profile",
+    "edit": "My contact details",
     "updated": "Changes saved"
   },
   "step2": {
-    "edit": "Update my services",
+    "edit": "My 2350 form",
     "updated": "Changes saved"
+  },
+  "form2350": {
+    "title": "My 2350 form",
+    "intro": "This is your master 2350 form — the heart of your listing. Tick the « O » for each service you provide and fill in the « AUTRE PAR FOURNISSEUR » fields. You can edit it anytime; your copy remains your reference."
   },
   "no_active_options": "No active profile options to edit"
 }

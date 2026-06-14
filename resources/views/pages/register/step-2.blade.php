@@ -8,10 +8,10 @@
             <div class="content-card__header">
                 <div>
                     <h3 class="content-card__header--title">
-                        {{ __('auth.register.title.step2') }}
+                        {{ (isset($isEdit) && $isEdit) ? __('profile.form2350.title') : __('auth.register.title.step2') }}
                     </h3>
                     <div class="content-card__label">
-                        {{ __('auth.register.title.step2-subtitle') }}
+                        {{ (isset($isEdit) && $isEdit) ? __('profile.form2350.intro') : __('auth.register.title.step2-subtitle') }}
                     </div>
                 </div>
                 @if(!isset($isEdit) || !$isEdit)

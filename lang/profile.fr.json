@@ -75,12 +75,16 @@
     }
   },
   "step1": {
-    "edit": "Modifier mon profil",
+    "edit": "Mes coordonnées",
     "updated": "Modifications enregistrées"
   },
   "step2": {
-    "edit": "Modifier mes services",
+    "edit": "Mon formulaire 2350",
     "updated": "Modifications enregistrées"
+  },
+  "form2350": {
+    "title": "Mon formulaire 2350",
+    "intro": "Voici votre formulaire master 2350 — le cœur de votre fiche. Cochez les « O » des services que vous offrez et remplissez les champs « AUTRE PAR FOURNISSEUR ». Vous pouvez le modifier en tout temps; votre copie reste votre référence."
   },
   "no_active_options": "Aucune option de profil active à modifier"
 }

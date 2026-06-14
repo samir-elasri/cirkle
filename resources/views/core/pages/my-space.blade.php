@@ -218,38 +218,43 @@
 
                         @endif --}}
 
-                        @if($subscriber->is_public)
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center">
-                                <div>
-                                    <a class="call-to-action" href="{{urlRouteName('edit-step-1')}}">@lang('profile.step1.edit')</a>
-                                </div>
-                                <div>
-                                    <a class="call-to-action" href="{{urlRouteName('edit-step-2')}}">@lang('profile.step2.edit')</a>
-                                </div>
-                                @php
-                                    $hasActiveOptions = false;
-                                    $optionsToCheck = ['license', 'promotion', 'image', 'estimation', 'job_offer'];
-                                    foreach ($optionsToCheck as $option) {
-                                        if ($subscriber->{"profile_{$option}_active"}) {
-                                            $hasActiveOptions = true;
-                                            break;
-                                        }
-                                    }
-                                    // Check URL separately as it doesn't have an active field
-                                    if (!$hasActiveOptions && $subscriber->profile_url_activation_datetime) {
-                                        $hasActiveOptions = true;
-                                    }
-                                @endphp
-                                @if($hasActiveOptions)
-                                    <div>
-                                        <a class="call-to-action" href="{{urlRouteName('edit-step-5')}}">@lang('profile.options.edit')</a>
-                                    </div>
-                                @endif
-                                <div>
-                                    <a class="call-to-action" href="{{urlRouteName('provider', ['id' => $subscriber->id])}}">@lang('profile.public.view')</a>
-                                </div>
+                        {{-- Le formulaire 2350 est LE formulaire du fournisseur (Denis) :
+                             accessible et modifiable EN TOUT TEMPS, qu'il soit publié ou non. --}}
+                        @php
+                            $hasActiveOptions = false;
+                            $optionsToCheck = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer'];
+                            foreach ($optionsToCheck as $option) {
+                                if ($subscriber->{"profile_{$option}_active"}) {
+                                    $hasActiveOptions = true;
+                                    break;
+                                }
+                            }
+                            if (!$hasActiveOptions && $subscriber->profile_url_activation_datetime) {
+                                $hasActiveOptions = true;
+                            }
+                        @endphp
+
+                        <div style="text-align:center;margin-bottom:1em">
+                            <a class="call-to-action" style="font-size:1.1em;padding:.8em 1.6em" href="{{urlRouteName('edit-step-2')}}">
+                                📋 @lang('profile.form2350.title')
+                            </a>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center">
+                            <div>
+                                <a class="call-to-action cta-alt" href="{{urlRouteName('edit-step-1')}}">@lang('profile.step1.edit')</a>
                             </div>
-                        @endif
+                            @if($hasActiveOptions)
+                                <div>
+                                    <a class="call-to-action cta-alt" href="{{urlRouteName('edit-step-5')}}">@lang('profile.options.edit')</a>
+                                </div>
+                            @endif
+                            @if($subscriber->is_public)
+                                <div>
+                                    <a class="call-to-action cta-alt" href="{{urlRouteName('provider', ['id' => $subscriber->id])}}">@lang('profile.public.view')</a>
+                                </div>
+                            @endif
+                        </div>
                     @endif
                 </div>
             @endif
