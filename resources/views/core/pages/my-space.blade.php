@@ -30,6 +30,9 @@
 
     <div class="optimal-content-width">
         <h1>@lang('auth.profile.greetings') {{ $subscriber->first_name }} {{ $subscriber->last_name }}</h1>
+        @if ($subscriber->formatted_member_number)
+            <p style="font-size:1.1em">@lang('main.memberNumber') : <strong style="color:#157a47">{{ $subscriber->formatted_member_number }}</strong></p>
+        @endif
 
         <div class="tabs tab-style tab-menu" style="display:none">
             <div class="tab tab-item active tab-style__single"

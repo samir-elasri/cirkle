@@ -1,6 +1,13 @@
 <div style="display: contents;" data-component="profile">
 	<div class="form" data-ref="profile">
 
+		@if ($subscriber->formatted_member_number)
+			<div class="form__column">
+				{{ Form::label('member_number', trans('main.memberNumber') . ':') }}
+				<span style="font-weight:700;font-size:1.15em;color:#157a47">{{ $subscriber->formatted_member_number }}</span>
+			</div>
+		@endif
+
 		<div class="form__column">
 			{{ Form::label('email', trans('auth.register.email') . ':') }}
 			<span>{{ $subscriber->email }}</span>

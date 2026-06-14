@@ -4,6 +4,7 @@
   "catalogueLegend"    : "En vert : professions avec des fournisseurs dans votre code postal (le nombre indique les membres disponibles).",
   "membersShort"       : "membre(s)",
   "memberCounter"      : "Membres",
+  "memberNumber"       : "Votre numéro de membre",
   "memberCounterTitle" : "Numéro du plus récent membre Cirkle",
   "platformSelectorTitle"  : "Clients et fournisseurs : veuillez cliquer sur la plateforme de votre choix avant de continuer",
   "platformResidentialEn"  : "Residential English",

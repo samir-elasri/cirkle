@@ -778,13 +778,16 @@ class SubscriberController extends Controller
 
 			$data['url'] = urlRouteName('subscriber.validate', ['token' => $token], true);
 
+			$numberMsg = __('main.memberNumber') . ' : ' . $subscriber->formatted_member_number;
+
 			if ($subscriber->sendMail('register', $data)) {
 				return Redirect::to(urlRouteName('profile'))
-					->with('success', __('form.register_success_message'));
+					->with('success', __('form.register_success_message') . ' — ' . $numberMsg);
 			}
 			else {
+				// Compte créé (numéro attribué) même si le courriel n'est pas envoyé.
 				return Redirect::to(urlRouteName('profile'))
-					->with('error', __('form.email_sent_error'));
+					->with('success', __('form.register_success_message') . ' — ' . $numberMsg);
 			}
 		}
 
