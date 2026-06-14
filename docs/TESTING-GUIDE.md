@@ -8,6 +8,21 @@ How to test every v1 feature on the **live site**: <https://cirkleservices.com>
 
 ---
 
+## Denis's feedback (round 1) — what it meant & status
+
+| Denis said (FR) | What it means | Status |
+|-----------------|---------------|--------|
+| *« je me suis inscrit comme client … pas reçu de confirmation et de no »* | His client signup **worked** (account `darryn1968data@gmail.com` → **C02361** was created), but he got no confirmation email and never saw his number. | ✅ **Fixed & live.** (1) Email was completely unconfigured on the server (`MAIL_HOST`/`FROM` empty) → switched to the server's sendmail, emails now send. (2) His **member number now shows** on his profile + in the success message after signup. |
+| *« je n'ai pas vu les options »* | The 5 paid options weren't visible to him. They only appeared once a supplier was **published** (`is_public`), and were buried/mislabelled. | ✅ **Fixed & live.** A supplier can now access **« Mon formulaire 2350 »** + their options **anytime** from the profile, published or not. |
+| *« mon master 2350 sera le form à remplir par le fourn … colonne B et C as is … pas remplir diff form … accès en tout temps »* | The supplier should fill **the 2350 itself** (the « O » ticks = col B, the texts = col C), as **one form**, re-editable anytime; his copy stays intact. | 🟢 **Largely done + reframed.** The competence form **is** the literal 2350 (B+C, O ticks + « AUTRE PAR FOURNISSEUR » fields), now clearly labelled **« Mon formulaire 2350 »** and **editable anytime**. **Next iteration (verify once live):** folding the 5 options in as inline 2350 sections. |
+| *« tous les services liés mis à jour automatiquement ? » → **non*** | When a master template changes, should existing suppliers' fiches auto-update? **No.** | ✅ Already the case — each supplier's filled form is independent; editing a template never overwrites a supplier's saved copy. |
+| *« utilise l'ancien [2350] et on vérifie après »* | Use the existing master 2350 file for now; refine after launch. | ✅ Using the existing `1 WEB MASTER 2350 … 010626.xlsx`. |
+| *« la 1ère mise en ligne doit être PARFAITE »* | First launch must be perfect. | 🎯 Ongoing — this guide + his round-by-round testing is how we get there. |
+
+> **How to delete a member account** (he asked): log in to **/admin** → **Subscribers** → search the email → **Delete**. The email is unique, so deleting frees it for a fresh signup.
+
+---
+
 ## 0. Test accounts (ready to use)
 
 > ⚠️ **These are temporary TEST credentials on the live site.** Rotate or delete them before the public launch (Aug 1). Don't share publicly.
