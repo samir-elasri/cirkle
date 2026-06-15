@@ -18,6 +18,7 @@ How to test every v1 feature on the **live site**: <https://cirkleservices.com>
 | *« tous les services liés mis à jour automatiquement ? » → **non*** | When a master template changes, should existing suppliers' fiches auto-update? **No.** | ✅ Already the case — each supplier's filled form is independent; editing a template never overwrites a supplier's saved copy. |
 | *« utilise l'ancien [2350] et on vérifie après »* | Use the existing master 2350 file for now; refine after launch. | ✅ Using the existing `1 WEB MASTER 2350 … 010626.xlsx`. |
 | *« la 1ère mise en ligne doit être PARFAITE »* | First launch must be perfect. | 🎯 Ongoing — this guide + his round-by-round testing is how we get there. |
+| **(found during testing)** supplier registration: step 3 → *Suivant* → **« Page introuvable »** | Step 4 crashed for every profession — a bad translation key blew up once the registration fee was > 0, so **no supplier could finish signing up**. | ✅ **Fixed & live.** Full flow re-tested end-to-end on prod (steps 1→6 → cart, incl. the auto-client). Suppliers can now register all the way through, and the **options are visible at step 5**. |
 
 > **How to delete a member account** (he asked): log in to **/admin** → **Subscribers** → search the email → **Delete**. The email is unique, so deleting frees it for a fresh signup.
 
