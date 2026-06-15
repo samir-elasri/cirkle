@@ -4,11 +4,25 @@
     </div>
 @endif
 
-{{-- Rendu littéral MASTER 2350 (couleurs/espaces du fichier Excel) — styles inline : rebuild SCSS gelée --}}
+{{-- Rendu littéral MASTER 2350 (couleurs/espaces du fichier Excel) — styles inline : rebuild SCSS gelée.
+     Modèle visuel demandé par Denis (2 items) :
+       1. le « O » (la case à cocher) + le texte permanent (colonne C) = inchangé, en rouge pour le O;
+       2. les champs « AUTRE PAR FOURNISSEUR » (info saisie par le fournisseur) = EN GRIS PÂLE. --}}
 <style>
     .service-literal { white-space: pre-wrap; }
     .form__column--gap-before { margin-top: 1.1em; }
+    /* le « O » à cocher en rouge (marqueur du master) — scopé au formulaire 2350 */
+    .form-2350 sl-checkbox::part(control) { border-color: #d33; }
+    /* champ « AUTRE PAR FOURNISSEUR » : gris pâle, pour distinguer l'info du fournisseur du texte permanent */
+    .form-2350 .supplier-input {
+        background: #f4f4f4 !important;
+        color: #6b6b6b !important;
+        border: 1px dashed #c9c9c9 !important;
+    }
+    .form-2350 .supplier-input::placeholder { color: #b0b0b0 !important; font-style: italic; }
 </style>
+
+<div class="form-2350">
 
 <div class="form__column">
     <div class="registration-title">{{ __('auth.register.services') }}</div>
@@ -29,7 +43,7 @@
                     <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
                 @if ($service->has_input || !empty($service->input_label))
-                    <input type="text"
+                    <input type="text" class="supplier-input"
                            name="service_input[{{ $service->id }}]"
                            value="{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}"
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
@@ -81,7 +95,7 @@
                     <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
                 @if ($service->has_input || !empty($service->input_label))
-                    <input type="text"
+                    <input type="text" class="supplier-input"
                            name="capability_input[{{ $service->id }}]"
                            value="{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}"
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
@@ -104,3 +118,5 @@
         items="{{ json_encode(old('custom_capabilities') ?? $existingCustomCapabilities ?? (session('registerFormData.custom_capabilities') ?? [])) }}"
     >{{ __('main.add-capability') }}</add-item-button>
 </div>
+
+</div>{{-- /.form-2350 --}}

@@ -47,13 +47,16 @@ class DailyCron extends Command
     {
         $now = now();
 
-        // 1) Rappel 7 jours avant expiration (une seule fois)
+        // Délai de rappel/grâce : 10 jours (cahier de charges), configurable via réglage.
+        $window = (int) (setting('renewal_reminder_days') ?: 10);
+
+        // 1) Rappel 10 jours avant expiration (une seule fois)
         $expiringSoon = \App\Models\Core\PurchasedSub::query()
             ->where('active', true)
             ->where('cancel_at_period_end', false)
             ->whereNull('renewal_reminder_sent_at')
             ->whereDate('end_date', '>=', $now->toDateString())
-            ->whereDate('end_date', '<=', $now->copy()->addDays(7)->toDateString())
+            ->whereDate('end_date', '<=', $now->copy()->addDays($window)->toDateString())
             ->with('subscriber')
             ->get();
 
@@ -76,8 +79,8 @@ class DailyCron extends Command
             }
         }
 
-        // 2) Fin de terme : expiré au-delà de la grâce de 7 jours, OU annulé en fin de terme
-        $graceCutoff = $now->copy()->subDays(7)->toDateString();
+        // 2) Fin de terme : expiré au-delà de la grâce de 10 jours, OU annulé en fin de terme
+        $graceCutoff = $now->copy()->subDays($window)->toDateString();
 
         $toDeactivate = \App\Models\Core\PurchasedSub::query()
             ->where('active', true)
