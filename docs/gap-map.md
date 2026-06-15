@@ -53,6 +53,17 @@
 - **Add-on ↔ spec mapping** (existing → v1 code): Photos→`image` (P12PICCK $100), Permits→`license` (PPERMITCK $50), Estimation→`estimation` (PESTCK2 $50), Recruitment→`job_offer` (PHIRECK $100), Promotion→`promotion` (**deferred**, PPROMOCK50). **Diplomas (PDIPOMECK $50) is new** — no existing option. Prices are currently flat `setting('{option}_price')`, not the per-code values.
 - **Known-issue (do not touch yet):** `resources/sass/vendor/` missing ⇒ `npm run prod` fails; committed `public_html/dist/compiled/*.min.css|js` are authoritative. Deploy does **not** rebuild assets.
 
+## Post-launch refinements — from the updated transcript (2026-06-15) + Denis's live testing
+
+The updated transcript (`docs/transcript_updated.md`) is a more detailed re-transcription of the supplier-registration / 2350 discussion. The 14 v1 features still stand; these are **refinements toward Denis's exact vision**, to iterate live ("on vérifie après lorsque mon site est sur le web"). See memory `cirkle-2350-supplier-flow`.
+
+- **2350 = the single supplier form (reframe in progress):** supplier should pick **Résidentiel/B2B → profession from the recursive black list → the coloured 2350 fiche** (Excel replica), filling **B (O ticks) + C** and **AUTRE PAR FOURNISSEUR**, with **forfaits + website option inline as sections**, then conclusion → payment. Done so far: literal B/C render, fee gate, re-editable "Mon formulaire 2350", federal-tax-only. **Remaining:** recursive-list profession pick (currently a dropdown), one continuous coloured-replica fill UI, options folded in as 2350 sections.
+- **Province-level subscription pricing (NEW, unbuilt):** forfaits priced per **postal code** (50/144/273/510) AND per **province** (Ontario/Québec/… — much higher). Currently only postal-code 1/3/6/12 modelled.
+- **"Réviser"/preview-my-fiche** action for the supplier (after registration).
+- **Confirmed (already built correctly):** federal tax only (no driver's licence, no corporation #); B/C columns, A internal; fee shown to supplier only; auto-client; member numbers.
+- **Demo-data caveats (Denis's testing):** the ARBORISTE master contains **template/example rows** (e.g. VÉRANDA = veranda construction, a sample service type — not a company name) and **intro rows that carry an « O »** (e.g. "NOUS SOMMES QUALIFIÉS POUR OFFRIR:") → they render as tickable because the sheet marks them; refine in the sheet per profession. The big CLIENTS/disclaimer/ÉDIFICES block is legit master content (customers-instructions + capabilities/edifice lists), parsed correctly; only shown on the competence form today.
+- **Fixed from testing (deployed):** registration step-4 404 (bad translation key); member number now shown; prod email (sendmail); eye-toggle inside the field; favourite heart on the fiche.
+
 ## Build order — progress
 
 - ✅ **Done & deployed:** member numbering + counter (#4), homepage 4-platform selector (#1), accept-fee gate + per-profession fee (#6), MASTER 2350 engine — importer + literal fiche render + tick UI (#7), fiche tabs (#8).
