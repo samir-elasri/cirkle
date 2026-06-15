@@ -30,6 +30,13 @@
 
             <div style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:flex-start;margin-bottom:8px">
                 <div>{{ __('main.member') }} {{ $provider->formatted_member_number ?? $provider->id }}</div>
+                {{-- Cœur « favori fournisseur » : clients connectés (pas sa propre fiche) --}}
+                @php($me = auth('subscribers')->user())
+                @if ($me && (int) $me->id !== (int) $provider->id)
+                    <span style="font-size:1.6em;cursor:pointer" title="{{ __('providers.add-favourite') }}">
+                        @include('partials.providers.like')
+                    </span>
+                @endif
             </div>
 
             <h2>{{ $provider->company_name }}</h2>
