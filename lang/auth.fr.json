@@ -28,6 +28,7 @@
   },
   "register"                    : {
     "fee_title"            : "Frais de la fiche de compétence",
+    "registration_fee_note": "Des frais d'inscription de :amount seront ajoutés à votre première facture.",
     "fee_accept"           : "J'accepte ces frais",
     "fee_accepted_badge"   : "Frais acceptés",
     "fee_not_accepted"     : "Vous devez accepter les frais de la fiche de compétence pour continuer.",

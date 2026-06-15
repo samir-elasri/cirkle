@@ -53,7 +53,7 @@
                 <div class="form__column">
                     <div class="ui info message">
                         <i class="info circle icon"></i>
-                        Note: {{ __('Des frais d\'inscription de :amount seront ajoutés', ['amount' => prettyPrice(setting('registration_fee'))]) }}
+                        Note: {{ __('auth.register.registration_fee_note', ['amount' => prettyPrice(setting('registration_fee'))]) }}
                     </div>
                 </div>
                 @endif

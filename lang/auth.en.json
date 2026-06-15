@@ -28,6 +28,7 @@
   },
   "register": {
     "fee_title": "Competence fiche fee",
+    "registration_fee_note": "A registration fee of :amount will be added to your first invoice.",
     "fee_accept": "I accept these fees",
     "fee_accepted_badge": "Fees accepted",
     "fee_not_accepted": "You must accept the competence fiche fee to continue.",
