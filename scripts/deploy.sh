@@ -192,6 +192,7 @@ fi
 # Revisit only after debug.php stops hard-requiring Faker.
 \$COMPOSER install --optimize-autoloader --no-interaction
 php artisan migrate --force
+php artisan db:seed --class=ProvincesSeeder --force
 php artisan locales:compile
 php artisan view:clear
 php artisan config:clear

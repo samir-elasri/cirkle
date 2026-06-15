@@ -60,8 +60,14 @@ class ExcelImport
         $customersText = []; // SECTION CUSTOMERS TEXT (formulaire standard)
         $capabilitiesText = [];
         $feeText = [];       // bloc OBLIGATOIRE … FRAIS POUR LA FICHE … (porte d'acceptation)
-        $prices = [];        // 4 forfaits code postal : durée => coût
+        $forfaitPrices = [];   // forfaits d'abonnement : [ ['state'=>?int, 'duration'=>int, 'cost'=>int] ]
+        $websiteForfaits = []; // forfait « site web du fournisseur » (tranche #4) : [ ['tier','duration','cost'] ]
         $keywords = [];
+
+        $priceState = null;    // cible du forfait courant : NULL = code postal, sinon id de State (province)
+        $priceLang = 'fr';     // langue de la sous-section forfait (bascule à « ENGLISH VERSION »/CENSUS)
+        $websiteTier = null;   // palier site web courant (100/150)
+        $provinceCache = [];   // label province => id State (mémoïsation)
 
         $state = 'preamble';
         $blankStreak = 0;
@@ -179,18 +185,67 @@ class ExcelImport
                     break;
 
                 case 'prices':
-                    // Les 4 premiers « O » après le marqueur FORFAITS = 1/3/6/12 mois code postal.
-                    // Les sections suivantes (provinces, site web) ne sont pas encore modélisées.
-                    if ($b === 'O' && count($prices) < 4
+                    // Forfaits d'abonnement : code postal (state NULL) + une section par PROVINCE.
+                    // Le fichier contient le bloc FR puis le bloc EN (« ENGLISH VERSION ») : on ne
+                    // garde que les prix de la langue de la fiche (les montants 3 mois diffèrent).
+                    $cFlat = $this->flatten($c);
+
+                    // Frontière : la section SITE WEB (forfait distinct) commence à un marqueur SECTION.
+                    if (str_contains($aFlat, 'SECTION') || str_contains($cFlat, 'SITE WEB') || str_contains($cFlat, 'SUPPLIER WEB')) {
+                        $state = 'website';
+                        break;
+                    }
+
+                    // Langue de la sous-section courante
+                    if (str_contains($cFlat, 'ENGLISH VERSION') || str_contains($cFlat, 'TARIF PRICING') || str_contains($cFlat, 'CENSUS')) {
+                        $priceLang = 'en';
+                    } elseif (str_contains($cFlat, 'PRIX FORFAIT') || str_contains($cFlat, 'RECENSEMENT')) {
+                        $priceLang = 'fr';
+                    }
+
+                    // En-tête de cible : code postal vs province (le nom de la BC est sur sa propre ligne)
+                    if (str_contains($cFlat, 'PRIX FORFAIT') || str_contains($cFlat, 'TARIF PRICING')) {
+                        $priceState = null;
+                    } elseif ($label = $this->provinceLabel($cFlat)) {
+                        $priceState = $this->provinceStateId($label, $provinceCache);
+                    }
+
+                    // Ligne de prix « O » : on ne retient que la langue de la fiche
+                    if ($b === 'O' && $priceLang === ($langue ?: 'fr')
                         && preg_match('/(\d+)\s*(MOIS|MONTH)/iu', $c, $m)) {
                         $duration = (int)$m[1];
                         $cost = $this->lastAmount($c, $duration);
                         if ($cost !== null) {
-                            $prices[$duration] = $cost;
+                            $forfaitPrices[] = ['state' => $priceState, 'duration' => $duration, 'cost' => $cost];
                         }
                     }
-                    if (count($prices) >= 4) {
-                        $state = 'skip'; // provinces / site web : hors modèle pour l'instant
+                    break;
+
+                case 'website':
+                    // Forfait « site web du fournisseur » : 2 paliers (100$/150$), 1/6/12 mois.
+                    // Capturé ici pour la tranche #4; pas encore persisté.
+                    $cFlat = $this->flatten($c);
+
+                    // Fin des forfaits → début des OPTIONS payantes (permis/diplômes/photos/promotion)
+                    if (str_contains($aFlat, 'OPTION') || str_contains($cFlat, 'AJOUTER LES OPTIO')) {
+                        $state = 'skip';
+                        break;
+                    }
+                    if (str_contains($cFlat, 'ENGLISH VERSION') || str_contains($cFlat, 'SUPPLIER WEB')) {
+                        $priceLang = 'en';
+                    } elseif (str_contains($cFlat, 'SITE WEB DU FOURN') || str_contains($cFlat, 'FRAIS SITE WEB')) {
+                        $priceLang = 'fr';
+                        if (preg_match('/(\d{2,4})\s*\$/u', $c, $mt)) {
+                            $websiteTier = (int) $mt[1]; // palier 100 / 150
+                        }
+                    }
+                    if ($b === 'O' && $priceLang === ($langue ?: 'fr') && $websiteTier
+                        && preg_match('/(\d+)\s*(MOIS|MONTH)/iu', $c, $m)) {
+                        $duration = (int)$m[1];
+                        $cost = $this->lastAmount($c, $duration);
+                        if ($cost !== null) {
+                            $websiteForfaits[] = ['tier' => $websiteTier, 'duration' => $duration, 'cost' => $cost];
+                        }
                     }
                     break;
 
@@ -253,18 +308,27 @@ class ExcelImport
             }
         }
 
-        foreach ($prices as $duration => $cost) {
-            $subscription = Subscription::where('duration', '=', $duration)->where('active', '=', true)->first();
+        $postalPrices = [];   // résumé : durée => coût (forfait code postal)
+        $provinceCount = 0;
+        foreach ($forfaitPrices as $fp) {
+            $subscription = Subscription::where('duration', '=', $fp['duration'])->where('active', '=', true)->first();
             if (!$subscription) {
-                $this->warnings[] = "Aucune Subscription active de {$duration} mois : prix {$cost}\$ ignoré.";
+                $this->warnings[] = "Aucune Subscription active de {$fp['duration']} mois : prix {$fp['cost']}\$ ignoré.";
                 continue;
             }
             $price = SubscriptionPrice::firstOrCreate([
                 'service_category_id' => $categoryModel->id,
                 'subscription_id' => $subscription->id,
+                'state_id' => $fp['state'], // NULL = code postal
             ]);
-            $price->cost = $cost;
+            $price->cost = $fp['cost'];
             $price->save();
+
+            if ($fp['state'] === null) {
+                $postalPrices[$fp['duration']] = $fp['cost'];
+            } else {
+                $provinceCount++;
+            }
         }
 
         return [
@@ -274,7 +338,9 @@ class ExcelImport
             'locale' => app()->getLocale(),
             'services' => count($services),
             'capabilities' => count($capabilities),
-            'prices' => $prices,
+            'prices' => $postalPrices,
+            'province_prices' => $provinceCount,
+            'website_forfaits' => count($websiteForfaits),
             'keywords' => count($keywords),
             'warnings' => $this->warnings,
         ];
@@ -392,6 +458,51 @@ class ExcelImport
         $amount = (int)preg_replace('/\D/', '', $raw);
 
         return ($amount > 0 && $amount !== $duration) ? $amount : null;
+    }
+
+    /**
+     * Reconnaît une province dans un en-tête de forfait (texte déjà « aplati »),
+     * renvoie son label State (ON/QC/BC/…) ou NULL. Couvre les noms FR et EN.
+     */
+    private function provinceLabel(string $cFlat): ?string
+    {
+        static $map = [
+            'ONTARIO'           => 'ON',
+            'QUEBEC'            => 'QC',
+            'COLOMBIE'          => 'BC', 'BRITISH COLUMBIA' => 'BC',
+            'ALBERTA'           => 'AB',
+            'MANITOBA'          => 'MB',
+            'SASKATCHEWAN'      => 'SK',
+            'NOUVELLE-ECOSSE'   => 'NS', 'NOVA SCOTIA'      => 'NS',
+            'NOUVEAU-BRUNSWICK' => 'NB', 'NEW BRUNSWICK'    => 'NB',
+            'TERRE-NEUVE'       => 'NL', 'NEWFOUNDLAND'     => 'NL',
+            'PRINCE-EDOUARD'    => 'PE', 'PRINCE EDOUARD'   => 'PE', 'PRINCE EDWARD' => 'PE',
+        ];
+
+        foreach ($map as $keyword => $label) {
+            if (str_contains($cFlat, $keyword)) {
+                return $label;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Id de la State (province) par label, mémoïsé. Avertit si la province n'est pas seedée.
+     */
+    private function provinceStateId(string $label, array &$cache): ?int
+    {
+        if (array_key_exists($label, $cache)) {
+            return $cache[$label];
+        }
+
+        $id = \App\Models\Core\State::where('label', $label)->value('id');
+        if (!$id) {
+            $this->warnings[] = "Province « {$label} » introuvable (exécuter ProvincesSeeder) : forfaits de cette province ignorés.";
+        }
+
+        return $cache[$label] = $id;
     }
 
     private function providerType(?string $clientele): ?string

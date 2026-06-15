@@ -65,6 +65,7 @@ class SubscriptionPrice extends Model
 
     protected $fillable = [
         'service_category_id',
+		'state_id',
 		'cost',
 		'subscription_id',
 		// 'month_duration',
@@ -123,5 +124,13 @@ class SubscriptionPrice extends Model
 	public function serviceCategory(): BelongsTo
 	{
 		return $this->belongsTo(ServiceCategory::class);
+	}
+
+	/**
+	 * Province visée par ce forfait (NULL = forfait par code postal, le défaut).
+	 */
+	public function state(): BelongsTo
+	{
+		return $this->belongsTo(\App\Models\Core\State::class);
 	}
 }
