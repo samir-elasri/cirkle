@@ -31,6 +31,13 @@
 
         <ul class="nav nav-sidebar">
 
+                {{-- Lien fixe : import des fiches MASTER 2350 (hors arbre de menu en BD) --}}
+                <li class="{{ Request::segment(2) === 'fiche' ? 'active' : '' }}">
+                    <a href="/admin/fiche">
+                        <i class="fa fa-upload"></i><span class="text">Fiches 2350</span>
+                    </a>
+                </li>
+
                 @foreach($menus as $menu)
 
 					@if($menu->Autorisation === "hide")

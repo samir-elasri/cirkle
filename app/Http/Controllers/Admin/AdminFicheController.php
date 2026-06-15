@@ -32,7 +32,7 @@ class AdminFicheController extends AdminBaseController
 
         $services = [];
         foreach ($data['services'] as $service) {
-            if (!Arr::get($service, 'fr.title') && !Arr::get($service, 'fr.title')) {
+            if (!Arr::get($service, 'fr.title') && !Arr::get($service, 'en.title')) {
                 continue;
             }
             $s = new Service([
