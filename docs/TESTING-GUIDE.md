@@ -172,7 +172,7 @@ Log in as the **client**:
 
 **Cancel at term end:** as a fournisseur with an active subscription, **Mon espace → Fournisseur → Annuler mon abonnement** → it stays active until the end date (no refund), and won't renew.
 
-**Renewal reminders & grace (automatic, server-side):** 7 days before expiry the member gets a renewal email; after expiry there's a 7-day grace, then the fiche is hidden. This runs from the daily cron — needs the N0C cron set to `php artisan schedule:run` (see §14).
+**Renewal reminders & grace (automatic, server-side):** 10 days before expiry the member gets a renewal email; after expiry there is a 10-day grace (per the cahier de charges, configurable), then the fiche is hidden. This runs from the daily cron — needs the N0C cron set to `php artisan schedule:run` (see §14).
 
 ---
 
