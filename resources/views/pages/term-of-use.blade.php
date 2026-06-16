@@ -2,6 +2,9 @@
 
 <section>
     <div class="optimal-content-width content-writable">
+        <a href="{{ urlRouteName('home') }}" class="ck-back-btn" onclick="if(history.length>1){history.back();return false;}"
+           style="display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;padding:8px 16px;border:1px solid #d9d9d9;border-radius:8px;text-decoration:none;color:#1f2430;font-weight:600;background:#fff;">← Retour</a>
+
         {{-- Si le client a saisi le texte réel via l'admin (blocs CMS), on l'affiche.
              Sinon, on présente une ÉBAUCHE structurée conforme à la Loi 25 (feature #13). --}}
         @if (trim(strip_tags($blocs ?? '')) !== '')
