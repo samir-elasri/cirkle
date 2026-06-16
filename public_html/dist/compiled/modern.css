@@ -182,44 +182,73 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
 /* ── Bannière : fond VERT/GRIS ANIMÉ & fluide (inspiration glassmorphism) ────
    Remplace totalement l'ancienne image verte. Des « blobs » flous de vert et de
    gris ondulent doucement entre plusieurs nuances. */
-/* Fond VERT/GRIS ANIMÉ : la bannière (autres pages) ET la PAGE D'ACCUEIL ENTIÈRE
-   (= toute page qui contient un diaporama). Blobs flous qui ondulent. */
-.main__banner,
-body:has(.slideshow) {
-    background-image:
-        radial-gradient(38% 55% at 18% 28%, rgba(58,138,98,.90), transparent 62%),
-        radial-gradient(42% 52% at 82% 22%, rgba(150,165,156,.72), transparent 62%),
-        radial-gradient(48% 58% at 62% 82%, rgba(24,82,60,.95), transparent 60%),
-        radial-gradient(36% 48% at 8% 82%, rgba(116,136,126,.6), transparent 60%),
-        radial-gradient(40% 50% at 92% 78%, rgba(74,133,104,.78), transparent 60%),
-        linear-gradient(125deg, #123524, #2e6b4f, #5e6f64, #356048, #4a8568) !important;
-    background-size: 200% 200%, 220% 220%, 240% 240%, 200% 200%, 220% 220%, 360% 360% !important;
-    background-repeat: no-repeat !important;
-    background-color: #163d2c !important;
-    animation: ckBannerWave 22s ease-in-out infinite !important;
+/* ══════════ FOND LIQUIDE ANIMÉ (accueil) — aurora de blobs verts/gris ══════════
+   Base verte sombre + une couche ::before de « blobs » flous qui se DÉPLACENT
+   (animation de transform : translate/scale/rotate — fluide et GPU, donc bien
+   visible, contrairement à background-position). */
+.main__banner {
+    background:
+        radial-gradient(40% 55% at 20% 30%, rgba(58,138,98,.9), transparent 62%),
+        radial-gradient(45% 55% at 80% 25%, rgba(150,165,156,.7), transparent 62%),
+        radial-gradient(52% 62% at 60% 86%, rgba(24,82,60,.95), transparent 60%),
+        linear-gradient(125deg, #123524, #2e6b4f, #5e6f64, #356048) !important;
+    min-height: 200px;
 }
-body:has(.slideshow) { background-attachment: fixed !important; }
-.main__banner { min-height: 200px; }
-@keyframes ckBannerWave {
-    0%   { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
-    50%  { background-position: 100% 100%, 0% 100%, 100% 0%, 100% 0%,   0% 0%,     100% 50%; }
-    100% { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
+body:has(.slideshow) { background: #103325 !important; background-attachment: fixed !important; }
+body:has(.slideshow)::before {
+    content: ""; position: fixed; inset: -28%; z-index: -1; pointer-events: none;
+    background:
+        radial-gradient(closest-side, rgba(52,150,104,.97), transparent) 6% 18% / 60% 60% no-repeat,
+        radial-gradient(closest-side, rgba(134,158,144,.82), transparent) 88% 8% / 54% 54% no-repeat,
+        radial-gradient(closest-side, rgba(16,94,66,.98), transparent) 64% 90% / 66% 66% no-repeat,
+        radial-gradient(closest-side, rgba(160,172,162,.72), transparent) 6% 88% / 50% 50% no-repeat,
+        radial-gradient(closest-side, rgba(74,140,104,.92), transparent) 96% 80% / 56% 56% no-repeat;
+    filter: blur(58px) saturate(1.18);
+    animation: ckLiquid 15s ease-in-out infinite alternate;
+    will-change: transform;
 }
-@media (prefers-reduced-motion: reduce) { .main__banner, body:has(.slideshow) { animation: none !important; } }
+@keyframes ckLiquid {
+    0%   { transform: translate(0%, 0%)   scale(1)    rotate(0deg); }
+    50%  { transform: translate(5%, -4%)  scale(1.22) rotate(30deg); }
+    100% { transform: translate(-5%, 5%)  scale(1.07) rotate(-24deg); }
+}
+@media (prefers-reduced-motion: reduce) { body:has(.slideshow)::before { animation: none !important; } }
 
-/* Diaporama : transparent (laisse voir le fond animé de la page) + image verte
-   masquée + texte blanc lisible. */
+/* Diaporama : transparent (laisse voir le fond) + image verte masquée + texte blanc */
 .slideshow,
 .slideshow .slides, .slideshow .slick-list, .slideshow .slick-track,
 .slideshow .slide, .slideshow .slides-mobile, .slideshow .slides-mobile .slide { background: transparent !important; animation: none !important; }
 .slideshow .slide img, .slideshow .slide video { display: none !important; }
 .slideshow .slideshow__content h2, .slideshow .slideshow__text, .slideshow .slideshow__sub-text,
-.slideshow .slides-mobile__content, .slideshow .slides-mobile__content h2 { color: #ffffff !important; text-shadow: 0 2px 16px rgba(0,0,0,.4); }
+.slideshow .slides-mobile__content, .slideshow .slides-mobile__content h2 { color: #ffffff !important; text-shadow: 0 2px 16px rgba(0,0,0,.45); }
 
-/* Accueil : titres « nus » directement sur le fond vert → en blanc */
-body:has(.slideshow) .main__title h1,
-body:has(.slideshow) .platform-selector__title,
-body:has(.slideshow) .catalogue__legend { color: #ffffff !important; text-shadow: 0 2px 14px rgba(0,0,0,.35); }
+/* ══════════ TEXTE sur le fond vert → BLANC lisible (ombré) ══════════ */
+body:has(.slideshow) .blocs, body:has(.slideshow) .blocs h1, body:has(.slideshow) .blocs h2,
+body:has(.slideshow) .blocs h3, body:has(.slideshow) .blocs h4, body:has(.slideshow) .blocs p,
+body:has(.slideshow) .blocs li, body:has(.slideshow) .blocs span,
+body:has(.slideshow) .bloc-text__content, body:has(.slideshow) .bloc-text__content *,
+body:has(.slideshow) .main__title h1, body:has(.slideshow) .main__title,
+body:has(.slideshow) .platform-selector__title, body:has(.slideshow) .catalogue__legend,
+body:has(.slideshow) .search > label, body:has(.slideshow) .search-result__section > h2 {
+    color: #ffffff !important; text-shadow: 0 2px 12px rgba(0,0,0,.4);
+}
+/* …mais le texte DANS les cartes / tuiles / champs blancs reste SOMBRE */
+body:has(.slideshow) .content-card, body:has(.slideshow) .content-card *,
+body:has(.slideshow) .platform-selector__tile,
+body:has(.slideshow) .catalogue__row, body:has(.slideshow) .catalogue__row *,
+body:has(.slideshow) input, body:has(.slideshow) textarea, body:has(.slideshow) select,
+body:has(.slideshow) .ui.dropdown, body:has(.slideshow) .ui.dropdown * {
+    color: var(--ck-ink) !important; text-shadow: none !important;
+}
+/* réaffirme le vert « disponible » du catalogue (sinon écrasé en sombre) */
+body:has(.slideshow) .catalogue__cat--available { color: var(--ck-green) !important; }
+body:has(.slideshow) .catalogue__prof--available { color: #0f7a3f !important; }
+
+/* ══════════ Séparateur fin, mi-largeur, centré, blanc (sépare le haut du reste) ══════════ */
+body:has(.slideshow) .main__content::before {
+    content: ""; display: block; width: min(50%, 360px); height: 2px;
+    background: rgba(255,255,255,.6); margin: 4px auto 32px; border-radius: 2px;
+}
 
 /* ── Divers ───────────────────────────────────────────────────────────────── */
 .ui.segment, .ui.message { border-radius: 12px !important; }
