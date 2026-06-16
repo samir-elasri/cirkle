@@ -793,9 +793,7 @@ class SubscriberController extends Controller
 		if ($subscriber->saveElement($data)) {
 			Auth::guard('subscribers')->loginUsingId($subscriber->id);
 
-			$token = $subscriber->recoveringToken();
-
-			$data['url'] = urlRouteName('subscriber.validate', ['token' => $token], true);
+			$data['url'] = $subscriber->validationUrl(); // lien dans la langue du membre
 
 			$numberMsg = __('main.memberNumber') . ' : ' . $subscriber->formatted_member_number;
 
@@ -1523,7 +1521,7 @@ class SubscriberController extends Controller
 
 			$subscriber->sendMail(
 				'register',
-				['url' => urlRouteName('subscriber.validate', ['token' => $subscriber->recoveringToken()], true)]
+				['url' => $subscriber->validationUrl()] // lien dans la langue du membre
 			);
 
 			return Redirect::to(urlRouteName('cart'))->with('success', __('cart.item.added'));

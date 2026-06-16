@@ -204,6 +204,29 @@ class UserBase extends Model implements
 	}
 
 	/**
+	 * URL de validation du courriel, générée dans la LANGUE du membre
+	 * (preference_language) afin que le lien corresponde au texte du courriel.
+	 * Sans cela, le préfixe /fr ou /en suit la langue du SITE au moment de
+	 * l'inscription, pas celle du membre (d'où « texte FR mais lien EN »).
+	 */
+	public function validationUrl(): string
+	{
+		$token = $this->recoveringToken();
+
+		$locale = in_array($this->preference_language, getLocales(), true)
+			? $this->preference_language
+			: app()->getLocale();
+
+		$previous = app()->getLocale();
+		app()->setLocale($locale);
+		try {
+			return urlRouteName('subscriber.validate', ['token' => $token], true);
+		} finally {
+			app()->setLocale($previous);
+		}
+	}
+
+	/**
 	 * @param $value
 	 */
 	public function setPasswordAttribute($value): void
