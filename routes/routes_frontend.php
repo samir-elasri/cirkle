@@ -186,6 +186,14 @@ function createRoutes($locale)
 			])->middleware('recaptcha');
 		});
 
+		// Lien de validation du courriel « lisible en français » (sans les mots
+		// anglais subscriber/validate dans l'URL) — même contrôleur que
+		// subscriber.validate. Utilisé pour les membres francophones.
+		Route::any('valider-courriel/{token?}', [
+			'as'   => 'subscriber.validate-fr',
+			'uses' => 'Auth\\AuthController@validateSubscriber'
+		]);
+
 		Route::post('register-basic', [
 			'as'   => 'subscriber.register.storeBasic',
 			'uses' => 'SubscriberController@storeBasic'

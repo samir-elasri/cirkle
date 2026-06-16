@@ -217,10 +217,14 @@ class UserBase extends Model implements
 			? $this->preference_language
 			: app()->getLocale();
 
+		// Route au libellé français pour les francophones (/fr/valider-courriel/…),
+		// route standard sinon (/en/subscriber/validate/…).
+		$routeName = $locale === 'fr' ? 'subscriber.validate-fr' : 'subscriber.validate';
+
 		$previous = app()->getLocale();
 		app()->setLocale($locale);
 		try {
-			return urlRouteName('subscriber.validate', ['token' => $token], true);
+			return urlRouteName($routeName, ['token' => $token], true);
 		} finally {
 			app()->setLocale($previous);
 		}
