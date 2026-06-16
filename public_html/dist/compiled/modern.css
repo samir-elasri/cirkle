@@ -50,11 +50,11 @@ h3 { font-weight: 700 !important; }
 /* ── Barre de navigation : sleek, collante, effet verre ───────────────────── */
 .header {
     position: sticky !important; top: 0; z-index: 50;
-    background: rgba(255,255,255,.82) !important;
-    -webkit-backdrop-filter: saturate(180%) blur(14px);
-    backdrop-filter: saturate(180%) blur(14px);
+    background: #ffffff !important;            /* blanc PLEIN (sans transparence) */
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
     border-bottom: 1px solid var(--ck-line) !important;
-    box-shadow: 0 6px 24px rgba(22,27,38,.06) !important;
+    box-shadow: 0 6px 24px rgba(22,27,38,.07) !important;
     padding: 6px 0 !important;
 }
 .header__content { align-items: center !important; }
@@ -224,3 +224,7 @@ body:has(.slideshow) .catalogue__legend { color: #ffffff !important; text-shadow
 /* ── Divers ───────────────────────────────────────────────────────────────── */
 .ui.segment, .ui.message { border-radius: 12px !important; }
 .main__title { background: transparent !important; }
+
+/* Supprime l'image « vagues » verte (wave-top.png / wave-bottom.png) posée sur
+   #main : on laisse voir le fond (animé sur l'accueil, dégradé ailleurs). */
+#main { background: transparent !important; background-image: none !important; }
