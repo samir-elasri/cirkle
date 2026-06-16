@@ -244,10 +244,12 @@ body:has(.slideshow) .ui.dropdown, body:has(.slideshow) .ui.dropdown * {
 body:has(.slideshow) .catalogue__cat--available { color: var(--ck-green) !important; }
 body:has(.slideshow) .catalogue__prof--available { color: #0f7a3f !important; }
 
-/* ══════════ Séparateur fin, mi-largeur, centré, blanc (sépare le haut du reste) ══════════ */
-body:has(.slideshow) .main__content::before {
-    content: ""; display: block; width: min(50%, 360px); height: 2px;
-    background: rgba(255,255,255,.6); margin: 4px auto 32px; border-radius: 2px;
+/* ══════════ Séparateur fin, mi-largeur, centré, blanc — tout en HAUT de #main,
+   juste sous la section du haut (promotion). #main est un flex-column → align-self. ══════════ */
+body:has(.slideshow) #main::before {
+    content: ""; align-self: center; flex: 0 0 auto;
+    width: min(50%, 360px); height: 2px;
+    background: rgba(255,255,255,.6); border-radius: 2px; margin: 8px 0 2px;
 }
 
 /* ── Divers ───────────────────────────────────────────────────────────────── */
