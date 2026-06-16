@@ -182,8 +182,10 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
 /* ── Bannière : fond VERT/GRIS ANIMÉ & fluide (inspiration glassmorphism) ────
    Remplace totalement l'ancienne image verte. Des « blobs » flous de vert et de
    gris ondulent doucement entre plusieurs nuances. */
+/* Fond VERT/GRIS ANIMÉ : la bannière (autres pages) ET la PAGE D'ACCUEIL ENTIÈRE
+   (= toute page qui contient un diaporama). Blobs flous qui ondulent. */
 .main__banner,
-.slideshow {
+body:has(.slideshow) {
     background-image:
         radial-gradient(38% 55% at 18% 28%, rgba(58,138,98,.90), transparent 62%),
         radial-gradient(42% 52% at 82% 22%, rgba(150,165,156,.72), transparent 62%),
@@ -195,25 +197,29 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
     background-repeat: no-repeat !important;
     background-color: #163d2c !important;
     animation: ckBannerWave 22s ease-in-out infinite !important;
-    min-height: 200px;
 }
+body:has(.slideshow) { background-attachment: fixed !important; }
+.main__banner { min-height: 200px; }
 @keyframes ckBannerWave {
     0%   { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
     50%  { background-position: 100% 100%, 0% 100%, 100% 0%, 100% 0%,   0% 0%,     100% 50%; }
     100% { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
 }
-@media (prefers-reduced-motion: reduce) { .main__banner, .slideshow { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .main__banner, body:has(.slideshow) { animation: none !important; } }
 
-/* Diaporama d'accueil : retirer l'IMAGE verte + rendre l'intérieur transparent
-   pour laisser voir le fond animé du .slideshow ; texte en blanc lisible. */
+/* Diaporama : transparent (laisse voir le fond animé de la page) + image verte
+   masquée + texte blanc lisible. */
+.slideshow,
 .slideshow .slides, .slideshow .slick-list, .slideshow .slick-track,
-.slideshow .slide, .slideshow .slides-mobile, .slideshow .slides-mobile .slide { background: transparent !important; }
+.slideshow .slide, .slideshow .slides-mobile, .slideshow .slides-mobile .slide { background: transparent !important; animation: none !important; }
 .slideshow .slide img, .slideshow .slide video { display: none !important; }
-.slideshow .slideshow__content h2,
-.slideshow .slideshow__text, .slideshow .slideshow__sub-text,
-.slideshow .slides-mobile__content, .slideshow .slides-mobile__content h2 {
-    color: #ffffff !important; text-shadow: 0 2px 16px rgba(0,0,0,.4);
-}
+.slideshow .slideshow__content h2, .slideshow .slideshow__text, .slideshow .slideshow__sub-text,
+.slideshow .slides-mobile__content, .slideshow .slides-mobile__content h2 { color: #ffffff !important; text-shadow: 0 2px 16px rgba(0,0,0,.4); }
+
+/* Accueil : titres « nus » directement sur le fond vert → en blanc */
+body:has(.slideshow) .main__title h1,
+body:has(.slideshow) .platform-selector__title,
+body:has(.slideshow) .catalogue__legend { color: #ffffff !important; text-shadow: 0 2px 14px rgba(0,0,0,.35); }
 
 /* ── Divers ───────────────────────────────────────────────────────────────── */
 .ui.segment, .ui.message { border-radius: 12px !important; }
