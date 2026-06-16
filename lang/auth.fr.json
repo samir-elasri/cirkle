@@ -104,7 +104,8 @@
       "success": "Un lien de récupération vous a été envoyé par courriel."
     },
     "validated"            : {
-      "success": "Votre courriel à été validé."
+      "success": "Votre courriel à été validé.",
+      "already": "Votre adresse courriel est déjà confirmée (ce lien a déjà été utilisé)."
     },
     "password-form"        : {
       "success": "Votre mot de passe à été réinitialisé."

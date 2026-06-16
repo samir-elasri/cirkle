@@ -410,7 +410,9 @@ class AuthController extends Controller
 			}
 		}
 
-		echo __('reminders.token');
-		exit;
+		// Jeton introuvable : lien déjà utilisé (usage unique), compte déjà confirmé,
+		// ou lien expiré. On évite la page blanche brute : on renvoie vers la page de
+		// validation avec un message clair.
+		return Redirect::to(urlRouteName('email-validated'))->with('info', __('auth.register.validated.already'));
 	}
 }

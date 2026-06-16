@@ -104,7 +104,8 @@
       "success": "A recovery link has been sent to you by email."
     },
     "validated": {
-      "success": "Your email has been validated."
+      "success": "Your email has been validated.",
+      "already": "Your email is already confirmed (this link was already used)."
     },
     "password-form": {
       "success": "Your password has been reset."

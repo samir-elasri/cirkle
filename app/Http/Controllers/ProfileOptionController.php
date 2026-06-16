@@ -105,8 +105,12 @@ class ProfileOptionController extends Controller
 			$element->saveElement($data);
 			return response()->json(['data' => $data]);
 		} else {
-			// Subscriber is from session, process file uploads and store processed data
-			$sessionKey = 'profile_' . $type;
+			// Subscriber is from session, process file uploads and store processed data.
+			// Certains types arrivent au SINGULIER (license, diploma) alors que les
+			// lecteurs (getXxxList, storeStep6) lisent la clé au PLURIEL : on aligne,
+			// sinon l'élément ajouté part dans une clé morte (jamais affiché ni sauvé).
+			$sessionKeyMap = ['license' => 'profile_licenses', 'diploma' => 'profile_diplomas'];
+			$sessionKey = $sessionKeyMap[$type] ?? ('profile_' . $type);
 			$existingData = request()->session()->get($sessionKey, []);
 
 			// Process file uploads and replace UploadedFile objects with web paths
