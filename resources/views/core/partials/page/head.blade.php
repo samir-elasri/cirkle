@@ -64,6 +64,9 @@
 	<link rel="stylesheet" href="{{ asset_with_version('/dist/compiled/semantic/semantic.min.css') }}">
 	<link rel="stylesheet" href="{{ asset_with_version('/dist/compiled/main.min.css') }}">
 
+	{{-- Couche de modernisation UI (override; chargée APRÈS main.min.css, sans build SCSS) --}}
+	<link rel="stylesheet" href="{{ asset_with_version('/dist/compiled/modern.css') }}">
+
 	@if(config('google.analytics.measure_id'))
 		<!-- Global site tag (gtag.js) - Google Analytics (GA4) -->
 		<script async

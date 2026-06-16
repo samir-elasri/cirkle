@@ -1,0 +1,231 @@
+/* ============================================================================
+   Cirkle — couche de modernisation UI (override)
+   Chargée APRÈS main.min.css. Aucune dépendance au build SCSS (gelé).
+   Objectif : règles cohérentes, lisibles et modernes sur les parcours clés
+   (inscription fournisseur étapes 1-6, panier), SANS toucher aux choix
+   explicites de Denis (sélecteur jaune des 4 plateformes, couleurs du 2350).
+   Périmètre volontairement limité à .content-card et .cart pour éviter
+   tout effet de bord sur la page d'accueil.
+   ========================================================================== */
+
+:root {
+    --ck-accent: #ffd200;       /* jaune de marque (Denis) */
+    --ck-accent-dark: #f0c000;
+    --ck-ink: #1f2430;          /* texte principal */
+    --ck-ink-soft: #5a6172;     /* texte secondaire */
+    --ck-line: #e4e7ee;         /* bordures */
+    --ck-bg-soft: #f7f8fa;
+    --ck-radius: 12px;
+    --ck-radius-sm: 8px;
+    --ck-shadow: 0 2px 10px rgba(20, 26, 40, .06);
+    --ck-shadow-lg: 0 8px 28px rgba(20, 26, 40, .10);
+}
+
+/* ----------------------------------------------------------------------------
+   1) Cartes (étapes d'inscription) + conteneur
+   -------------------------------------------------------------------------- */
+.content-card {
+    background: #fff;
+    border: 1px solid var(--ck-line);
+    border-radius: var(--ck-radius);
+    box-shadow: var(--ck-shadow);
+    padding: clamp(20px, 4vw, 40px);
+    margin: 24px auto;
+    max-width: 760px;
+    color: var(--ck-ink);
+    line-height: 1.55;
+}
+
+.content-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--ck-line);
+    padding-bottom: 16px;
+    margin-bottom: 22px;
+}
+.content-card__header--title {
+    font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 4px;
+    color: var(--ck-ink);
+}
+.content-card__label {
+    font-size: .9rem;
+    color: var(--ck-ink-soft);
+}
+
+/* Titres de section dans les formulaires (étaient minuscules) */
+.content-card .registration-title,
+.form-2350 .registration-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ck-ink);
+    margin: 22px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--ck-accent);
+    display: inline-block;
+}
+
+/* ----------------------------------------------------------------------------
+   2) Champs & rangées de formulaire (espacement cohérent)
+   -------------------------------------------------------------------------- */
+.content-card .form__column { margin-bottom: 18px; }
+.content-card .form__row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.content-card label { font-weight: 600; color: var(--ck-ink); }
+.content-card .form__row--error small { display: inline-block; margin-top: 4px; }
+
+/* Contrôles : inputs, selects natifs, composants Shoelace */
+.content-card input[type="text"],
+.content-card input[type="email"],
+.content-card input[type="password"],
+.content-card input[type="number"],
+.content-card input[type="tel"],
+.content-card textarea,
+.content-card select {
+    border: 1px solid var(--ck-line);
+    border-radius: var(--ck-radius-sm);
+    padding: 10px 12px;
+    font-size: 1rem;
+    color: var(--ck-ink);
+    background: #fff;
+    transition: border-color .12s, box-shadow .12s;
+    max-width: 100%;
+}
+.content-card input[type="text"]:focus,
+.content-card input[type="email"]:focus,
+.content-card input[type="password"]:focus,
+.content-card input[type="number"]:focus,
+.content-card textarea:focus,
+.content-card select:focus {
+    outline: none;
+    border-color: var(--ck-accent-dark);
+    box-shadow: 0 0 0 3px rgba(255, 210, 0, .25);
+}
+.content-card sl-select,
+.content-card sl-input { display: block; max-width: 420px; }
+.content-card sl-select::part(combobox),
+.content-card sl-input::part(base) {
+    border-radius: var(--ck-radius-sm);
+}
+
+/* ----------------------------------------------------------------------------
+   3) Formulaire 2350 (lisibilité) — on NE touche PAS aux couleurs (inline)
+      ni à la sémantique des cases (en attente de Denis).
+   -------------------------------------------------------------------------- */
+.form-2350 { font-size: 1rem; line-height: 1.6; }
+.form-2350 .service-literal { font-size: .98rem; line-height: 1.55; }
+.form-2350 sl-checkbox { display: block; margin: 7px 0; }
+.form-2350 .form__column--gap-before { margin-top: 1.3em; }
+.form-2350 .form__row { align-items: center; }
+
+/* ----------------------------------------------------------------------------
+   4) Boutons (dans le parcours d'inscription + panier seulement)
+      <button> = action principale (jaune marque) ; <a> = secondaire (contour)
+   -------------------------------------------------------------------------- */
+.content-card button.call-to-action,
+.cart button.call-to-action,
+.cart input.call-to-action[type="submit"] {
+    background: var(--ck-accent);
+    color: var(--ck-ink);
+    border: 1px solid var(--ck-accent);
+    border-radius: var(--ck-radius-sm);
+    padding: 12px 26px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .12s, transform .04s;
+    display: inline-block;
+}
+.content-card button.call-to-action:hover,
+.cart button.call-to-action:hover,
+.cart input.call-to-action[type="submit"]:hover { background: var(--ck-accent-dark); }
+.content-card button.call-to-action:active,
+.cart button.call-to-action:active { transform: translateY(1px); }
+
+.content-card a.call-to-action {
+    background: #fff;
+    color: var(--ck-ink);
+    border: 1px solid var(--ck-line);
+    border-radius: var(--ck-radius-sm);
+    padding: 12px 22px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color .12s, background .12s;
+}
+.content-card a.call-to-action:hover { background: var(--ck-bg-soft); border-color: var(--ck-ink-soft); }
+
+.content-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ck-line);
+}
+.content-card__footer:has(a.call-to-action) { justify-content: space-between; }
+
+/* « Ajouter une option » / liens d'ajout */
+.content-card .addition-link,
+.content-card sl-dropdown > .call-to-action {
+    display: inline-block;
+    margin-top: 8px;
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------------------------------
+   5) Panier : cartes d'articles + sommaire propre
+   -------------------------------------------------------------------------- */
+.cart .optimal-content-width { max-width: 820px; }
+.cart .cart__empty { text-align: right; margin-bottom: 14px; }
+.cart .cart__empty .call-to-action {
+    background: #fff; color: #d33; border: 1px solid #e6b3b3;
+    border-radius: var(--ck-radius-sm); padding: 8px 16px; font-weight: 700; cursor: pointer;
+}
+
+.cart .cart-single {
+    background: #fff;
+    border: 1px solid var(--ck-line);
+    border-radius: var(--ck-radius);
+    box-shadow: var(--ck-shadow);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+}
+.cart .cart-single__title { font-size: 1.2rem; font-weight: 800; margin: 0 0 6px; color: var(--ck-ink); }
+.cart .cart-single__body { color: var(--ck-ink-soft); }
+.cart .cart-single__footer { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--ck-line); }
+.cart .cart-single__price { font-size: 1.1rem; font-weight: 800; color: var(--ck-ink); }
+
+.cart .cart__summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 24px;
+    align-items: baseline;
+    background: var(--ck-bg-soft);
+    border: 1px solid var(--ck-line);
+    border-radius: var(--ck-radius);
+    padding: 18px 22px;
+    margin-top: 18px;
+}
+.cart .cart__summary .cart__label { color: var(--ck-ink-soft); }
+.cart .cart__summary > div { text-align: right; font-weight: 700; color: var(--ck-ink); }
+/* Dernière ligne (Total) mise en avant */
+.cart .cart__summary .cart__label:last-of-type,
+.cart .cart__summary > div:last-of-type {
+    font-size: 1.2rem; font-weight: 800; color: var(--ck-ink);
+    border-top: 2px solid var(--ck-ink); padding-top: 10px; margin-top: 4px;
+}
+.cart .cart__footer { display: flex; justify-content: flex-end; margin-top: 18px; }
+
+/* ----------------------------------------------------------------------------
+   6) Petites cohérences globales sûres (messages d'info)
+   -------------------------------------------------------------------------- */
+.content-card .ui.message,
+.content-card .ui.segment {
+    border-radius: var(--ck-radius-sm);
+}
