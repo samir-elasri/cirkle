@@ -197,6 +197,9 @@ php artisan locales:compile
 php artisan view:clear
 php artisan config:clear
 php artisan route:clear
+# Cache-busting des assets (asset_with_version lit cache-time.txt) : valeur
+# unique à chaque déploiement, sinon les navigateurs gardent le CSS/JS en cache.
+date +%s%N > cache-time.txt
 REMOTE
 green "✓ Remote post-deploy complete"
 echo
