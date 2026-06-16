@@ -130,10 +130,17 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
 .platform-selector__tiles { gap: 14px !important; }
 .platform-selector__tile {
     border-radius: 14px !important; background: #fff !important;
-    box-shadow: var(--ck-shadow) !important; transition: transform .1s, box-shadow .14s !important;
+    box-shadow: var(--ck-shadow) !important; transition: transform .1s, box-shadow .14s, background .14s !important;
     padding: 1.1em 1.3em !important;
 }
 .platform-selector__tile:hover { transform: translateY(-3px) !important; box-shadow: var(--ck-shadow-lg) !important; }
+/* Plateforme CHOISIE : le JAUNE remplit le FOND du bouton (pas que la bordure) */
+.platform-selector__tile.is-active {
+    background: var(--ck-accent) !important;
+    border-color: var(--ck-accent-dark) !important;
+    color: var(--ck-ink) !important;
+    box-shadow: 0 8px 22px rgba(242,194,0,.42) !important;
+}
 
 /* ── Accueil : catalogue (vert « disponible » conservé) ───────────────────── */
 .catalogue__row { background: #fff !important; border: 1px solid var(--ck-line) !important;
@@ -171,6 +178,30 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
 .cart .cart__summary > div { text-align: right; font-weight: 700; }
 .cart .cart__summary .cart__label:last-of-type, .cart .cart__summary > div:last-of-type {
     font-size: 1.25rem !important; font-weight: 900 !important; border-top: 2px solid var(--ck-ink); padding-top: 11px; margin-top: 5px; }
+
+/* ── Bannière : fond VERT/GRIS ANIMÉ & fluide (inspiration glassmorphism) ────
+   Remplace totalement l'ancienne image verte. Des « blobs » flous de vert et de
+   gris ondulent doucement entre plusieurs nuances. */
+.main__banner {
+    background-image:
+        radial-gradient(38% 55% at 18% 28%, rgba(58,138,98,.88), transparent 62%),
+        radial-gradient(42% 52% at 82% 22%, rgba(150,165,156,.72), transparent 62%),
+        radial-gradient(48% 58% at 62% 82%, rgba(24,82,60,.92), transparent 60%),
+        radial-gradient(36% 48% at 8% 82%, rgba(116,136,126,.6), transparent 60%),
+        radial-gradient(40% 50% at 92% 78%, rgba(74,133,104,.7), transparent 60%),
+        linear-gradient(125deg, #133526, #2e6b4f, #5e6f64, #356048, #4a8568) !important;
+    background-size: 200% 200%, 220% 220%, 240% 240%, 200% 200%, 220% 220%, 360% 360% !important;
+    background-repeat: no-repeat !important;
+    background-color: #1b3e2e !important;
+    animation: ckBannerWave 22s ease-in-out infinite !important;
+    min-height: 200px;
+}
+@keyframes ckBannerWave {
+    0%   { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
+    50%  { background-position: 100% 100%, 0% 100%, 100% 0%, 100% 0%,   0% 0%,     100% 50%; }
+    100% { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) { .main__banner { animation: none !important; } }
 
 /* ── Divers ───────────────────────────────────────────────────────────────── */
 .ui.segment, .ui.message { border-radius: 12px !important; }
