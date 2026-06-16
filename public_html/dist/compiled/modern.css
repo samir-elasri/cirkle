@@ -1,260 +1,177 @@
 /* ============================================================================
-   Cirkle — couche de modernisation UI/UX (override)
-   Chargée APRÈS main.min.css + semantic.min.css. Aucune dépendance au build SCSS
-   (gelé). Objectif : un look moderne, propre et intuitif sur tout le site, SANS
-   toucher aux choix explicites de Denis :
-     - couleurs du formulaire 2350 (« O » rouge, champs gris pâle du fournisseur) ;
-     - sélecteur des 4 plateformes en JAUNE.
-   Tout le reste est progressivement modernisé via cette feuille.
+   Cirkle — couche de modernisation UI/UX (override, build SCSS gelé)
+   Chargée APRÈS main.min.css. Objectif : un look SLEEK & MODERNE sur tout le
+   site. On force les propriétés visuelles clés (!important) pour gagner sur les
+   styles d'origine. On CONSERVE : couleurs du 2350 (« O » rouge + champs gris
+   pâle) et sélecteur des 4 plateformes en jaune.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-    --ck-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --ck-accent: #ffd200;        /* jaune de marque (Denis) */
-    --ck-accent-dark: #f0c200;
-    --ck-accent-soft: #fff7d1;
-    --ck-ink: #1c2230;           /* texte principal */
-    --ck-ink-soft: #5a6172;      /* texte secondaire */
-    --ck-line: #e6e9f0;          /* bordures */
-    --ck-line-strong: #cfd4e0;
-    --ck-bg: #f6f7f9;            /* fond doux */
+    --ck-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --ck-accent: #ffd200;
+    --ck-accent-dark: #f2c200;
+    --ck-accent-soft: #fff6cc;
+    --ck-ink: #161b26;
+    --ck-ink-soft: #5b6478;
+    --ck-line: #e7eaf1;
+    --ck-line-strong: #d4d9e4;
     --ck-bg-card: #ffffff;
-    --ck-green: #1f9d57;         /* « disponible » (annuaire) */
-    --ck-green-soft: #e9f8ef;
-    --ck-radius: 14px;
-    --ck-radius-sm: 9px;
-    --ck-radius-xs: 6px;
-    --ck-shadow: 0 1px 3px rgba(20,26,40,.06), 0 6px 18px rgba(20,26,40,.05);
-    --ck-shadow-lg: 0 10px 34px rgba(20,26,40,.12);
+    --ck-green: #15924f;
+    --ck-green-soft: #e7f7ee;
+    --ck-radius: 16px;
+    --ck-radius-sm: 11px;
+    --ck-shadow: 0 1px 2px rgba(22,27,38,.05), 0 8px 24px rgba(22,27,38,.06);
+    --ck-shadow-lg: 0 18px 48px rgba(22,27,38,.14);
 }
 
-/* ----------------------------------------------------------------------------
-   1) Base globale : typographie, fond, titres, liens
-   -------------------------------------------------------------------------- */
+/* ── Fond moderne (dégradé doux, fixe) ─────────────────────────────────────
+   Remplace l'ancien fond. Subtil mais bien présent. */
 body {
-    font-family: var(--ck-font);
+    font-family: var(--ck-font) !important;
     color: var(--ck-ink);
-    background: var(--ck-bg);
+    line-height: 1.62;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    line-height: 1.6;
-    letter-spacing: .1px;
+    background:
+        radial-gradient(900px 500px at 12% -5%, rgba(255,210,0,.16), transparent 60%),
+        radial-gradient(900px 600px at 100% 0%, rgba(90,140,255,.12), transparent 55%),
+        linear-gradient(180deg, #f4f6fb 0%, #f8f9fc 40%, #fbfcfe 100%) !important;
+    background-attachment: fixed !important;
 }
-h1, h2, h3, h4, h5, .registration-title, .fiche-section__title {
-    font-family: var(--ck-font);
-    color: var(--ck-ink);
-    line-height: 1.22;
-    letter-spacing: -.2px;
-}
-h1 { font-weight: 800; }
-h2, h3 { font-weight: 700; }
-p { line-height: 1.65; }
-a { transition: color .12s; }
 
-/* Largeurs de contenu un peu plus respirantes */
-.optimal-content-width { max-width: 1080px; }
+h1, h2, h3, h4, h5 { font-family: var(--ck-font) !important; color: var(--ck-ink); letter-spacing: -.3px; line-height: 1.18; }
+h1 { font-weight: 900 !important; }
+h2 { font-weight: 800 !important; }
+h3 { font-weight: 700 !important; }
+.optimal-content-width { max-width: 1100px; }
 
-/* ----------------------------------------------------------------------------
-   2) En-tête
-   -------------------------------------------------------------------------- */
+/* ── Barre de navigation : sleek, collante, effet verre ───────────────────── */
 .header {
-    background: #fff;
-    box-shadow: 0 1px 0 var(--ck-line), 0 2px 12px rgba(20,26,40,.04);
+    position: sticky !important; top: 0; z-index: 50;
+    background: rgba(255,255,255,.82) !important;
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--ck-line) !important;
+    box-shadow: 0 6px 24px rgba(22,27,38,.06) !important;
+    padding: 6px 0 !important;
 }
-.header__content { align-items: center; }
+.header__content { align-items: center !important; }
+.header__logo { max-height: 48px; width: auto; }
+.header-menu-item > a {
+    font-family: var(--ck-font); font-weight: 600 !important; color: var(--ck-ink) !important;
+    padding: 9px 14px !important; border-radius: 10px; transition: background .14s, color .14s; text-decoration: none;
+}
+.header-menu-item > a:hover { background: var(--ck-accent-soft) !important; color: var(--ck-ink) !important; }
 .header__member-counter {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--ck-accent-soft);
-    border: 1px solid var(--ck-accent);
-    border-radius: 999px;
-    padding: 6px 14px;
+    background: linear-gradient(135deg, #fff3b0, var(--ck-accent)) !important;
+    border-radius: 999px !important; padding: 7px 16px !important; box-shadow: 0 4px 12px rgba(242,194,0,.4);
 }
-.header__member-counter-label { color: var(--ck-ink-soft); font-weight: 600; font-size: .82rem; }
-.header__member-counter-value { color: var(--ck-ink); font-weight: 800; }
-.header-menu-item > a { font-weight: 600; }
+.header__member-counter-label { color: #5a4d00 !important; font-weight: 700 !important; }
+.header__member-counter-value { color: var(--ck-ink) !important; font-weight: 900 !important; }
 
-/* ----------------------------------------------------------------------------
-   3) Boutons (.call-to-action) — modernes et cohérents.
-      Primaire = jaune de marque + texte sombre. (Les tuiles du sélecteur de
-      plateformes ne sont PAS des .call-to-action : leur jaune reste intact.)
-   -------------------------------------------------------------------------- */
-.call-to-action,
-button.call-to-action,
-a.call-to-action,
-input.call-to-action[type="submit"] {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    background: var(--ck-accent);
-    color: var(--ck-ink) !important;
-    border: 1px solid var(--ck-accent);
-    border-radius: var(--ck-radius-sm);
-    padding: 11px 22px;
-    font-family: var(--ck-font);
-    font-weight: 700;
-    font-size: .98rem;
-    line-height: 1.1;
-    text-decoration: none;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(20,26,40,.08);
-    transition: background .12s, box-shadow .12s, transform .04s;
+/* ── Boutons : modernes, pleins, jaune de marque ──────────────────────────── */
+.call-to-action, button.call-to-action, a.call-to-action, input.call-to-action[type="submit"] {
+    display: inline-flex !important; align-items: center; justify-content: center; gap: 8px;
+    background: var(--ck-accent) !important; color: var(--ck-ink) !important;
+    border: 1px solid var(--ck-accent) !important; border-radius: 12px !important;
+    padding: 12px 26px !important; font-family: var(--ck-font); font-weight: 800 !important;
+    font-size: 1rem !important; line-height: 1.1; text-decoration: none !important; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(242,194,0,.28) !important; transition: transform .07s, box-shadow .14s, background .14s;
 }
-.call-to-action:hover,
-button.call-to-action:hover,
-a.call-to-action:hover { background: var(--ck-accent-dark); box-shadow: 0 4px 14px rgba(240,194,0,.35); text-decoration: none; }
-.call-to-action:active { transform: translateY(1px); }
-
-/* Variante secondaire : liens « Précédent » dans les parcours en carte */
-.content-card__footer a.call-to-action,
-.cart .cart__empty .call-to-action {
-    background: #fff; color: var(--ck-ink) !important; border-color: var(--ck-line-strong);
-    box-shadow: none;
+.call-to-action:hover, button.call-to-action:hover, a.call-to-action:hover {
+    background: var(--ck-accent-dark) !important; transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(242,194,0,.42) !important;
 }
-.content-card__footer a.call-to-action:hover { background: var(--ck-bg); border-color: var(--ck-ink-soft); }
+.call-to-action:active { transform: translateY(0) !important; }
+.content-card__footer a.call-to-action {
+    background: #fff !important; border-color: var(--ck-line-strong) !important; box-shadow: none !important;
+}
+.content-card__footer a.call-to-action:hover { background: #f3f5f9 !important; transform: none; }
 
-/* ----------------------------------------------------------------------------
-   4) Champs de formulaire (modernes) — on EXCLUT les champs gris du 2350.
-   -------------------------------------------------------------------------- */
-input[type="text"], input[type="email"], input[type="password"],
-input[type="number"], input[type="tel"], input[type="search"], textarea, select {
-    font-family: var(--ck-font);
-    color: var(--ck-ink);
-    background: #fff;
-    border: 1px solid var(--ck-line-strong);
-    border-radius: var(--ck-radius-sm);
-    padding: 10px 13px;
-    font-size: 1rem;
-    transition: border-color .12s, box-shadow .12s;
+/* ── Champs de formulaire : grands, nets, modernes ────────────────────────── */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+input[type="tel"], input[type="search"], input[type="url"], textarea, select {
+    font-family: var(--ck-font) !important; color: var(--ck-ink) !important;
+    background: #fff !important; border: 1.5px solid var(--ck-line-strong) !important;
+    border-radius: 12px !important; padding: 13px 16px !important; font-size: 1rem !important;
+    box-shadow: 0 1px 2px rgba(22,27,38,.04) !important; transition: border-color .14s, box-shadow .14s !important;
 }
 input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus,
-input[type="number"]:focus, input[type="tel"]:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--ck-accent-dark);
-    box-shadow: 0 0 0 3px rgba(255,210,0,.28);
+input[type="number"]:focus, input[type="tel"]:focus, input[type="search"]:focus, textarea:focus, select:focus {
+    outline: none !important; border-color: var(--ck-accent-dark) !important;
+    box-shadow: 0 0 0 4px rgba(255,210,0,.3) !important;
 }
-sl-input::part(base), sl-select::part(combobox) { border-radius: var(--ck-radius-sm); }
-/* Ne PAS modifier les champs « info fournisseur » du 2350 (gris pâle voulu) */
-.form-2350 .supplier-input { border-radius: var(--ck-radius-xs); }
+label { font-weight: 600; color: var(--ck-ink); }
+sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important; min-height: 48px; }
+/* on NE touche PAS au gris pâle des champs « info fournisseur » du 2350 */
+.form-2350 .supplier-input { border-radius: 8px !important; }
 
-/* ----------------------------------------------------------------------------
-   5) Cartes génériques (parcours d'inscription, sections de fiche, etc.)
-   -------------------------------------------------------------------------- */
+/* ── Cartes : ombres et arrondis prononcés ────────────────────────────────── */
 .content-card {
-    background: var(--ck-bg-card);
-    border: 1px solid var(--ck-line);
-    border-radius: var(--ck-radius);
-    box-shadow: var(--ck-shadow);
-    padding: clamp(22px, 4vw, 42px);
-    margin: 26px auto;
-    max-width: 780px;
-    line-height: 1.6;
+    background: var(--ck-bg-card) !important; border: 1px solid var(--ck-line) !important;
+    border-radius: 20px !important; box-shadow: var(--ck-shadow-lg) !important;
+    padding: clamp(24px, 4vw, 46px) !important; margin: 30px auto !important; max-width: 800px;
 }
-.content-card__header {
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-    border-bottom: 1px solid var(--ck-line); padding-bottom: 18px; margin-bottom: 24px;
+.content-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    border-bottom: 1px solid var(--ck-line); padding-bottom: 20px; margin-bottom: 26px; }
+.content-card__header--title { font-size: clamp(1.5rem, 2.6vw, 1.9rem) !important; font-weight: 900 !important; margin: 0 0 5px; }
+.content-card__label { font-size: .92rem; color: var(--ck-ink-soft); }
+.content-card .registration-title, .form-2350 .registration-title {
+    font-size: 1.22rem !important; font-weight: 800 !important; margin: 26px 0 15px;
+    padding-bottom: 8px; border-bottom: 3px solid var(--ck-accent); display: inline-block;
 }
-.content-card__header--title { font-size: clamp(1.4rem, 2.4vw, 1.75rem); font-weight: 800; margin: 0 0 4px; }
-.content-card__label { font-size: .9rem; color: var(--ck-ink-soft); }
-.content-card .registration-title,
-.form-2350 .registration-title {
-    font-size: 1.18rem; font-weight: 700; margin: 24px 0 14px; padding-bottom: 7px;
-    border-bottom: 3px solid var(--ck-accent); display: inline-block;
-}
-.content-card .form__column { margin-bottom: 18px; }
-.content-card label { font-weight: 600; }
-.content-card__footer {
-    display: flex; align-items: center; justify-content: space-between; gap: 14px;
-    margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--ck-line);
-}
+.content-card .form__column { margin-bottom: 20px; }
+.content-card__footer { display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--ck-line); }
 
-/* ----------------------------------------------------------------------------
-   6) Accueil : sélecteur de plateformes (jaune CONSERVÉ, juste modernisé)
-   -------------------------------------------------------------------------- */
-.platform-selector__tiles { gap: 12px; }
+/* ── Sélecteur des 4 plateformes : on garde le JAUNE, on modernise l'écrin ── */
+.platform-selector__tiles { gap: 14px !important; }
 .platform-selector__tile {
-    border-radius: var(--ck-radius-sm) !important;
-    box-shadow: var(--ck-shadow);
-    background: #fff;
-    transition: transform .08s, box-shadow .12s, background .12s;
+    border-radius: 14px !important; background: #fff !important;
+    box-shadow: var(--ck-shadow) !important; transition: transform .1s, box-shadow .14s !important;
+    padding: 1.1em 1.3em !important;
 }
-.platform-selector__tile:hover { transform: translateY(-2px); box-shadow: var(--ck-shadow-lg); }
-/* l'état actif jaune reste géré par les styles d'origine (choix de Denis) */
+.platform-selector__tile:hover { transform: translateY(-3px) !important; box-shadow: var(--ck-shadow-lg) !important; }
 
-/* ----------------------------------------------------------------------------
-   7) Accueil : catalogue catégories / professions (vert « disponible » conservé)
-   -------------------------------------------------------------------------- */
-.catalogue { line-height: 1.55; }
-.catalogue__row {
-    background: #fff; border: 1px solid var(--ck-line); border-radius: var(--ck-radius-sm);
-    padding: 14px 18px; margin-bottom: 12px; box-shadow: var(--ck-shadow);
-}
-.catalogue__cat { font-weight: 700; color: var(--ck-ink); }
-.catalogue__cat--available { color: var(--ck-green); }
-.catalogue__prof { color: var(--ck-ink-soft); }
+/* ── Accueil : catalogue (vert « disponible » conservé) ───────────────────── */
+.catalogue__row { background: #fff !important; border: 1px solid var(--ck-line) !important;
+    border-radius: 14px !important; padding: 16px 20px !important; margin-bottom: 14px !important;
+    box-shadow: var(--ck-shadow) !important; }
+.catalogue__cat { font-weight: 800 !important; }
+.catalogue__cat--available { color: var(--ck-green) !important; }
 .catalogue__prof--available {
-    display: inline-flex; align-items: center; gap: 6px;
-    color: var(--ck-green) !important; background: var(--ck-green-soft);
-    border-radius: 999px; padding: 3px 11px; font-weight: 600; text-decoration: none;
-    transition: background .12s;
+    display: inline-flex !important; align-items: center; gap: 6px; color: #0f7a3f !important;
+    background: var(--ck-green-soft) !important; border-radius: 999px !important;
+    padding: 4px 13px !important; font-weight: 700 !important; text-decoration: none !important; transition: background .12s;
 }
-.catalogue__prof--available:hover { background: #d8f2e3; text-decoration: none; }
-.catalogue__count { color: var(--ck-ink-soft); font-weight: 600; font-size: .85em; }
-.search-result__filters { margin-bottom: 18px; }
+.catalogue__prof--available:hover { background: #d4f1e0 !important; }
+.catalogue__count { color: var(--ck-ink-soft) !important; font-weight: 700; font-size: .85em; }
 
-/* ----------------------------------------------------------------------------
-   8) Fiche fournisseur : onglets + sections
-   -------------------------------------------------------------------------- */
-.fiche-tabs__nav {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    border-bottom: 2px solid var(--ck-line); margin-bottom: 22px;
-}
-.fiche-tabs__btn {
-    background: transparent; border: none; border-bottom: 3px solid transparent;
-    padding: 11px 18px; margin-bottom: -2px; cursor: pointer;
-    font-family: var(--ck-font); font-weight: 700; color: var(--ck-ink-soft);
-    border-radius: var(--ck-radius-xs) var(--ck-radius-xs) 0 0; transition: color .12s, background .12s;
-}
-.fiche-tabs__btn:hover { background: var(--ck-bg); color: var(--ck-ink); }
-.fiche-tabs__btn.is-active { color: var(--ck-ink); border-bottom-color: var(--ck-accent); }
-.fiche-section { margin-bottom: 22px; }
-.fiche-section__title {
-    font-size: 1.15rem; font-weight: 700; margin: 0 0 10px; padding-bottom: 6px;
-    border-bottom: 1px solid var(--ck-line);
-}
-.evaluations-list__header { font-weight: 700; }
-.review {
-    background: #fff; border: 1px solid var(--ck-line); border-radius: var(--ck-radius-sm);
-    padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--ck-shadow);
-}
+/* ── Fiche fournisseur : onglets + sections ───────────────────────────────── */
+.fiche-tabs__nav { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 2px solid var(--ck-line) !important; margin-bottom: 24px; }
+.fiche-tabs__btn { background: transparent !important; border: none !important; border-bottom: 3px solid transparent !important;
+    padding: 12px 20px !important; margin-bottom: -2px; cursor: pointer; font-family: var(--ck-font);
+    font-weight: 700 !important; color: var(--ck-ink-soft) !important; border-radius: 10px 10px 0 0; transition: all .14s; }
+.fiche-tabs__btn:hover { background: var(--ck-accent-soft) !important; color: var(--ck-ink) !important; }
+.fiche-tabs__btn.is-active { color: var(--ck-ink) !important; border-bottom-color: var(--ck-accent) !important; }
+.fiche-section__title { font-size: 1.18rem !important; font-weight: 800 !important; margin: 0 0 12px; padding-bottom: 7px; border-bottom: 1px solid var(--ck-line); }
+.review { background: #fff !important; border: 1px solid var(--ck-line) !important; border-radius: 12px !important;
+    padding: 16px 18px !important; margin-bottom: 12px !important; box-shadow: var(--ck-shadow) !important; }
 
-/* ----------------------------------------------------------------------------
-   9) Panier : cartes d'articles + sommaire en grille
-   -------------------------------------------------------------------------- */
-.cart .optimal-content-width { max-width: 840px; }
-.cart .cart-single {
-    background: #fff; border: 1px solid var(--ck-line); border-radius: var(--ck-radius);
-    box-shadow: var(--ck-shadow); padding: 18px 20px; margin-bottom: 14px;
-}
-.cart .cart-single__title { font-size: 1.2rem; font-weight: 800; margin: 0 0 6px; }
-.cart .cart-single__body { color: var(--ck-ink-soft); }
-.cart .cart-single__footer { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--ck-line); }
-.cart .cart-single__price { font-size: 1.1rem; font-weight: 800; }
-.cart .cart__summary {
-    display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: baseline;
-    background: #fff; border: 1px solid var(--ck-line); border-radius: var(--ck-radius);
-    padding: 18px 22px; margin-top: 18px; box-shadow: var(--ck-shadow);
-}
-.cart .cart__summary .cart__label { color: var(--ck-ink-soft); }
+/* ── Panier ───────────────────────────────────────────────────────────────── */
+.cart .cart-single { background: #fff !important; border: 1px solid var(--ck-line) !important; border-radius: 16px !important;
+    box-shadow: var(--ck-shadow) !important; padding: 20px 22px !important; margin-bottom: 14px !important; }
+.cart .cart-single__title { font-size: 1.25rem !important; font-weight: 800 !important; margin: 0 0 6px; }
+.cart .cart-single__price { font-size: 1.15rem !important; font-weight: 800 !important; }
+.cart .cart__summary { display: grid !important; grid-template-columns: 1fr auto; gap: 9px 24px; align-items: baseline;
+    background: #fff !important; border: 1px solid var(--ck-line) !important; border-radius: 16px !important;
+    padding: 20px 24px !important; margin-top: 18px; box-shadow: var(--ck-shadow) !important; }
 .cart .cart__summary > div { text-align: right; font-weight: 700; }
-.cart .cart__summary .cart__label:last-of-type,
-.cart .cart__summary > div:last-of-type {
-    font-size: 1.2rem; font-weight: 800; border-top: 2px solid var(--ck-ink);
-    padding-top: 10px; margin-top: 4px;
-}
-.cart .cart__footer { display: flex; justify-content: flex-end; margin-top: 18px; }
+.cart .cart__summary .cart__label:last-of-type, .cart .cart__summary > div:last-of-type {
+    font-size: 1.25rem !important; font-weight: 900 !important; border-top: 2px solid var(--ck-ink); padding-top: 11px; margin-top: 5px; }
 
-/* ----------------------------------------------------------------------------
-   10) Petites cohérences
-   -------------------------------------------------------------------------- */
-.ui.segment, .ui.message { border-radius: var(--ck-radius-sm) !important; }
-.addition-link { font-weight: 700; }
+/* ── Divers ───────────────────────────────────────────────────────────────── */
+.ui.segment, .ui.message { border-radius: 12px !important; }
+.main__title { background: transparent !important; }
