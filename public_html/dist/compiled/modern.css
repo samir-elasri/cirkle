@@ -182,17 +182,18 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
 /* ── Bannière : fond VERT/GRIS ANIMÉ & fluide (inspiration glassmorphism) ────
    Remplace totalement l'ancienne image verte. Des « blobs » flous de vert et de
    gris ondulent doucement entre plusieurs nuances. */
-.main__banner {
+.main__banner,
+.slideshow {
     background-image:
-        radial-gradient(38% 55% at 18% 28%, rgba(58,138,98,.88), transparent 62%),
+        radial-gradient(38% 55% at 18% 28%, rgba(58,138,98,.90), transparent 62%),
         radial-gradient(42% 52% at 82% 22%, rgba(150,165,156,.72), transparent 62%),
-        radial-gradient(48% 58% at 62% 82%, rgba(24,82,60,.92), transparent 60%),
+        radial-gradient(48% 58% at 62% 82%, rgba(24,82,60,.95), transparent 60%),
         radial-gradient(36% 48% at 8% 82%, rgba(116,136,126,.6), transparent 60%),
-        radial-gradient(40% 50% at 92% 78%, rgba(74,133,104,.7), transparent 60%),
-        linear-gradient(125deg, #133526, #2e6b4f, #5e6f64, #356048, #4a8568) !important;
+        radial-gradient(40% 50% at 92% 78%, rgba(74,133,104,.78), transparent 60%),
+        linear-gradient(125deg, #123524, #2e6b4f, #5e6f64, #356048, #4a8568) !important;
     background-size: 200% 200%, 220% 220%, 240% 240%, 200% 200%, 220% 220%, 360% 360% !important;
     background-repeat: no-repeat !important;
-    background-color: #1b3e2e !important;
+    background-color: #163d2c !important;
     animation: ckBannerWave 22s ease-in-out infinite !important;
     min-height: 200px;
 }
@@ -201,7 +202,18 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
     50%  { background-position: 100% 100%, 0% 100%, 100% 0%, 100% 0%,   0% 0%,     100% 50%; }
     100% { background-position:   0% 0%, 100% 0%,  50% 100%,   0% 100%, 100% 100%,   0% 50%; }
 }
-@media (prefers-reduced-motion: reduce) { .main__banner { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .main__banner, .slideshow { animation: none !important; } }
+
+/* Diaporama d'accueil : retirer l'IMAGE verte + rendre l'intérieur transparent
+   pour laisser voir le fond animé du .slideshow ; texte en blanc lisible. */
+.slideshow .slides, .slideshow .slick-list, .slideshow .slick-track,
+.slideshow .slide, .slideshow .slides-mobile, .slideshow .slides-mobile .slide { background: transparent !important; }
+.slideshow .slide img, .slideshow .slide video { display: none !important; }
+.slideshow .slideshow__content h2,
+.slideshow .slideshow__text, .slideshow .slideshow__sub-text,
+.slideshow .slides-mobile__content, .slideshow .slides-mobile__content h2 {
+    color: #ffffff !important; text-shadow: 0 2px 16px rgba(0,0,0,.4);
+}
 
 /* ── Divers ───────────────────────────────────────────────────────────────── */
 .ui.segment, .ui.message { border-radius: 12px !important; }
