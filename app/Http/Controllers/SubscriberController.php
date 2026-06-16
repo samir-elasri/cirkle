@@ -131,7 +131,7 @@ class SubscriberController extends Controller
 		// Provinces réellement tarifées pour cette catégorie (sinon : que le code postal).
 		$provinceIds = $allPrices->whereNotNull('state_id')->pluck('state_id')->unique()->values()->all();
 		$params['provinces'] = $provinceIds
-			? State::whereIn('id', $provinceIds)->orderByTranslation('title')->get()
+			? State::whereIn('states.id', $provinceIds)->orderByTranslation('title')->get()
 			: collect();
 
 		return $params;
