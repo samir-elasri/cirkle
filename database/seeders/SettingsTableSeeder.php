@@ -18,6 +18,10 @@ class SettingsTableSeeder extends Seeder
 
 		Setting::create(gatherTranslatables([
 			'pub_group_id' => 1,
+			// Expéditeur des courriels : doit correspondre au domaine d'envoi pour passer
+			// SPF/DMARC (un placeholder « example.com » fait rejeter/spammer les courriels).
+			'sender_email' => 'noreply@cirkleservices.com',
+			'sender_email_name' => 'CIRKLE',
 			'fr' => [
 				'copyright_notice' => "Copyright {$year} - Nom de la compagnie - Tous droits réservés",
 				'validation_email_title' => 'Validation du courriel',
