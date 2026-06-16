@@ -394,7 +394,7 @@ class AuthController extends Controller
 
 		foreach ($this->frontendGuards as $guard => $class) {
 			/** @var Subscriber $class */
-			$subscriber = $class::getByToken(Route::input('token'));
+			$subscriber = $class::getByValidationToken(Route::input('token'));
 
 			if ($subscriber) {
 				/** @var Subscriber $subscriber */

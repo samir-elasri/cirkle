@@ -217,4 +217,15 @@ class UserBase extends Model implements
 	{
 		return self::active()->whereNotNull('recover_token')->where('recover_token', $token)->first();
 	}
+
+	/**
+	 * Recherche par jeton SANS exiger « active » : à la validation du courriel, un
+	 * fournisseur fraîchement inscrit est encore inactif (il ne devient actif qu'au
+	 * paiement), donc getByToken() ne le trouverait pas. Le jeton aléatoire à usage
+	 * unique reste la garantie de sécurité.
+	 */
+	public static function getByValidationToken($token)
+	{
+		return self::whereNotNull('recover_token')->where('recover_token', $token)->first();
+	}
 }
