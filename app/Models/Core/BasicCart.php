@@ -232,6 +232,7 @@ class BasicCart extends Model
 						'order_id'        => $order->id,
 						'record_date'     => now(),
 						'subscription_id' => $item->id,
+						'state_id'        => $item->state_id ?? null, // zone : NULL = code postal, sinon province
 						'subscriber_id'   => $subscriber->id,
 						'start_date'      => $item->start_datetime,
 						'end_date'        => $item->end_datetime,

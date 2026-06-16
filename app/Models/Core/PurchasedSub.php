@@ -64,6 +64,7 @@ class PurchasedSub extends Model
 	protected $fillable = [
 		'record_date',
 		'subscription_id',
+		'state_id',
 		'subscriber_id',
 		'order_id',
 		'start_date',
@@ -134,6 +135,16 @@ class PurchasedSub extends Model
 	public function subscription()
 	{
 		return $this->belongsTo(Subscription::class);
+	}
+
+	/**
+	 * Province visée par l'abonnement (NULL = forfait par code postal).
+	 *
+	 * @return BelongsTo|State
+	 */
+	public function state()
+	{
+		return $this->belongsTo(State::class);
 	}
 
 	/**

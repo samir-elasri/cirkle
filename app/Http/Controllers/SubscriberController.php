@@ -11,6 +11,7 @@ use App\Models\Core\Country;
 use App\Models\JobOffer;
 use App\Models\License;
 use App\Models\PostalCode;
+use App\Models\SubscriptionPrice;
 use App\Models\Promotion;
 use App\Models\ServiceCategory;
 use App\Models\Service;
@@ -108,12 +109,30 @@ class SubscriberController extends Controller
 
 		$selectedCategory = $request->session()->get('registerFormData.service_category_id');
 
+		// Prix affiché par défaut = forfait CODE POSTAL (state_id NULL) de la catégorie.
 		$params['subscriptions'] = Subscription::where('active', '=', true)
 			->with(['subscriptionPrices' => function($query) use ($selectedCategory) {
-				$query->where('subscription_prices.service_category_id', '=', $selectedCategory);
+				$query->where('subscription_prices.service_category_id', '=', $selectedCategory)
+					->whereNull('subscription_prices.state_id');
 			}])
 			->orderBy('position')
 			->get();
+
+		// Forfaits par PROVINCE (cahier de charges) : carte (abonnement => zone => coût)
+		// pour que la page calcule le prix selon la zone choisie (code postal ou province).
+		$allPrices = SubscriptionPrice::where('service_category_id', '=', $selectedCategory)->get();
+		$priceMap = [];
+		foreach ($allPrices as $price) {
+			$zone = $price->state_id === null ? 'postal' : (string) $price->state_id;
+			$priceMap[$price->subscription_id][$zone] = (float) $price->cost;
+		}
+		$params['priceMap'] = $priceMap;
+
+		// Provinces réellement tarifées pour cette catégorie (sinon : que le code postal).
+		$provinceIds = $allPrices->whereNotNull('state_id')->pluck('state_id')->unique()->values()->all();
+		$params['provinces'] = $provinceIds
+			? State::whereIn('id', $provinceIds)->orderByTranslation('title')->get()
+			: collect();
 
 		return $params;
 	}
@@ -1054,43 +1073,66 @@ class SubscriberController extends Controller
 		
 		// Get models from session
 		$subscriber = $request->session()->get('subscriber_model');
-		$postalCodes = $request->session()->get('postal_codes', collect());
+		$postalCodes = collect(); // reconstruit à chaque passage (évite l'accumulation)
 
 		$data = $request->all([
 			'subscription_id',
+			'zone_type',              // 'postal' (codes postaux) | 'province'
 			'postal_codes',
+			'subscription_state_id',  // province visée si zone_type = province
 		]);
 
-		$validator = Validator::make(
-			$data,
-			[
-				'subscription_id' => 'required',
-				'postal_codes' => 'required|array',
-			]
-		);
+		// Zone : par code postal (1 à 10 codes) OU par province (cahier de charges).
+		$zoneType = (($data['zone_type'] ?? 'postal') === 'province') ? 'province' : 'postal';
+		$data['zone_type'] = $zoneType;
+
+		$rules = ['subscription_id' => 'required'];
+		if ($zoneType === 'province') {
+			$rules['subscription_state_id'] = 'required|exists:states,id';
+		} else {
+			$rules['postal_codes'] = 'required|array';
+		}
+
+		$validator = Validator::make($data, $rules);
 
 		$validator->setAttributeNames([
-			'subscription_id' => __('auth.register.subscription_id'),
-			'postal_codes' => __('auth.register.postal_codes'),
+			'subscription_id'       => __('auth.register.subscription_id'),
+			'postal_codes'          => __('auth.register.postal_codes'),
+			'subscription_state_id' => 'Province',
 		]);
-		
+
+		// Le forfait choisi (abonnement × catégorie × zone) doit réellement avoir un prix.
+		$selectedCategory = $request->session()->get('registerFormData.service_category_id');
+		$validator->after(function ($v) use ($data, $selectedCategory, $zoneType) {
+			$stateId = $zoneType === 'province' ? ($data['subscription_state_id'] ?: null) : null;
+			$exists = SubscriptionPrice::where('subscription_id', '=', $data['subscription_id'] ?? 0)
+				->where('service_category_id', '=', $selectedCategory)
+				->where('state_id', '=', $stateId)
+				->exists();
+			if (!$exists) {
+				$v->errors()->add('subscription_id', "Ce forfait n'est pas disponible pour cette zone.");
+			}
+		});
+
 		if ($validator->fails()) {
 			return redirect()->back()
 				->withInput()
 				->withErrors($validator);
 		}
 
-		// Add postal codes to collection
-		foreach($data['postal_codes'] as $postalCode) {
-			if ($postalCode) {
-				$postalCodes->push(new PostalCode([
-					'postal_code' => $postalCode,
-				]));
+		if ($zoneType === 'postal') {
+			foreach (($data['postal_codes'] ?? []) as $postalCode) {
+				if ($postalCode) {
+					$postalCodes->push(new PostalCode(['postal_code' => $postalCode]));
+				}
 			}
+			$data['subscription_state_id'] = null;
+		} else {
+			$data['postal_codes'] = [];
 		}
 
-		// Update subscriber model
-		$subscriber->fill($data);
+		// Update subscriber model (seul subscription_id est une colonne ici)
+		$subscriber->fill(['subscription_id' => $data['subscription_id']]);
 
 		// Store updated models back in session
 		$request->session()->put('subscriber_model', $subscriber);
@@ -1263,7 +1305,23 @@ class SubscriberController extends Controller
 
 				Auth::guard('subscribers')->loginUsingId($subscriber->id);
 				Cart::empty();
-				Cart::add(Cart::getItem($request->session()->get('registerFormData.subscription_id'), Subscription::class));
+
+				// Abonnement : prix résolu selon la CATÉGORIE + la ZONE choisie
+				// (code postal = state NULL, ou la province). Corrige aussi le prix
+				// par catégorie (l'ancien « premier prix » était arbitraire).
+				$subscriptionItem = Cart::getItem($request->session()->get('registerFormData.subscription_id'), Subscription::class);
+				if ($subscriptionItem) {
+					$zoneStateId = $request->session()->get('registerFormData.subscription_state_id') ?: null;
+					$resolvedCost = SubscriptionPrice::where('subscription_id', '=', $subscriptionItem->id)
+						->where('service_category_id', '=', $request->session()->get('registerFormData.service_category_id'))
+						->where('state_id', '=', $zoneStateId)
+						->value('cost');
+					if ($resolvedCost !== null) {
+						$subscriptionItem->cost = (float) $resolvedCost; // honoré par Subscription::getCostAttribute
+					}
+					$subscriptionItem->state_id = $zoneStateId; // zone enregistrée sur l'achat (BasicCart::buyCart)
+					Cart::add($subscriptionItem);
+				}
 
 				// Frais de la fiche : variables par profession (feature #6), repli sur le réglage global
 				$ficheCategory = ServiceCategory::find($request->session()->get('registerFormData.service_category_id'));

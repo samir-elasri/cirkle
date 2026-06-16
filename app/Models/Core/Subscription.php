@@ -121,7 +121,13 @@ class Subscription extends Model implements TranslatableContract
 	}
 
     public function getCostAttribute() {
-        return $this->subscriptionPrices?->first()->cost ?? 0;
+        // Prix résolu à l'ajout au panier selon la catégorie + la zone choisie
+        // (code postal ou province) — voir SubscriberController::storeStep6. Sans
+        // résolution, repli sur le premier prix (compat. historique).
+        if (isset($this->attributes['cost']) && $this->attributes['cost'] !== null) {
+            return (float) $this->attributes['cost'];
+        }
+        return $this->subscriptionPrices?->first()?->cost ?? 0;
     }
 
     public function getProductDescriptionAttribute()

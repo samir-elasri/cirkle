@@ -2,8 +2,8 @@
 
 <section>
     <div class="optimal-content-width">
-  
-        <div class="content-card" data-component="step4">
+
+        <div class="content-card">
             <div class="content-card__header">
                 <div>
                     <h3 class="content-card__header--title">Enregistrement du fournisseur</h3>
@@ -13,11 +13,8 @@
             </div>
 
             {!! Form::open(['url' => urlRouteName('subscriber.register.storeStep4')]) !!}
-                {{-- <div>
-                    <img src="/dist/img/info.svg" alt="">
-                    <a href="{{ urlRouteName('public-subscriptions') }}" target="_blank">Description complete</a>
-                </div> --}}
 
+                {{-- 1) Durée du forfait --}}
                 <div class="form__column ">
                     <div class="form__row--error">
                         <label for="subscription_id">{{ __('auth.register.subscription_id') }}</label>
@@ -25,27 +22,69 @@
                             {!! $error !!}
                         @endforeach
                     </div>
-                    <sl-select data-ref="subscriptionElement" name="subscription_id" id="subscription_id" value="{{ old('subscription_id') ?? session('registerFormData.subscription_id') ?? '' }}">
+                    <sl-select name="subscription_id" id="subscription_id" value="{{ old('subscription_id') ?? session('registerFormData.subscription_id') ?? '' }}">
                         @foreach($subscriptions as $subscription)
-                            <sl-option value="{{ $subscription->id }}" data-price="{{ $subscription->subscriptionPrices->first()?->cost }}" data-max-postal-codes="{{ $subscription->max_postal_codes }}">
+                            <sl-option value="{{ $subscription->id }}" data-max-postal-codes="{{ $subscription->max_postal_codes }}">
                                 {{ $subscription->title }}
-                                -
-                                {{ prettyPrice($subscription->subscriptionPrices->first()?->cost) }}
                             </sl-option>
                         @endforeach
                     </sl-select>
                 </div>
 
-                <div class="form__column ">
+                {{-- 2) Zone desservie : par code postal OU par province (cahier de charges) --}}
+                @php $zoneOld = old('zone_type') ?? session('registerFormData.zone_type') ?? 'postal'; @endphp
+                <div class="form__column">
+                    <label>Zone desservie</label>
+                    <div style="display:flex;gap:22px;flex-wrap:wrap;margin-top:4px">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                            <input type="radio" name="zone_type" value="postal" {{ $zoneOld !== 'province' ? 'checked' : '' }}>
+                            Par code postal
+                        </label>
+                        @if($provinces->isNotEmpty())
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                                <input type="radio" name="zone_type" value="province" {{ $zoneOld === 'province' ? 'checked' : '' }}>
+                                Par province
+                            </label>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- 2a) Codes postaux (1 à N selon le forfait) --}}
+                <div class="form__column" id="postal_block">
                     <label for="postal_codes">{{ __('auth.register.postal_codes') }}</label>
                     @foreach($errors->get('postal_codes', '<small style="color: red">:message</small>') as $error)
                         {!! $error !!}
                     @endforeach
-                    <div>Le forfait inclut <span data-ref="maxPostalCodesElement"></span> codes postaux.</div>
+                    <div>Le forfait inclut <span id="max_postal_codes"></span> codes postaux.</div>
                     <div style="display:flex;gap:10px;flex-wrap:wrap">
                         @for ($i = 0; $i < $subscriptions->max('max_postal_codes'); $i++)
-                            <input style="width:7ch" data-ref="postalCodeInputs" data-i="{{$i}}" type="text" name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) ?? session('registerFormData.postal_codes.'.$i) ?? '' }}">
+                            <input style="width:7ch" class="postal-code-input" data-i="{{$i}}" type="text" name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) ?? session('registerFormData.postal_codes.'.$i) ?? '' }}">
                         @endfor
+                    </div>
+                </div>
+
+                {{-- 2b) Province --}}
+                @if($provinces->isNotEmpty())
+                    <div class="form__column" id="province_block" style="display:none">
+                        <div class="form__row--error">
+                            <label for="subscription_state_id">Province</label>
+                            @foreach($errors->get('subscription_state_id', '<small style="color: red">:message</small>') as $error)
+                                {!! $error !!}
+                            @endforeach
+                        </div>
+                        <sl-select name="subscription_state_id" id="subscription_state_id" value="{{ old('subscription_state_id') ?? session('registerFormData.subscription_state_id') ?? '' }}">
+                            @foreach($provinces as $province)
+                                <sl-option value="{{ $province->id }}">{{ $province->title }}</sl-option>
+                            @endforeach
+                        </sl-select>
+                    </div>
+                @endif
+
+                {{-- 3) Prix du forfait sélectionné --}}
+                <div class="form__column">
+                    <div class="ui segment" style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Prix du forfait</strong>
+                        <strong id="forfait_price_display">—</strong>
                     </div>
                 </div>
 
@@ -58,12 +97,6 @@
                 </div>
                 @endif
 
-                {{-- <div class="form__column">
-                    <label>Sommaire d'abonnement</label>
-
-                    <div data-ref="totalElement"></div>
-                </div> --}}
-
                 <div class="content-card__footer">
                     <a href="{{ urlRouteName('register-supplier-step-3') }}" class="call-to-action">{{ __('main.previous') }}</a>
 
@@ -73,6 +106,57 @@
                 </div>
 
             {!! Form::close() !!}
+
+            {{-- Forfait par code postal OU par province : calcul du prix côté client (sans rebuild JS) --}}
+            <script>
+            (function () {
+                var priceMap = @json($priceMap, JSON_UNESCAPED_UNICODE);
+                var sub      = document.getElementById('subscription_id');
+                var prov     = document.getElementById('subscription_state_id');
+                var postalBlock = document.getElementById('postal_block');
+                var provBlock   = document.getElementById('province_block');
+                var priceEl  = document.getElementById('forfait_price_display');
+                var maxEl    = document.getElementById('max_postal_codes');
+                var postalInputs = document.querySelectorAll('.postal-code-input');
+                var fmt = new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' });
+
+                function zone() {
+                    var r = document.querySelector('input[name="zone_type"]:checked');
+                    return r ? r.value : 'postal';
+                }
+                function value(el) { return el ? (el.value || '') : ''; }
+
+                function update() {
+                    var z = zone();
+                    if (postalBlock) postalBlock.style.display = (z === 'province') ? 'none' : '';
+                    if (provBlock)   provBlock.style.display   = (z === 'province') ? '' : 'none';
+
+                    // Nombre de codes postaux inclus selon la durée choisie
+                    var subId = value(sub);
+                    var opt = sub ? sub.querySelector('sl-option[value="' + subId + '"]') : null;
+                    var maxPC = opt ? parseInt(opt.getAttribute('data-max-postal-codes') || '0', 10) : 0;
+                    if (maxEl) maxEl.textContent = maxPC;
+                    postalInputs.forEach(function (input) {
+                        input.classList.toggle('hide', parseInt(input.dataset.i, 10) >= maxPC);
+                    });
+
+                    // Prix selon la zone
+                    var map = priceMap[subId] || {};
+                    var cost = (z === 'province') ? map[value(prov)] : map['postal'];
+                    priceEl.textContent = (cost || cost === 0) ? fmt.format(cost) : '—';
+                }
+
+                document.querySelectorAll('input[name="zone_type"]').forEach(function (r) {
+                    r.addEventListener('change', update);
+                });
+                if (sub)  sub.addEventListener('sl-change', update);
+                if (prov) prov.addEventListener('sl-change', update);
+                if (window.customElements && customElements.whenDefined) {
+                    customElements.whenDefined('sl-select').then(function () { setTimeout(update, 0); });
+                }
+                setTimeout(update, 0);
+            })();
+            </script>
         </div>
     </div>
 </section>
