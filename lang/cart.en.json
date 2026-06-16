@@ -1,4 +1,5 @@
 {
+	"title": "Cart",
 	"buy": "Buy",
 	"bought": "Your transaction was successful. You will receive a confirmation email shortly.",
 	"setup": "Thank you for confirming your order. You have a free trial period of :length day(s) and your transaction will be processed on :date",

@@ -33,17 +33,26 @@
 
                 {{-- 2) Zone desservie : par code postal OU par province (cahier de charges) --}}
                 @php $zoneOld = old('zone_type') ?? session('registerFormData.zone_type') ?? 'postal'; @endphp
+                <style>
+                    .zone-toggle { display:inline-flex; border:2px solid #d9d9d9; border-radius:10px; overflow:hidden; margin-top:8px; }
+                    .zone-toggle .zone-opt { position:relative; display:flex; align-items:center; gap:8px; padding:12px 22px; cursor:pointer; font-weight:600; color:#555; background:#fff; user-select:none; transition:background .12s,color .12s; }
+                    .zone-toggle .zone-opt + .zone-opt { border-left:2px solid #d9d9d9; }
+                    .zone-toggle .zone-opt input { position:absolute; opacity:0; pointer-events:none; }
+                    .zone-toggle .zone-opt:hover { background:#fafafa; }
+                    .zone-toggle .zone-opt.is-active { background:#ffd200; color:#222; }
+                    .zone-toggle .zone-opt:has(input:checked) { background:#ffd200; color:#222; }
+                </style>
                 <div class="form__column">
-                    <label>Zone desservie</label>
-                    <div style="display:flex;gap:22px;flex-wrap:wrap;margin-top:4px">
-                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <label style="font-weight:700;">Zone desservie</label>
+                    <div class="zone-toggle">
+                        <label class="zone-opt {{ $zoneOld !== 'province' ? 'is-active' : '' }}">
                             <input type="radio" name="zone_type" value="postal" {{ $zoneOld !== 'province' ? 'checked' : '' }}>
-                            Par code postal
+                            <span>📍 Par code postal</span>
                         </label>
                         @if($provinces->isNotEmpty())
-                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                            <label class="zone-opt {{ $zoneOld === 'province' ? 'is-active' : '' }}">
                                 <input type="radio" name="zone_type" value="province" {{ $zoneOld === 'province' ? 'checked' : '' }}>
-                                Par province
+                                <span>🍁 Par province</span>
                             </label>
                         @endif
                     </div>
@@ -128,6 +137,10 @@
 
                 function update() {
                     var z = zone();
+                    document.querySelectorAll('.zone-toggle .zone-opt').forEach(function (l) {
+                        var i = l.querySelector('input');
+                        l.classList.toggle('is-active', !!(i && i.checked));
+                    });
                     if (postalBlock) postalBlock.style.display = (z === 'province') ? 'none' : '';
                     if (provBlock)   provBlock.style.display   = (z === 'province') ? '' : 'none';
 

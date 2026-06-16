@@ -32,9 +32,17 @@
         {{--			<div class="font-scaling"><a role="button" aria-label="Augmenter/réduire la taille du texte." href="{{ urlRouteName('fontScaled') }}"><span>A</span><span>A</span></a></div>--}}
         {{--		</li>--}}
 
-        {{--		@if (App\Models\Core\BasicCart::isActive())--}}
-        {{--			<li class="menu-corpo__item menu-corpo__item--cart"><a href="{{urlRouteName('cart')}}"><span class="cart-icon"></span><span class="cart-nb-items">{{Session::get('cart') ? count(Session::get('cart')) : 0}}</span></a></li>--}}
-        {{--		@endif--}}
+        @php $cartCount = Session::get('cart') ? count(Session::get('cart')) : 0; @endphp
+        @if($cartCount > 0)
+            <li class="menu-corpo__item menu-corpo__item--cart">
+                <a href="{{ urlRouteName('cart') }}" aria-label="{{ __('cart.title') }}"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:5px 13px;background:#ffd200;color:#222;border-radius:18px;font-weight:700;text-decoration:none;line-height:1;">
+                    <span aria-hidden="true">🛒</span>
+                    <span>{{ __('cart.title') }}</span>
+                    <span style="background:#222;color:#fff;border-radius:10px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0 5px;">{{ $cartCount }}</span>
+                </a>
+            </li>
+        @endif
 
         {{--		<li class="spacer on-desktop"></li>--}}
 

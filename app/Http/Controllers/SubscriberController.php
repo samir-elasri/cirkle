@@ -1112,6 +1112,15 @@ class SubscriberController extends Controller
 			if (!$exists) {
 				$v->errors()->add('subscription_id', "Ce forfait n'est pas disponible pour cette zone.");
 			}
+
+			// Zone code postal : au moins UN code postal non vide est requis
+			// (« required|array » seul laisse passer 10 cases vides).
+			if ($zoneType === 'postal') {
+				$filled = collect($data['postal_codes'] ?? [])->filter(fn ($c) => trim((string) $c) !== '')->count();
+				if ($filled < 1) {
+					$v->errors()->add('postal_codes', 'Veuillez saisir au moins un code postal.');
+				}
+			}
 		});
 
 		if ($validator->fails()) {

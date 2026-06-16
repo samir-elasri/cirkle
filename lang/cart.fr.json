@@ -1,4 +1,5 @@
 {
+    "title": "Panier",
     "buy": "Acheter",
     "bought": "Votre transaction est passée avec succès. Vous receverez un courriel de confirmation d'ici peu.",
     "setup": "Merci d'avoir confirmé votre commande. Vous avez une période d'essai gratuite de :length jour(s) et votre transaction passera le :date",
