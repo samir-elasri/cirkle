@@ -1158,6 +1158,7 @@ class SubscriberController extends Controller
 			'estimation',
 			'job_offer',
 			'url',
+			'url_forfait',
 			'estimation_cost',
 			'accepts_cash',
 			'accepts_check',
@@ -1205,7 +1206,14 @@ class SubscriberController extends Controller
 			'job_offer' =>  setting("job_offer_title", "job_offer_title"),
 			'url' =>  setting("url_title", "url_title"),
 		]);
-		
+
+		// Forfait site web sélectionné → un couple palier × durée valide est requis.
+		$validator->after(function ($v) use ($data) {
+			if (!empty($data['url']) && !\App\Support\WebsiteForfait::isValid($data['url_forfait'] ?? null)) {
+				$v->errors()->add('url_forfait', 'Veuillez choisir un forfait site web.');
+			}
+		});
+
 		if ($validator->fails()) {
 			return redirect()->back()
 				->withInput()
@@ -1247,6 +1255,8 @@ class SubscriberController extends Controller
 		if (!empty($cleanedData['url'])) {
 			// $cleanedData['profile_url_active'] = true; doesnt exist
 			$cleanedData['profile_url_activation_datetime'] = now();
+		} else {
+			$cleanedData['url_forfait'] = null; // option site web non retenue
 		}
 
 		$subscriber->fill($cleanedData);
@@ -1455,7 +1465,8 @@ class SubscriberController extends Controller
 
 				if ($subscriber->profile_url_activation_datetime) {
 					$purchase = new Purchase();
-					$price = setting("url_price") ?? 0;
+					// Forfait site web : prix du couple palier × durée choisi (repli sur url_price).
+					$price = \App\Support\WebsiteForfait::price($subscriber->url_forfait) ?? (setting("url_price") ?? 0);
 					$purchase->fill([
 						'purchase_type' => 'Option profil',
 						'item_name'     => 'url',

@@ -151,6 +151,8 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		'@Option de profil Website URL (connection)',
 		'url',
 		'profile_url_activation_datetime',
+		'url_forfait',
+		'url_forfait_end',
 		'end_date',
 
 		'profile_license_active',

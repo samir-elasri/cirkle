@@ -210,7 +210,12 @@ class BasicCart extends Model
                             $subscriber->$optionName = true;
                         }
                         else {
-                            $subscriber->end_date = now()->addMonths(setting('url_month_duration'));
+                            // Forfait site web : expiration PROPRE au forfait (palier × durée
+                            // choisi). N'écrase plus la date de fin d'abonnement (feature #12).
+                            $months = \App\Support\WebsiteForfait::months($subscriber->url_forfait);
+                            if ($months) {
+                                $subscriber->url_forfait_end = now()->addMonths($months);
+                            }
                         }
                         $subscriber->$optionDatetime = now();
                         $subscriber->save();
