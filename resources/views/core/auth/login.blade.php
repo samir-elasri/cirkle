@@ -2,6 +2,13 @@
 <section class="with-background page">
 	<div class="with-backgroundpage__content login optimal-content-width">
 		@include('core.partials.spacing', ['spacing' => $default_bloc_spacing])
+		{{-- Bouton retour demandé par Denis sur la page de connexion : revient à la page
+		     précédente si possible, sinon à l'accueil. --}}
+		<div class="login__back" style="margin-bottom:14px;">
+			<a href="{{ urlRouteName('home') }}"
+			   class="call-to-action cta-alt"
+			   onclick="if(window.history.length>1){history.back();return false;}">← @lang('main.back')</a>
+		</div>
 		{!! Form::open(['url' => urlRouteName('subscriber.login'), 'class' => 'form']) !!}
 		@if(Route::currentRouteName() != "login")
 			{!! Form::hidden('current_url', Request::fullUrl()) !!}
