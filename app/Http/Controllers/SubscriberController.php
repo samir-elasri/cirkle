@@ -644,10 +644,27 @@ class SubscriberController extends Controller
 				continue; // déjà actif ou déjà au panier
 			}
 
+			// Les listes (permis, diplômes, promotions, photos, offres d'emploi) sont
+			// déjà enregistrées sur le compte via leur sous-formulaire AJAX (ProfileOptionController@add).
+			// Ici on ne traite que les champs directs (site web, estimation) et l'ajout au panier.
 			if ($option === 'url') {
 				$subscriber->url_forfait = $request->input('url_forfait');
+				foreach (['fr', 'en'] as $loc) {
+					$u = $request->input("{$loc}.url");
+					if (!empty($u)) {
+						$subscriber->translateOrNew($loc)->url = $u;
+					}
+				}
 				$subscriber->save();
 				$price = (float) (\App\Support\WebsiteForfait::price($request->input('url_forfait')) ?? 0);
+			} elseif ($option === 'estimation') {
+				$subscriber->estimation_cost = $request->input('estimation_cost');
+				$subscriber->accepts_cash   = (bool) $request->input('accepts_cash');
+				$subscriber->accepts_check  = (bool) $request->input('accepts_check');
+				$subscriber->accepts_debit  = (bool) $request->input('accepts_debit');
+				$subscriber->accepts_credit = (bool) $request->input('accepts_credit');
+				$subscriber->save();
+				$price = (float) (setting('estimation_price') ?? 0);
 			} else {
 				$price = (float) (setting("{$option}_price") ?? 0);
 			}

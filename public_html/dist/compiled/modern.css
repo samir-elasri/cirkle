@@ -378,3 +378,11 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
     padding-top: 10px; margin-top: 6px; font-size: 1.08em;
 }
 .add-options-summary__note { border-top: 1px solid #eee; padding-top: 8px; margin: 8px 0 0; font-size: .85em; color: #666; }
+
+.add-option-subform {
+    border: 1px solid var(--ck-line, #e6e9f0); border-left: 4px solid var(--ck-accent, #ffd200);
+    border-radius: 12px; padding: 8px 18px 14px; margin: 14px 0; background: #fff;
+}
+.add-option-subform__title { margin: 10px 0 4px; font-size: 1.05em; }
+.add-option-subform .optimal-content-width { max-width: none; padding: 0; }
+.add-option-subform section { padding: 0; }

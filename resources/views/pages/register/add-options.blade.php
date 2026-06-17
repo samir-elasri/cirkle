@@ -52,21 +52,38 @@
                         @endforeach
                     </div>
 
-                    @if(in_array('url', $availableOptions, true))
-                        <div class="add-option-forfait" id="url_forfait_wrap" style="display:none;">
-                            <label for="url_forfait">@lang('profile.add-options.url-forfait')</label>
-                            <select name="url_forfait" id="url_forfait">
-                                <option value="">—</option>
-                                @foreach($tiers as $tier => $durations)
-                                    @foreach($durations as $months => $price)
-                                        <option value="{{ $tier }}-{{ $months }}">
-                                            {{ $tier }}$ · {{ $months }} @lang('profile.add-options.months') — {{ prettyPrice($price) }}
-                                        </option>
-                                    @endforeach
-                                @endforeach
-                            </select>
+                    {{-- Sous-formulaire de chaque option, révélé quand la case est cochée.
+                         Les listes (permis/diplômes/photos/etc.) s'enregistrent directement
+                         (AJAX) sur le compte; les champs estimation/site web sont soumis avec
+                         le formulaire. L'option est facturée au panier puis activée au paiement. --}}
+                    @foreach($availableOptions as $option)
+                        <div class="add-option-subform" id="subform_{{ $option }}" style="display:none;">
+                            <h4 class="add-option-subform__title">@lang('profile.add-options.option.'.$option)</h4>
+                            @switch($option)
+                                @case('license')
+                                    @include('pages.profile-options.licenses', ['data' => $subscriber->licenses ?? []])
+                                    @break
+                                @case('diploma')
+                                    @include('pages.profile-options.diplomas', ['data' => $subscriber->diplomas ?? []])
+                                    @break
+                                @case('promotion')
+                                    @include('pages.profile-options.promotions', ['data' => $subscriber->promotions ?? []])
+                                    @break
+                                @case('image')
+                                    @include('pages.profile-options.photos', ['data' => $subscriber->subscriberImages ?? []])
+                                    @break
+                                @case('job_offer')
+                                    @include('pages.profile-options.joboffers', ['data' => $subscriber->jobOffers ?? []])
+                                    @break
+                                @case('estimation')
+                                    @include('pages.profile-options.estimations', ['data' => $subscriber, 'registrationForm' => true])
+                                    @break
+                                @case('url')
+                                    @include('pages.profile-options.url', ['data' => $subscriber, 'registrationForm' => true])
+                                    @break
+                            @endswitch
                         </div>
-                    @endif
+                    @endforeach
 
                     <div class="add-options-summary">
                         <h4>@lang('profile.add-options.summary')</h4>
@@ -94,13 +111,12 @@
                     var fmt = new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' });
                     var linesEl = document.getElementById('fees-lines');
                     var totalEl = document.getElementById('fees-total');
-                    var forfaitWrap = document.getElementById('url_forfait_wrap');
-                    var forfaitSel  = document.getElementById('url_forfait');
 
                     function checked(name) { var cb = document.getElementById('opt_' + name); return !!(cb && cb.checked); }
                     function urlPrice() {
-                        if (!forfaitSel || !forfaitSel.value) return 0;
-                        var p = forfaitSel.value.split('-');
+                        var sel = document.getElementById('url_forfait');
+                        if (!sel || !sel.value) return 0;
+                        var p = sel.value.split('-');
                         return (websiteTiers[p[0]] && websiteTiers[p[0]][p[1]]) ? Number(websiteTiers[p[0]][p[1]]) : 0;
                     }
                     function recompute() {
@@ -116,11 +132,17 @@
                             : '<div class="add-options-summary__empty">' + emptyLabel + '</div>';
                         totalEl.textContent = fmt.format(total);
                     }
+
+                    // Révéler le sous-formulaire de l'option cochée + recalculer les frais.
+                    document.querySelectorAll('.add-option-card__cb').forEach(function (cb) {
+                        cb.addEventListener('change', function () {
+                            var sf = document.getElementById('subform_' + cb.value);
+                            if (sf) sf.style.display = cb.checked ? 'block' : 'none';
+                            recompute();
+                        });
+                    });
                     document.addEventListener('change', function (e) {
-                        if (e.target && e.target.id === 'opt_url' && forfaitWrap) {
-                            forfaitWrap.style.display = e.target.checked ? 'block' : 'none';
-                        }
-                        recompute();
+                        if (e.target && e.target.id === 'url_forfait') recompute();
                     });
                     recompute();
                 })();
