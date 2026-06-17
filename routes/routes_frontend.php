@@ -40,6 +40,12 @@ function createRoutes($locale)
 		'uses' => 'ProfileOptionController@add'
 	]);
 
+	// Édition d'un item d'option (form classique en modale ; pas de recaptcha — action authentifiée)
+	Route::post('profile-option.update/{type}/{id}', [
+		'as' => 'profile-option.update',
+		'uses' => 'ProfileOptionController@update'
+	]);
+
 
 	Route::get('unpause-subscription',[
 		'as' => 'unpause-subscription',

@@ -12,6 +12,7 @@
         <button type="button" class="call-to-action down-button">
             <i class="fas fa-arrow-down"></i>
         </button>
+        @include('partials.profile-options.edit-modal', ['item' => $license, 'type' => 'license'])
         <button type="button" class="call-to-action delete-button">
             <i class="fas fa-times"></i>
         </button>

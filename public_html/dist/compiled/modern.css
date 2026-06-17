@@ -300,7 +300,10 @@ body:has(.slideshow) #main::before {
 .single-list__item {
     background: #fff !important; border: 1px solid var(--ck-line) !important; border-radius: 11px !important;
     padding: 14px 16px !important; box-shadow: var(--ck-shadow) !important; display: flex; align-items: center; gap: 10px;
+    color: var(--ck-ink) !important;
 }
+/* Texte des items de liste (permis/diplômes/…) toujours lisible (était parfois pâle/invisible) */
+.single-list__item > span { color: var(--ck-ink) !important; flex: 1; }
 .cta-alt { background: #fff !important; color: var(--ck-ink) !important; border: 1px solid var(--ck-line-strong) !important; box-shadow: none !important; }
 .full-width-center { display: flex !important; justify-content: center; }
 .muted { color: var(--ck-ink-soft) !important; }

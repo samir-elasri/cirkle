@@ -381,6 +381,36 @@ class ProfileOptionController extends Controller
 		return response()->json([], 200);
 	}
 
+	/**
+	 * Modifier un item d'option (permis, diplôme, …) déjà enregistré.
+	 * Soumission classique (form dans une modale) — pas d'AJAX, le composant JS
+	 * compilé ne gère que add/delete/move. Vérifie que l'item appartient bien au
+	 * fournisseur connecté avant de mettre à jour (titre/description + champs propres).
+	 */
+	public function update(Request $request, $type = null, $id = null)
+	{
+		$sub = $this->getSubscriber();
+		if (!$sub || !$sub->id || !$id) {
+			return redirect()->back()->with('error', __('main.errorOccurred'));
+		}
+
+		$class = ModelUtilityFacade::getClassByCollectionName($type);
+		if (!$class) {
+			abort(404);
+		}
+
+		$item = $class::find($id);
+		if (!$item || (int) $item->subscriber_id !== (int) $sub->id) {
+			abort(403);
+		}
+
+		$data = $request->except(['_token', '_method']);
+		$data['subscriber_id'] = $sub->id;
+		$item->saveElement($data);
+
+		return redirect()->back()->with('success', __('profile.options.updated'));
+	}
+
 	public function moveOption(Request $request, $type = null, $id = null, $direction = null)
 	{
 		if (!$id || !$direction) {
