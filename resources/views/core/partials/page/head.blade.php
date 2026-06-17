@@ -45,8 +45,9 @@
 		<meta property="recaptcha:input_name" content="{{ config('google.recaptcha.input_name') }}">
 	@endif
 
-	<!-- Icône -->
-	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<!-- Icône (logo Cirkle — le « globe ») -->
+	<link rel="icon" type="image/png" sizes="64x64" href="{{ asset_with_version('/favicon-cirkle.png') }}">
+	<link rel="shortcut icon" href="{{ asset_with_version('/favicon.ico') }}" type="image/x-icon">
 
 	<!-- Web manifest -->
 	@php ($locale = app()->getLocale())
