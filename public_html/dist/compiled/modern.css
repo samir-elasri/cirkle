@@ -259,3 +259,59 @@ body:has(.slideshow) #main::before {
 /* Supprime l'image « vagues » verte (wave-top.png / wave-bottom.png) posée sur
    #main : on laisse voir le fond (animé sur l'accueil, dégradé ailleurs). */
 #main { background: transparent !important; background-image: none !important; }
+
+/* ════════════ PIED DE PAGE — sombre, moderne ════════════ */
+.page-footer {
+    background: #11161f !important; color: #c4cad6 !important;
+    margin-top: 48px !important; border-top: 3px solid var(--ck-accent) !important;
+}
+.page-footer__content, .page-footer__about, .page-footer__menu, .page-footer__socials,
+.page-footer p, .page-footer li, .page-footer span { color: #c4cad6 !important; text-shadow: none !important; }
+.page-footer a { color: #eef1f6 !important; text-decoration: none !important; transition: color .12s; }
+.page-footer a:hover { color: var(--ck-accent) !important; }
+.page-footer h1, .page-footer h2, .page-footer h3, .page-footer h4 { color: #fff !important; }
+.page-footer__copyright { border-top: 1px solid rgba(255,255,255,.12) !important; padding-top: 14px !important; margin-top: 8px; font-size: .85rem; opacity: .85; }
+
+/* ════════════ ONGLETS « Mon espace » ════════════ */
+.nested-tabs.tab-menu { display: flex !important; flex-wrap: wrap; gap: 6px; border-bottom: 2px solid var(--ck-line) !important; margin-bottom: 22px !important; }
+.tab.tab-item, .nested-tab.tab-item {
+    padding: 11px 18px !important; cursor: pointer; font-family: var(--ck-font); font-weight: 700 !important;
+    color: var(--ck-ink-soft) !important; border: none !important; border-bottom: 3px solid transparent !important;
+    border-radius: 10px 10px 0 0 !important; margin-bottom: -2px; transition: background .14s, color .14s;
+}
+.tab.tab-item:hover, .nested-tab.tab-item:hover { background: var(--ck-accent-soft) !important; color: var(--ck-ink) !important; }
+.tab.tab-item.active, .nested-tab.tab-item.active { color: var(--ck-ink) !important; border-bottom-color: var(--ck-accent) !important; background: transparent !important; }
+
+/* ════════════ LISTES (options, historique) ════════════ */
+.single-list { display: flex; flex-direction: column; gap: 10px; }
+.single-list__item {
+    background: #fff !important; border: 1px solid var(--ck-line) !important; border-radius: 11px !important;
+    padding: 14px 16px !important; box-shadow: var(--ck-shadow) !important; display: flex; align-items: center; gap: 10px;
+}
+.cta-alt { background: #fff !important; color: var(--ck-ink) !important; border: 1px solid var(--ck-line-strong) !important; box-shadow: none !important; }
+.full-width-center { display: flex !important; justify-content: center; }
+.muted { color: var(--ck-ink-soft) !important; }
+
+/* ════════════ RÉSULTATS DE RECHERCHE ════════════ */
+.search-content .title, .search-results .title { font-weight: 800 !important; }
+.msg-info {
+    background: #eef4ff !important; border: 1px solid #d6e4ff !important; border-radius: 12px !important;
+    padding: 14px 16px !important; color: var(--ck-ink) !important;
+}
+
+/* ════════════ TABLEAUX ════════════ */
+.content-card table, table.diploma-table { width: 100%; border-collapse: collapse; }
+.content-card table th, .content-card table td,
+table.diploma-table th, table.diploma-table td { border-bottom: 1px solid var(--ck-line); padding: 10px 12px; text-align: left; }
+.content-card table th, table.diploma-table th { font-weight: 700; color: var(--ck-ink); }
+
+/* ════════════ <details> (formulaires d'options) ════════════ */
+details.details {
+    background: #fff !important; border: 1px solid var(--ck-line) !important; border-radius: 12px !important;
+    padding: 2px 16px !important; margin-bottom: 12px !important; box-shadow: var(--ck-shadow) !important;
+}
+details.details > summary { font-weight: 700 !important; cursor: pointer; padding: 13px 0 !important; }
+
+/* ════════════ Liens de contenu ════════════ */
+.content-writable a, .bloc-text__content a { color: #0f7a3f; font-weight: 600; }
+.content-card a:not(.call-to-action) { color: #0f7a3f; font-weight: 600; }
