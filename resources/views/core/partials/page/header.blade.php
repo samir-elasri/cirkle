@@ -64,7 +64,7 @@
 
 			{{-- Raccourci panier : visible tant que le panier contient des articles
 			     (de l'inscription jusqu'au paiement), pour voir/accéder à ce qui a été ajouté. --}}
-			@php $ckCart = Session::get('cart'); $ckCartCount = $ckCart ? count($ckCart) : 0; @endphp
+			@php $ckCart = logged_in() ? Session::get('cart') : null; $ckCartCount = $ckCart ? count($ckCart) : 0; @endphp
 			@if($ckCartCount > 0)
 				<a href="{{ urlRouteName('cart') }}" class="header__cart" title="{{ __('cart.title') }}">
 					<span aria-hidden="true">🛒</span>

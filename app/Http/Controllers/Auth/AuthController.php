@@ -284,6 +284,10 @@ class AuthController extends Controller
 				Auth::guard($guard)->logout();
 			}
 		}
+		// Vide le panier à la déconnexion : sinon le raccourci panier reste affiché
+		// pour un visiteur déconnecté (et la page /panier renvoie 404 sans session valide).
+		Session::forget('cart');
+		Session::forget('coupon');
 		return Redirect::to(urlRouteName('profile'))->with('success', __('auth.register.login.disconnected'));
 	}
 
