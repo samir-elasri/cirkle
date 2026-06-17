@@ -4,7 +4,7 @@
 		@if ($subscriber->formatted_member_number)
 			<div class="form__column">
 				{{ Form::label('member_number', trans('main.memberNumber') . ':') }}
-				<span style="font-weight:700;font-size:1.15em;color:#157a47">{{ $subscriber->formatted_member_number }}</span>
+				<span style="display:inline-block;font-weight:800;background:#ffd200;color:#161b26;padding:2px 13px;border-radius:999px">{{ $subscriber->formatted_member_number }}</span>
 			</div>
 		@endif
 
