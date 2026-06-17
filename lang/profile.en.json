@@ -86,5 +86,38 @@
     "title": "My 2350 form",
     "intro": "This is your master 2350 form — the heart of your listing. Tick the « O » for each service you provide and fill in the « AUTRE PAR FOURNISSEUR » fields. You can edit it anytime; your copy remains your reference."
   },
-  "no_active_options": "No active profile options to edit"
+  "no_active_options": "No active profile options to edit",
+  "add-options": {
+    "title": "Add options",
+    "intro": "Choose the options to add to your listing. They are added to your cart; once payment is complete, the option becomes active and you can fill in its content under « Edit my options ».",
+    "all-active": "You already have all available options (active or in your cart).",
+    "back": "Back to my profile",
+    "submit": "Add to cart",
+    "summary": "Fee summary",
+    "empty": "No option selected.",
+    "from": "from",
+    "months": "months",
+    "url-forfait": "Website plan",
+    "url-forfait-required": "Please choose a website plan.",
+    "none-selected": "Please select at least one option.",
+    "payment-note": "The option becomes active once payment is complete.",
+    "option": {
+      "license": "Permits, licenses & associations",
+      "diploma": "Academic diplomas",
+      "promotion": "Promotion",
+      "image": "Supplier photos",
+      "estimation": "Work estimates",
+      "job_offer": "Employee recruitment",
+      "url": "Website (web plan)"
+    },
+    "desc": {
+      "license": "Show your permits, licenses, associations and unions.",
+      "diploma": "Highlight your academic diplomas.",
+      "promotion": "Feature a promotion on your listing.",
+      "image": "Add photos of your work.",
+      "estimation": "Offer work estimates to clients.",
+      "job_offer": "Post your job offers.",
+      "url": "Display your website address."
+    }
+  }
 }

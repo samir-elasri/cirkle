@@ -328,3 +328,53 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 /* ════════════ Liens de contenu ════════════ */
 .content-writable a, .bloc-text__content a { color: #0f7a3f; font-weight: 600; }
 .content-card a:not(.call-to-action) { color: #0f7a3f; font-weight: 600; }
+
+/* ════════════ « Ajouter des options » (achat post-inscription) ════════════ */
+.add-options-none { padding: 18px 4px; color: #444; font-size: 1.05em; }
+.add-options-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px; margin: 18px 0 6px;
+}
+.add-option-card {
+    position: relative; display: flex; flex-direction: column; gap: 4px;
+    background: #fff; border: 1.5px solid var(--ck-line-strong, #d7dce6); border-radius: 14px;
+    padding: 16px 16px 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .12s;
+    box-shadow: var(--ck-shadow);
+}
+.add-option-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(20,30,55,.10); }
+.add-option-card__cb { position: absolute; opacity: 0; pointer-events: none; }
+.add-option-card__check {
+    position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%;
+    border: 1.5px solid var(--ck-line-strong, #d7dce6); color: transparent; background: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800;
+    transition: all .15s;
+}
+.add-option-card__title { font-weight: 800; color: var(--ck-ink, #161b26); font-size: 1.04em; padding-right: 30px; }
+.add-option-card__desc  { color: #5a6270; font-size: .86em; line-height: 1.35; }
+.add-option-card__price { margin-top: 6px; font-weight: 800; color: #0f7a3f; }
+.add-option-card:has(.add-option-card__cb:checked) {
+    border-color: var(--ck-accent, #ffd200); box-shadow: 0 0 0 3px rgba(255,210,0,.30), var(--ck-shadow);
+}
+.add-option-card:has(.add-option-card__cb:checked) .add-option-card__check {
+    background: var(--ck-accent, #ffd200); border-color: var(--ck-accent, #ffd200); color: var(--ck-ink, #161b26);
+}
+.add-option-card__cb:focus-visible + .add-option-card__check { outline: 2px solid #0f7a3f; outline-offset: 2px; }
+
+.add-option-forfait { margin: 6px 0 14px; }
+.add-option-forfait label { display: block; font-weight: 700; margin-bottom: 6px; }
+.add-option-forfait select {
+    width: 100%; max-width: 420px; padding: 11px 12px; border: 1.5px solid var(--ck-line-strong, #d7dce6);
+    border-radius: 10px; background: #fff; font: inherit;
+}
+
+.add-options-summary {
+    border: 1px solid var(--ck-line, #e6e9f0); border-radius: 12px; padding: 16px; margin-top: 8px; background: #fafbfd;
+}
+.add-options-summary h4 { margin: 0 0 10px; }
+.add-options-summary__line { display: flex; justify-content: space-between; padding: 5px 0; }
+.add-options-summary__empty { color: #888; padding: 5px 0; }
+.add-options-summary__total {
+    display: flex; justify-content: space-between; border-top: 2px solid #222;
+    padding-top: 10px; margin-top: 6px; font-size: 1.08em;
+}
+.add-options-summary__note { border-top: 1px solid #eee; padding-top: 8px; margin: 8px 0 0; font-size: .85em; color: #666; }

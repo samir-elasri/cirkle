@@ -563,6 +563,114 @@ class SubscriberController extends Controller
 		return $params;
 	}
 
+	/** Toutes les options de profil, dans l'ordre d'affichage. */
+	private const PROFILE_OPTIONS = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
+
+	/** Une option est-elle déjà active sur le fournisseur ? (url n'a pas de colonne _active) */
+	private function optionIsActive($subscriber, string $option): bool
+	{
+		return $option === 'url'
+			? (bool) $subscriber->profile_url_activation_datetime
+			: (bool) $subscriber->{"profile_{$option}_active"};
+	}
+
+	/** Noms des options déjà présentes dans le panier (évite les doublons). */
+	private function optionsInCart(): array
+	{
+		$names = [];
+		foreach (Cart::getCart() as $item) {
+			if ($item instanceof Purchase && $item->purchase_type === 'Option profil') {
+				$names[] = $item->item_name;
+			}
+		}
+		return $names;
+	}
+
+	/**
+	 * Page « Ajouter des options » (APRÈS l'inscription, demandé par Denis :
+	 * « s'il veut ajouter des options »). Liste uniquement les options que le
+	 * fournisseur n'a PAS encore (ni actives, ni déjà au panier). L'ajout passe
+	 * par le panier; l'activation se fait au PAIEMENT (BasicCart::buyCart), puis
+	 * le contenu se remplit via « Modifier mes options » (editStep5).
+	 */
+	public function createAddOptions($params)
+	{
+		$subscriber = auth('subscribers')->user();
+		if (!$subscriber) {
+			return Redirect::to(urlRouteName('home'))->with('error', __('auth.must-be-logged-in'));
+		}
+
+		$inCart = $this->optionsInCart();
+		$available = [];
+		foreach (self::PROFILE_OPTIONS as $option) {
+			if (!$this->optionIsActive($subscriber, $option) && !in_array($option, $inCart, true)) {
+				$available[] = $option;
+			}
+		}
+
+		$params['subscriber'] = $subscriber;
+		$params['availableOptions'] = $available;
+		return $params;
+	}
+
+	/**
+	 * Ajoute au panier les options choisies après l'inscription. N'active rien
+	 * ici (activation au paiement). Le forfait site web (url) enregistre le
+	 * couple palier×durée sur le fournisseur pour que buyCart calcule la date de
+	 * fin; son prix est variable (WebsiteForfait), les autres viennent des réglages.
+	 */
+	public function addOptions(Request $request)
+	{
+		$subscriber = auth('subscribers')->user();
+		if (!$subscriber) {
+			return Redirect::to(urlRouteName('home'))->with('error', __('auth.must-be-logged-in'));
+		}
+
+		$selected = array_values(array_intersect(self::PROFILE_OPTIONS, (array) $request->input('options', [])));
+		if (empty($selected)) {
+			return Redirect::back()->withInput()->with('error', __('profile.add-options.none-selected'));
+		}
+
+		// Forfait site web obligatoire si l'option site internet est retenue.
+		if (in_array('url', $selected, true) && !\App\Support\WebsiteForfait::isValid($request->input('url_forfait'))) {
+			return Redirect::back()->withInput()->with('error', __('profile.add-options.url-forfait-required'));
+		}
+
+		$inCart = $this->optionsInCart();
+		$added = 0;
+
+		foreach ($selected as $option) {
+			if ($this->optionIsActive($subscriber, $option) || in_array($option, $inCart, true)) {
+				continue; // déjà actif ou déjà au panier
+			}
+
+			if ($option === 'url') {
+				$subscriber->url_forfait = $request->input('url_forfait');
+				$subscriber->save();
+				$price = (float) (\App\Support\WebsiteForfait::price($request->input('url_forfait')) ?? 0);
+			} else {
+				$price = (float) (setting("{$option}_price") ?? 0);
+			}
+
+			$purchase = new Purchase();
+			$purchase->fill([
+				'purchase_type' => 'Option profil',
+				'item_name'     => $option,
+				'quantity'      => 1,
+				'unit_price'    => $price,
+				'total_price'   => $price,
+			]);
+			Cart::add($purchase);
+			$added++;
+		}
+
+		if ($added === 0) {
+			return Redirect::to(urlRouteName('cart'))->with('info', __('cart.item.already_in'));
+		}
+
+		return Redirect::to(urlRouteName('cart'))->with('success', __('cart.item.added'));
+	}
+
 	/**
 	 * Process the profile options update (Step 5)
 	 * Updates only currently active profile options

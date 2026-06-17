@@ -120,6 +120,34 @@ return [
 				'restricted' => true
 			]
 		],
+		'add-options'        => [
+			'methods' => 'get',
+			'uri'     => [
+				'fr' => '/fournisseur/options/ajouter',
+				'en' => '/supplier/options/add',
+			],
+			'view'    => 'pages.register.add-options',
+			'uses'    => 'App\\Http\\Controllers\\SubscriberController@createAddOptions',
+			'admin'   => [
+				'title'        => true,
+				'metas'        => true,
+				'customs'      => true,
+				'right_column' => false,
+				'blocs'        => true,
+				'sharing'      => true,
+				'translations' => [
+					'fr' => [
+						'title' => 'Ajouter des options'
+					],
+					'en' => [
+						'title' => 'Add options'
+					]
+				]
+			],
+			'page' => [
+				'restricted' => true
+			]
+		],
 		'register-supplier-step-1'        => [
 			'methods' => 'get',
 			'uri'     => [

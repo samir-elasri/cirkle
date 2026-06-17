@@ -244,6 +244,10 @@
                             <div>
                                 <a class="call-to-action cta-alt" href="{{urlRouteName('edit-step-1')}}">@lang('profile.step1.edit')</a>
                             </div>
+                            {{-- Ajouter des options APRÈS l'inscription (achat) — demandé par Denis --}}
+                            <div>
+                                <a class="call-to-action" href="{{urlRouteName('add-options')}}">➕ @lang('profile.add-options.title')</a>
+                            </div>
                             @if($hasActiveOptions)
                                 <div>
                                     <a class="call-to-action cta-alt" href="{{urlRouteName('edit-step-5')}}">@lang('profile.options.edit')</a>

@@ -214,6 +214,13 @@ function createRoutes($locale)
 			'uses' => 'SubscriberController@updateStep5'
 		])->middleware('recaptcha');
 
+		// Achat d'options APRÈS l'inscription (ajout au panier; paiement = activation).
+		// recaptcha exigé par le FormBuilder maison (comme tous les forms register).
+		Route::post('add-options', [
+			'as'   => 'subscriber.profile.add-options.store',
+			'uses' => 'SubscriberController@addOptions'
+		])->middleware('recaptcha');
+
 		Route::post('register-step1', [
 			'as'   => 'subscriber.register.storeStep1',
 			'uses' => 'SubscriberController@storeStep1'

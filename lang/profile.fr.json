@@ -86,5 +86,38 @@
     "title": "Mon formulaire 2350",
     "intro": "Voici votre formulaire master 2350 — le cœur de votre fiche. Cochez les « O » des services que vous offrez et remplissez les champs « AUTRE PAR FOURNISSEUR ». Vous pouvez le modifier en tout temps; votre copie reste votre référence."
   },
-  "no_active_options": "Aucune option de profil active à modifier"
+  "no_active_options": "Aucune option de profil active à modifier",
+  "add-options": {
+    "title": "Ajouter des options",
+    "intro": "Choisissez les options à ajouter à votre fiche. Elles s'ajoutent à votre panier; une fois le paiement effectué, l'option devient active et vous pouvez en remplir le contenu dans « Modifier mes options ».",
+    "all-active": "Vous avez déjà toutes les options disponibles (actives ou dans votre panier).",
+    "back": "Retour à mon profil",
+    "submit": "Ajouter au panier",
+    "summary": "Sommaire des frais",
+    "empty": "Aucune option sélectionnée.",
+    "from": "à partir de",
+    "months": "mois",
+    "url-forfait": "Forfait site web",
+    "url-forfait-required": "Veuillez choisir un forfait site web.",
+    "none-selected": "Veuillez sélectionner au moins une option.",
+    "payment-note": "L'option devient active une fois le paiement effectué.",
+    "option": {
+      "license": "Permis, licences et associations",
+      "diploma": "Diplômes académiques",
+      "promotion": "Promotion",
+      "image": "Photos du fournisseur",
+      "estimation": "Estimation des travaux",
+      "job_offer": "Recrutement d'employés",
+      "url": "Site internet (forfait web)"
+    },
+    "desc": {
+      "license": "Affichez vos permis, licences, associations et syndicats.",
+      "diploma": "Mettez en valeur vos diplômes académiques.",
+      "promotion": "Mettez en avant une promotion sur votre fiche.",
+      "image": "Ajoutez des photos de vos réalisations.",
+      "estimation": "Offrez une estimation des travaux aux clients.",
+      "job_offer": "Publiez vos offres d'emploi.",
+      "url": "Affichez l'adresse de votre site internet."
+    }
+  }
 }
