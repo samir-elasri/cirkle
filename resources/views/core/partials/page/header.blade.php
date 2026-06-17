@@ -61,6 +61,18 @@
 					<span class="header__member-counter-value">{{ $latestMemberNumber }}</span>
 				</div>
 			@endif
+
+			{{-- Raccourci panier : visible tant que le panier contient des articles
+			     (de l'inscription jusqu'au paiement), pour voir/accéder à ce qui a été ajouté. --}}
+			@php $ckCart = Session::get('cart'); $ckCartCount = $ckCart ? count($ckCart) : 0; @endphp
+			@if($ckCartCount > 0)
+				<a href="{{ urlRouteName('cart') }}" class="header__cart" title="{{ __('cart.title') }}">
+					<span aria-hidden="true">🛒</span>
+					<span class="header__cart-text">{{ __('cart.title') }}</span>
+					<span class="header__cart-count">{{ $ckCartCount }}</span>
+				</a>
+			@endif
+
 			@if(logged_in())
 				<a href="{{urlRouteName('subscriber.logout')}}" class="call-to-action">{{ __('auth.profile.logout') }}</a>
 			@else
