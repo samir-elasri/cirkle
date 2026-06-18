@@ -389,3 +389,20 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 .add-option-subform__title { margin: 10px 0 4px; font-size: 1.05em; }
 .add-option-subform .optimal-content-width { max-width: none; padding: 0; }
 .add-option-subform section { padding: 0; }
+
+/* ════════════ Badge PROMO (cercle orange, style logo) à côté du nom du fournisseur ════════════ */
+.ck-promo-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.7em; height: 2.7em; border-radius: 50%;
+    border: 2px solid #e8820c; color: #e8820c; background: #fff;
+    font-size: .5em; font-weight: 900; letter-spacing: .03em; text-transform: uppercase;
+    line-height: 1; vertical-align: middle; margin-left: 10px; box-shadow: 0 2px 6px rgba(232,130,12,.25);
+}
+
+/* Bouton « Ouvrir » d'une option (révèle/ouvre le sous-formulaire de l'option) */
+.add-option-card__open {
+    margin-top: 8px; align-self: flex-start; background: #fff; border: 1.5px solid var(--ck-line-strong, #d7dce6);
+    color: var(--ck-ink, #161b26); border-radius: 999px; padding: 5px 16px; font-weight: 700; font-size: .85em;
+    cursor: pointer; transition: border-color .15s, background .15s;
+}
+.add-option-card__open:hover { border-color: var(--ck-accent, #ffd200); background: #fffbe9; }

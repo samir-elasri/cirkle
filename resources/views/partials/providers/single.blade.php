@@ -11,6 +11,11 @@
         <span style="color:black">{{ __('main.member') }} {{ $provider->formatted_member_number ?? $provider->id }}</span>
         <br>
         {{ $provider->company_name }}
+        {{-- Badge PROMO (cercle orange, style logo) à côté du nom quand l'option promotion
+             est payée/active — demandé par Denis; disparaît dès que l'option n'est plus active. --}}
+        @if ($provider->profile_promotion_active)
+            <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>
+        @endif
     </h3>
 
     <div class="content-writable" style="flex-grow:1">

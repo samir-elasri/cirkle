@@ -48,6 +48,12 @@
                                         {{ prettyPrice($optionPrices[$option]) }}
                                     @endif
                                 </span>
+                                {{-- Bouton « Ouvrir » : ouvre/ferme le sous-formulaire de l'option (demandé par Denis).
+                                     <button> dans <label> = élément interactif, ne coche pas la case. --}}
+                                <button type="button" class="add-option-card__open"
+                                        onclick="var s=document.getElementById('subform_{{ $option }}'); s.style.display=(s.style.display==='block')?'none':'block';">
+                                    ▸ @lang('profile.add-options.open')
+                                </button>
                             </label>
                         @endforeach
                     </div>

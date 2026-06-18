@@ -39,7 +39,7 @@
                 @endif
             </div>
 
-            <h2>{{ $provider->company_name }}</h2>
+            <h2>{{ $provider->company_name }}@if ($provider->profile_promotion_active) <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>@endif</h2>
 
             {{-- ===================== Navigation des onglets ===================== --}}
             <div class="fiche-tabs__nav" data-fiche-tabs>
