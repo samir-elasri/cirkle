@@ -143,14 +143,30 @@ class ExcelImport
                 case 'services':
                 case 'capabilities':
                     if ($b === 'O') {
+                        // Les lignes « OPTION : … » (les 6 options payantes : permis, diplômes,
+                        // photos, promotion, estimation, recrutement) ne sont PAS des services —
+                        // l'app les gère séparément. On ne les importe pas comme services.
+                        if (preg_match('/^\s*OPTION\b/iu', $c)) {
+                            break;
+                        }
                         $html = $this->formattedText($cCell);
                         if (trim($c) === '' || $html === '') {
                             break; // entièrement rouge ou vide : disparaît
                         }
+                        // Champ de saisie (format 18.06.26) : « PRÉCISEZ » en gris pâle dans la
+                        // colonne C marque le champ (remplace l'ancien « X » en colonne D, disparu).
+                        // On retire le mot-marqueur du libellé — le champ « Précisez » le remplace.
+                        $hasInput = (bool) preg_match('/PR[ÉE]CISEZ|PAR\s+FOURNISSEUR/iu', $c);
+                        if ($hasInput) {
+                            $c = trim(preg_replace('/\s*:?\s*(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR)\s*:?\s*$/iu', '', $c));
+                            $html = $this->stripInputMarker($html);
+                        } else {
+                            $hasInput = ($d === 'X'); // compat ancien format (X en colonne D)
+                        }
                         $entry = [
                             'title' => $c,
                             'formatted_title' => $html,
-                            'has_input' => ($d === 'X'),
+                            'has_input' => $hasInput,
                             'source_row' => $row,
                             'gap_before' => $blankSinceLastO,
                         ];
@@ -371,6 +387,18 @@ class ExcelImport
         }
 
         return (string)$value;
+    }
+
+    /**
+     * Retire le marqueur « PRÉCISEZ »/« PAR FOURNISSEUR » (et son « : ») du libellé HTML
+     * formaté : à l'écran, le champ de saisie « Précisez » remplace ce mot. Nettoie aussi
+     * les espaces et les <span> vides résiduels pour ne pas laisser de trou.
+     */
+    private function stripInputMarker(string $html): string
+    {
+        $html = preg_replace('/(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR)\s*:?/iu', '', $html);
+        $html = preg_replace('/<span[^>]*>\s*<\/span>/iu', '', $html);
+        return trim($html);
     }
 
     /**
