@@ -13,11 +13,16 @@
     .form__column--gap-before { margin-top: 1.1em; }
     /* le « O » à cocher en rouge (marqueur du master) — scopé au formulaire 2350 */
     .form-2350 sl-checkbox::part(control) { border-color: #d33; }
-    /* champ « AUTRE PAR FOURNISSEUR » : gris pâle, pour distinguer l'info du fournisseur du texte permanent */
+    /* champ « PRÉCISEZ » : gris pâle, pour distinguer l'info du fournisseur du texte permanent.
+       Textarea auto-extensible : démarre sur 1 ligne (sur la ligne du service) puis grandit au besoin. */
     .form-2350 .supplier-input {
         background: #f4f4f4 !important;
         color: #6b6b6b !important;
         border: 1px dashed #c9c9c9 !important;
+    }
+    .form-2350 textarea.supplier-input {
+        min-height: 2.4em; line-height: 1.4; padding: 7px 10px; width: 100%;
+        font: inherit; resize: vertical; overflow: hidden; box-sizing: border-box;
     }
     .form-2350 .supplier-input::placeholder { color: #b0b0b0 !important; font-style: italic; }
 </style>
@@ -43,11 +48,11 @@
                     <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
                 @if ($service->has_input || !empty($service->input_label))
-                    <input type="text" class="supplier-input"
+                    <textarea class="supplier-input" rows="1"
                            name="service_input[{{ $service->id }}]"
-                           value="{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}"
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
-                    >
+                           oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                    >{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}</textarea>
                 @endif
             </div>
         </div>
@@ -95,11 +100,11 @@
                     <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
                 @if ($service->has_input || !empty($service->input_label))
-                    <input type="text" class="supplier-input"
+                    <textarea class="supplier-input" rows="1"
                            name="capability_input[{{ $service->id }}]"
-                           value="{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}"
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
-                    >
+                           oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                    >{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}</textarea>
                 @endif
             </div>
         </div>
@@ -120,3 +125,13 @@
 </div>
 
 </div>{{-- /.form-2350 --}}
+
+{{-- Ajuste la hauteur des champs « Précisez » déjà remplis (mode édition). En inscription
+     le formulaire arrive par AJAX : oninput suffit (pas de valeur pré-remplie à étendre). --}}
+<script>
+    (function () {
+        document.querySelectorAll('.form-2350 textarea.supplier-input').forEach(function (t) {
+            if (t.value.trim() !== '') { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+        });
+    })();
+</script>
