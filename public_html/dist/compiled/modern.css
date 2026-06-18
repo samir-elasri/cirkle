@@ -398,6 +398,8 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
     font-size: .5em; font-weight: 900; letter-spacing: .03em; text-transform: uppercase;
     line-height: 1; vertical-align: middle; margin-left: 10px; box-shadow: 0 2px 6px rgba(232,130,12,.25);
 }
+/* Badge « E » (logo Cirkle) à côté du nom — option Recrutement payée */
+.ck-e-badge { height: 1.7em; width: auto; vertical-align: middle; margin-left: 8px; }
 
 /* Bouton « Ouvrir » d'une option (révèle/ouvre le sous-formulaire de l'option) */
 .add-option-card__open {

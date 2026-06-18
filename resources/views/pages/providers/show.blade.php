@@ -39,7 +39,7 @@
                 @endif
             </div>
 
-            <h2>{{ $provider->company_name }}@if ($provider->profile_promotion_active) <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>@endif</h2>
+            <h2>{{ $provider->company_name }}@if ($provider->profile_promotion_active) <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>@endif@if ($provider->profile_job_offer_active) <img class="ck-e-badge" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="Cirkle" title="{{ setting('job_offer_title') }}">@endif</h2>
 
             {{-- ===================== Navigation des onglets ===================== --}}
             <div class="fiche-tabs__nav" data-fiche-tabs>

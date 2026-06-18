@@ -16,6 +16,11 @@
         @if ($provider->profile_promotion_active)
             <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>
         @endif
+        {{-- Badge « E » (logo Cirkle) à côté du nom quand l'option RECRUTEMENT est payée/active
+             (placement confirmé par Denis sur la ligne Recrutement du 2350). --}}
+        @if ($provider->profile_job_offer_active)
+            <img class="ck-e-badge" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="Cirkle" title="{{ setting('job_offer_title') }}">
+        @endif
     </h3>
 
     <div class="content-writable" style="flex-grow:1">
