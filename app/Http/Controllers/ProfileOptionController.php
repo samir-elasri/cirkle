@@ -79,6 +79,25 @@ class ProfileOptionController extends Controller
 		$data = $request->all();
 		$class = ModelUtilityFacade::getClassByCollectionName($type);
 
+		// Robustesse traductions : un groupe à UN seul champ (ex. diplôme = fr[title] seul)
+		// peut arriver indexé numériquement (fr => [0 => valeur]) au lieu de fr => ['title' => …],
+		// ce qui faisait insérer une colonne « 0 » et plantait l'inscription. On re-clé par
+		// position sur les attributs traduisibles du modèle.
+		if ($class) {
+			$translatable = (array) ((new $class)->translatedAttributes ?? []);
+			foreach (['fr', 'en'] as $loc) {
+				if ($translatable && isset($data[$loc]) && is_array($data[$loc]) && $data[$loc] !== []) {
+					$keys = array_keys($data[$loc]);
+					if ($keys === range(0, count($keys) - 1)) { // purement numérique
+						$data[$loc] = array_combine(
+							array_slice($translatable, 0, count($data[$loc])),
+							array_values($data[$loc])
+						);
+					}
+				}
+			}
+		}
+
 		$sub = $this->getSubscriber();
 		if (!$sub) {
 			return response()->json(['error' => 'No subscriber found'], 400);

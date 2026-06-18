@@ -1437,6 +1437,14 @@ class SubscriberController extends Controller
 		// persist everything to database in a transaction
 		try {
 			DB::transaction(function() use ($subscriber, $subscriberServices, $postalCodes, $request) {
+				// Si une tentative précédente a échoué (rollback), le modèle gardé en session
+				// a un id fantôme → ->save() ferait un UPDATE de 0 ligne et createPairedClient
+				// pointerait vers un parent inexistant (FK). On force un INSERT propre.
+				if ($subscriber->exists && !Subscriber::whereKey($subscriber->getKey())->exists()) {
+					$subscriber->exists = false;
+					$subscriber->{$subscriber->getKeyName()} = null;
+					$subscriber->wasRecentlyCreated = false;
+				}
 				$subscriber->save();
 				$this->moveTemporaryFilesToFinalLocation($subscriber, $request);
 

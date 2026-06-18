@@ -1,6 +1,10 @@
 {{-- Bouton « modifier » + modale d'édition d'un item d'option (permis, diplôme).
      Réutilise le composant modal générique (data-component="modal") qui clone le
-     <template> par id — pas besoin du JS compilé (gelé). Form classique → recharge. --}}
+     <template> par id — pas besoin du JS compilé (gelé). Form classique → recharge.
+     IMPORTANT : uniquement pour un item DÉJÀ enregistré (id en base). Pendant
+     l'inscription les items sont en session (sans id) — sinon urlRouteName(update)
+     lève « Missing parameter: id » et casse TOUT le rendu de la liste. --}}
+@if(!empty($item->id))
 @php $editId = 'edit-' . $type . '-' . $item->id; @endphp
 
 <button type="button" class="call-to-action edit-button"
@@ -52,3 +56,4 @@
         <button type="submit" class="call-to-action">@lang('form.save')</button>
     </form>
 </template>
+@endif
