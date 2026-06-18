@@ -1,6 +1,6 @@
 @if (!empty($serviceCategory->services_intro_text))
     <div class="form__column">
-        {!! $serviceCategory->services_intro_text !!}
+        <div class="master-2350-note">{!! $serviceCategory->services_intro_text !!}</div>
     </div>
 @endif
 
@@ -72,13 +72,17 @@
     >{{ __('main.add-service') }}</add-item-button>
 </div>
 
-<div class="form__column">
-    {!! $serviceCategory->customers_text !!}
-</div>
+@if (trim(strip_tags($serviceCategory->customers_text ?? '')) !== '')
+    <div class="form__column">
+        <div class="master-2350-note">{!! $serviceCategory->customers_text !!}</div>
+    </div>
+@endif
 
-<div class="form__column">
-    {!! $serviceCategory->capabilities_text !!}
-</div>
+@if (trim(strip_tags($serviceCategory->capabilities_text ?? '')) !== '')
+    <div class="form__column">
+        <div class="master-2350-note">{!! $serviceCategory->capabilities_text !!}</div>
+    </div>
+@endif
 
 <div class="form__column">
     <div class="registration-title">{{ __('auth.register.capabilities') }}</div>

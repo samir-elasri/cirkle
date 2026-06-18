@@ -9,7 +9,6 @@
            style="display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;padding:8px 16px;border:1px solid #d9d9d9;border-radius:8px;text-decoration:none;color:#1f2430;font-weight:600;background:#fff;">← {{ $locale === 'fr' ? 'Retour' : 'Back' }}</a>
 
         @if ($locale === 'fr')
-            <h1>Conditions d'utilisation</h1>
             <p><em>Conforme à la Loi 25 du Québec — Dernière mise à jour : 17 janvier 2026</em></p>
             <p>Les présentes conditions encadrent l'utilisation de la plateforme CIRKLE (cirkleservices.com). En créant un compte ou en utilisant le site, vous acceptez ces conditions.</p>
 
@@ -50,7 +49,6 @@
             <h2>10. Consentement final</h2>
             <p>En accédant au Site et en poursuivant sa navigation, l'utilisateur reconnaît avoir lu, compris et accepté sans réserve les présentes conditions d'utilisation et la politique de confidentialité.</p>
         @else
-            <h1>Terms of Use</h1>
             <p><em>Compliant with Québec Law 25 — Last updated: January 17, 2026</em></p>
             <p>These terms govern the use of the CIRKLE platform (cirkleservices.com). By creating an account or using the site, you accept these terms.</p>
 

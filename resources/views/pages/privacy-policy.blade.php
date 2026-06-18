@@ -8,7 +8,6 @@
            style="display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;padding:8px 16px;border:1px solid #d9d9d9;border-radius:8px;text-decoration:none;color:#1f2430;font-weight:600;background:#fff;">← {{ $locale === 'fr' ? 'Retour' : 'Back' }}</a>
 
         @if ($locale === 'fr')
-            <h1>Politique de confidentialité</h1>
             <p><em>Conforme à la Loi 25 du Québec (projet de loi 25) — Dernière mise à jour : 17 janvier 2026</em></p>
 
             <h2>1. Identité du responsable des renseignements personnels</h2>
@@ -133,7 +132,6 @@
             <h2>15. Consentement final</h2>
             <p>En accédant au Site et en poursuivant sa navigation, l'utilisateur reconnaît avoir lu, compris et accepté sans réserve les présentes conditions d'utilisation et la politique de confidentialité.</p>
         @else
-            <h1>Privacy Policy</h1>
             <p><em>Compliant with Québec Law 25 (Bill 25) — Last updated: January 17, 2026</em></p>
 
             <h2>1. Person in charge of the protection of personal information</h2>

@@ -395,7 +395,15 @@ class ProfileOptionController extends Controller
 					request()->session()->put('subscriber_model', $sub);
 				}
 			}
+			// Suppression sans JS (lien avec ?redirect=1, ex. photos dont le bouton JS gelé
+			// ne marchait pas) : on revient à la page avec un message au lieu d'un JSON.
+			if ($request->query('redirect')) {
+				return back();
+			}
 			return response()->json([], 200);
+		}
+		if ($request->query('redirect')) {
+			return back();
 		}
 		return response()->json([], 200);
 	}

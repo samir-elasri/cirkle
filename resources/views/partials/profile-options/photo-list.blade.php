@@ -26,9 +26,19 @@
             <i class="fas fa-arrow-down"></i>
         </button>
 
-        <button type="button" class="call-to-action delete-button">
-            <i class="fas fa-times"></i>
-        </button>
+        {{-- Suppression : le bouton JS gelé ne marchait pas pour les photos. Pour un item
+             déjà en base, lien direct (?redirect=1 → suppression + retour). --}}
+        @if(!empty($photo->id))
+            <a href="{{ urlRouteName('option-delete', ['type' => 'subscriber_images', 'id' => $photo->id, 'redirect' => 1]) }}"
+               class="call-to-action delete-button-link" title="@lang('main.delete')"
+               onclick="return confirm(@json(__('main.delete-modal.text')))">
+                <i class="fas fa-times"></i>
+            </a>
+        @else
+            <button type="button" class="call-to-action delete-button">
+                <i class="fas fa-times"></i>
+            </button>
+        @endif
     </div>
 @endforeach
 

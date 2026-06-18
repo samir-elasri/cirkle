@@ -39,7 +39,7 @@
                             <label class="add-option-card" for="opt_{{ $option }}">
                                 <input type="checkbox" name="options[]" id="opt_{{ $option }}" value="{{ $option }}" class="add-option-card__cb">
                                 <span class="add-option-card__check" aria-hidden="true">✓</span>
-                                <span class="add-option-card__title">@lang('profile.add-options.option.'.$option)</span>
+                                <span class="add-option-card__title">@lang('profile.add-options.option.'.$option)@if($option === 'promotion')<span class="ck-opt-promo" title="Logo à côté de votre nom">PROMO</span>@elseif($option === 'job_offer')<img class="ck-opt-e" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="" title="Logo à côté de votre nom">@endif</span>
                                 <span class="add-option-card__desc">@lang('profile.add-options.desc.'.$option)</span>
                                 <span class="add-option-card__price">
                                     @if($option === 'url')

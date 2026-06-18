@@ -110,7 +110,7 @@
                                         name="{{ $option }}"
                                         @if(!empty(old($option)) || !empty(session('registerFormData.'.$option))) checked @endif
                                     >
-                                        <h3 style="margin:0">{{setting("{$option}_title", "{$option}_title")}}</h3>
+                                        <h3 style="margin:0">{{setting("{$option}_title", "{$option}_title")}}@if($option === 'promotion')<span class="ck-opt-promo" title="Logo à côté de votre nom">PROMO</span>@elseif($option === 'job_offer')<img class="ck-opt-e" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="" title="Logo à côté de votre nom">@endif</h3>
                                     </sl-checkbox>
                                 </div>
                                 <p>
