@@ -15,13 +15,11 @@
 <template
         id="add-new-modal{{$optionName}}">
 
-    <div data-component="addOption">
-        <script type="application/json">{!! json_encode([
-            'postUrl' => urlRouteName("profile-option.add", ['type' => $optionName]),
-            'csrf' => csrf_token()
-        ], JSON_THROW_ON_ERROR) !!}</script>
-
-        <form class="form" data-ref="addForm">
+    {{-- Form NON-JS (POST direct + ?redirect=1) : fiable, ne dépend plus du composant
+         JS compilé « addOption » (gelé/bugué). enctype pour les photos/promotion. --}}
+    <form class="form" method="POST"
+          action="{{ urlRouteName('profile-option.add', ['type' => $optionName, 'redirect' => 1]) }}"
+          enctype="multipart/form-data">
             @csrf
 
             @if($optionName === 'subscriber_images')
@@ -77,5 +75,4 @@
                 @lang('main.confirm')
             </button>
         </form>
-    </div>
 </template>

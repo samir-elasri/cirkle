@@ -78,6 +78,8 @@ class ProfileOptionController extends Controller
 	{
 		$data = $request->all();
 		$class = ModelUtilityFacade::getClassByCollectionName($type);
+		// Soumission NON-JS (form avec ?redirect=1) : on revient à la page au lieu d'un JSON.
+		$redirect = (bool) $request->query('redirect');
 
 		// Robustesse traductions : un groupe à UN seul champ (ex. diplôme = fr[title] seul)
 		// peut arriver indexé numériquement (fr => [0 => valeur]) au lieu de fr => ['title' => …],
@@ -118,10 +120,12 @@ class ProfileOptionController extends Controller
 					]);
 				}
 
+				if ($redirect) { return back(); }
 				return response()->json(['data' => $data]);
 			}
 
 			$element->saveElement($data);
+			if ($redirect) { return back(); }
 			return response()->json(['data' => $data]);
 		} else {
 			// Subscriber is from session, process file uploads and store processed data.
@@ -148,6 +152,7 @@ class ProfileOptionController extends Controller
 			}
 
 			request()->session()->put($sessionKey, $existingData);
+			if ($redirect) { return back(); }
 			return response()->json(['data' => $processedData]);
 		}
 	}
