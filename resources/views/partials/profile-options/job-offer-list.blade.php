@@ -19,8 +19,12 @@
             <label>@lang('profile.options.fields.currently-recruiting')</label>
         </div>
 
-        <button type="button" class="call-to-action delete-button">
-            <i class="fas fa-times"></i>
-        </button>
+        @if(!empty($jobOffer->id))
+            <a href="{{ urlRouteName('option-delete', ['type' => 'job_offers', 'id' => $jobOffer->id, 'redirect' => 1]) }}"
+               class="call-to-action delete-button-link" title="@lang('main.delete')"
+               onclick="return confirm(@json(__('main.delete-modal.text')))"><i class="fas fa-times"></i></a>
+        @else
+            <button type="button" class="call-to-action delete-button"><i class="fas fa-times"></i></button>
+        @endif
     </div>
 @endforeach

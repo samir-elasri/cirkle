@@ -194,8 +194,14 @@ class ExcelImport
                     break;
 
                 case 'fee':
-                    // Texte brut (on garde l'avertissement de refus même s'il est rouge)
-                    if (trim($c) !== '' && !str_starts_with(trim($c), '…')) {
+                    // Le bloc frais se termine au séparateur « …… » : tout ce qui suit
+                    // (COÛT DES SERVICES, « PAR LE FOURNISSEUR » répétés, suggestions…)
+                    // n'appartient PAS aux frais. On quitte l'état pour ne plus capturer.
+                    if (str_starts_with(trim($c), '…')) {
+                        $state = 'preamble';
+                        break;
+                    }
+                    if (trim($c) !== '') {
                         $feeText[] = trim($c);
                     }
                     break;
