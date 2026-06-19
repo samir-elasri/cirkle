@@ -405,6 +405,18 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
     border:2px solid #e8820c; color:#e8820c; font-size:.55em; font-weight:900; vertical-align:middle; margin-left:8px; }
 .ck-opt-e { height:1.5em; width:auto; vertical-align:middle; margin-left:8px; }
 
+/* ════════════ Note explicative réutilisable (help-note) — « tout expliqué sur chaque page » ════════════ */
+.ck-help {
+    display: flex; gap: .75em; align-items: flex-start;
+    background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ffc107;
+    border-radius: 10px; padding: .95em 1.15em; margin: 0 0 1.5em;
+    color: var(--ck-ink, #2a2f3a); line-height: 1.6;
+}
+.ck-help__icon { color: #f0a500; font-size: 1.15rem; margin-top: .12em; flex: 0 0 auto; }
+.ck-help__body { font-size: .95rem; }
+.ck-help__body span { font-size: inherit; }
+.ck-help__title { display: block; margin-bottom: .25em; font-size: 1rem; }
+
 /* ════════════ Texte long du MASTER 2350 (intro/clients/capacités) — lisible ════════════ */
 .master-2350-note {
     background: #f7f9fc; border: 1px solid var(--ck-line, #e6e9f0); border-left: 4px solid var(--ck-accent, #ffd200);

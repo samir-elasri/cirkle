@@ -11,6 +11,15 @@
 	"platformResidentialFr": "Résidentiel Français",
 	"platformBusinessEn": "B2B English",
 	"platformBusinessFr": "B2B Français",
+	"help": {
+		"home": "Welcome to Cirkle. Find a professional near you in just a few clicks: choose your platform below, enter your postal code, then discover the suppliers available in your area. Are you a professional? Sign up to be seen by thousands of clients.",
+		"platform": "Residential: services for individuals and the home. B2B: business-to-business services. Then choose French or English to suit your preference.",
+		"profession": "Here are the suppliers available for this profession in your area. Click a profile to see the details, reviews and contact information, then reach out directly to the professional of your choice.",
+		"register-step1": "Step 1 of 5 — Your information. Enter your company's contact details. You'll then choose your services, your plan and your options. Your data is protected in accordance with Law 25.",
+		"register-step3": "Review step — Check the information you entered. If everything is correct, continue; otherwise go back to make changes.",
+		"register-step4": "Choose your subscription plan and the postal codes (regions) where you want to appear. A one-time registration fee may apply; the total is shown before payment.",
+		"register-step6": "Final step — Create your password and accept the terms of use. You'll then be redirected to secure payment to activate your profile."
+	},
 	"mbiance_slogan": "Web sites and mobile applications",
 	"purchase": "Purchase",
 	"inaccessible": "This content is not available",

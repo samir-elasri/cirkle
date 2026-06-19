@@ -12,6 +12,8 @@
             </div>
         @endisset
 
+        @include('partials.help-note', ['text' => __('main.help.profession')])
+
         <div class="provider-search">
             <div class="provider-search__results">
                 @foreach ($subscribers as $provider)

@@ -19,9 +19,11 @@
                 @endif
             </div>
 
+            @include('partials.help-note', ['text' => __('main.help.register-step1')])
+
             {!! Form::open([
-                'url' => isset($isEdit) && $isEdit 
-                    ? urlRouteName('subscriber.profile.updateStep1') 
+                'url' => isset($isEdit) && $isEdit
+                    ? urlRouteName('subscriber.profile.updateStep1')
                     : urlRouteName('subscriber.register.storeStep1')
             ]) !!}
                 <input type="hidden" name="preference_language" value="{{ App::getLocale() }}">

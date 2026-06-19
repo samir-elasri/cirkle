@@ -11,6 +11,15 @@
   "platformResidentialFr"  : "Résidentiel Français",
   "platformBusinessEn"     : "B2B English",
   "platformBusinessFr"     : "B2B Français",
+  "help": {
+    "home": "Bienvenue sur Cirkle. Trouvez en quelques clics un professionnel près de chez vous : choisissez votre plateforme ci-dessous, entrez votre code postal, puis découvrez les fournisseurs disponibles dans votre région. Vous êtes un professionnel ? Inscrivez-vous pour être visible auprès de milliers de clients.",
+    "platform": "Résidentiel : services pour les particuliers et la maison. B2B : services entre entreprises. Choisissez ensuite le français ou l'anglais selon votre préférence.",
+    "profession": "Voici les fournisseurs disponibles pour cette profession dans votre région. Cliquez sur une fiche pour voir les détails, les évaluations et les coordonnées, puis contactez directement le professionnel de votre choix.",
+    "register-step1": "Étape 1 sur 5 — Vos informations. Indiquez les coordonnées de votre entreprise. Vous choisirez ensuite vos services, votre forfait et vos options. Vos données sont protégées conformément à la Loi 25.",
+    "register-step3": "Étape de vérification — Relisez les informations saisies. Si tout est exact, continuez ; sinon revenez en arrière pour corriger.",
+    "register-step4": "Choisissez votre forfait d'abonnement et les codes postaux (régions) où vous souhaitez apparaître. Des frais d'inscription uniques peuvent s'appliquer ; le total est affiché avant le paiement.",
+    "register-step6": "Dernière étape — Créez votre mot de passe et acceptez les conditions d'utilisation. Vous serez ensuite redirigé vers le paiement sécurisé pour activer votre fiche."
+  },
   "mbiance_slogan"   : "Conception de sites web et applications mobiles",
   "purchase"         : "Acheter",
   "inaccessible"     : "Ce contenu n'est pas disponible",

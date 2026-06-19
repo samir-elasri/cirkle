@@ -11,6 +11,8 @@
                 </div>
             </div>
 
+            @include('partials.help-note', ['text' => __('main.help.register-step6')])
+
             {!! Form::open(['url' => urlRouteName('subscriber.register.storeStep6')]) !!}
                 <div class="form__column ">
                     <div class="color-primary">{{__('auth.choose-password') }}</div>

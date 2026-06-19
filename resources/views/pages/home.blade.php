@@ -1,5 +1,8 @@
 <section>
     <div class="optimal-content-width">
+        @include('partials.help-note', ['text' => __('main.help.home')])
+
+        @include('partials.help-note', ['text' => __('main.help.platform')])
         @include ('partials.platform-selector')
 
         <div class="tile-row">

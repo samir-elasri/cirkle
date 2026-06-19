@@ -12,6 +12,8 @@
                 @include('partials.progress', ['length' => 5, 'active' => 4])
             </div>
 
+            @include('partials.help-note', ['text' => __('main.help.register-step4')])
+
             {!! Form::open(['url' => urlRouteName('subscriber.register.storeStep4')]) !!}
 
                 {{-- 1) Durée du forfait --}}
