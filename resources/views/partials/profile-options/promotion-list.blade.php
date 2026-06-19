@@ -7,12 +7,18 @@
                 {{$promotion->title}}
            </span>
 
-        <div class="ui toggle checkbox">
-            <input @if((bool)$promotion->in_progress) checked
-                   @endif name="in_progress"
-                   type="checkbox">
-            <label>@lang('profile.options.fields.current')</label>
-        </div>
+        {{-- Toggle « en cours » en NON-JS : lien direct qui bascule + recharge --}}
+        @if(!empty($promotion->id))
+            <a href="{{ urlRouteName('promotion-toggle', ['id' => $promotion->id, 'redirect' => 1]) }}"
+               class="call-to-action {{ $promotion->in_progress ? '' : 'cta-alt' }}">
+                @lang('profile.options.fields.current') : {{ $promotion->in_progress ? '✓' : '—' }}
+            </a>
+        @else
+            <div class="ui toggle checkbox">
+                <input @if((bool)$promotion->in_progress) checked @endif name="in_progress" type="checkbox">
+                <label>@lang('profile.options.fields.current')</label>
+            </div>
+        @endif
 
         <button type="button" class="call-to-action up-button">
             <i class="fas fa-arrow-up"></i>

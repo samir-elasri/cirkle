@@ -469,6 +469,7 @@ class ProfileOptionController extends Controller
 			}
 
 			if (!$next) {
+					if ($request->query('redirect')) { return back(); }
 				return response()->json(['success' => true], 200);
 			}
 
@@ -502,6 +503,7 @@ class ProfileOptionController extends Controller
 			}
 		}
 
+		if ($request->query('redirect')) { return back(); }
 		return response()->json(['success' => true], 200);
 	}
 
@@ -529,6 +531,7 @@ class ProfileOptionController extends Controller
 			}
 		}
 
+		if ($request->query('redirect')) { return back(); }
 		return response()->json([], 200);
 	}
 
@@ -556,6 +559,7 @@ class ProfileOptionController extends Controller
 			}
 		}
 
+		if ($request->query('redirect')) { return back(); }
 		return response()->json([], 200);
 	}
 
