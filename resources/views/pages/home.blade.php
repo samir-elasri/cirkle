@@ -5,6 +5,10 @@
     $loc = app()->getLocale();
     $t = fn ($fr, $en) => $loc === 'en' ? $en : $fr;
     $eBadge = asset_with_version('/dist/img/cirkle-e-badge.png');
+    // Plateforme choisie (résidentiel/B2B) : ne montrer que les professions de cette
+    // plateforme (la langue FR/EN est déjà gérée par la traduction du titre). Évite que
+    // les 4 variantes (W…RF/RE/B2BE/B2BF) d'un même service apparaissent ensemble.
+    $platformType = $selectedProviderType ?? 'residential';
     // Catalogue complet (noir) : catégories (parents) -> professions (sous-catégories)
     $profsByCat = ($subcategories ?? collect())->groupBy('service_category_id');
 @endphp
@@ -91,7 +95,7 @@
             <p class="ck-home__catalogue-contact">{{ $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à servclient@cirkleservices.com', 'Suppliers: if your profession is not listed, email us at servclient@cirkleservices.com') }}</p>
 
             @foreach ($categories as $category)
-                @php $profs = ($profsByCat[$category->id] ?? collect())->filter(fn ($p) => !empty($p->title)); @endphp
+                @php $profs = ($profsByCat[$category->id] ?? collect())->filter(fn ($p) => !empty($p->title) && (($p->provider_type ?: 'residential') === $platformType)); @endphp
                 @if (!$category->title || $profs->isEmpty()) @continue @endif
                 <div class="ck-home__cat-row">
                     <div class="ck-home__cat">{{ $category->title }}</div>
