@@ -455,9 +455,12 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 .ck-home__h { color: #00b050; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; margin: 0 0 .45em; font-size: 1rem; }
 .ck-home__sub { color: #0070c0; font-weight: 700; margin: .15em 0 .35em; font-size: .95rem; }
 .ck-home__list { list-style: none; margin: 0 0 .3em; padding: 0; }
-.ck-home__list li { padding: .1em 0; line-height: 1.3; font-size: .9rem; }
+.ck-home__list li { position: relative; padding: .12em 0 .12em 1.1em; line-height: 1.32; font-size: .9rem; }
+.ck-home__list li::before { content: "•"; position: absolute; left: .1em; top: 0; font-weight: 900; }
 .ck-home__list--client li { color: #157a47; }
+.ck-home__list--client li::before { color: #00b050; }
 .ck-home__list--supplier li { color: #44546a; }
+.ck-home__list--supplier li::before { color: #44546a; }
 .ck-home__step { margin: .3em 0; line-height: 1.38; font-size: .9rem; }
 .ck-home__green { color: #00b050; font-weight: 700; }
 .ck-home__blue  { color: #0070c0; font-weight: 700; }
@@ -549,6 +552,23 @@ body:has(.ck-home) .platform-selector__title {
     border-radius: 8px; padding: .55em .9em;
     display: block; max-width: 860px; margin-left: auto; margin-right: auto;
 }
+/* Bloc de texte CMS sur l'accueil (message « recrutement / patience ») :
+   carte lisible avec accent vert, au lieu de texte nu. */
+body:has(.ck-home) .blocs .bloc-text__content {
+    max-width: 900px; margin: 0 auto;
+    background: #f8fffb; border: 1px solid #cfe6d8; border-left: 5px solid #00b050;
+    border-radius: 12px; padding: 20px 26px; box-shadow: 0 6px 20px rgba(22,27,38,.06);
+}
+body:has(.ck-home) .blocs .content-writable h4 {
+    color: #00b050 !important; font-weight: 900; font-size: 1.15rem;
+    margin: 0 0 .55em; letter-spacing: .02em;
+}
+body:has(.ck-home) .blocs .content-writable p {
+    margin: 0 0 .6em; line-height: 1.6; color: #2a2f3a !important; font-size: .95rem;
+}
+body:has(.ck-home) .blocs .content-writable p:last-child { margin-bottom: 0; }
+/* Conserve le vert des libellés « IMPORTANT » / « SUGGESTION » (sinon écrasés en sombre) */
+body:has(.ck-home) .blocs .content-writable p span { color: #00b050 !important; font-weight: 700; }
 .ck-home__catalogue { margin-top: .8em; }
 
 /* ════════════════════════════════════════════════════════════════════════════
