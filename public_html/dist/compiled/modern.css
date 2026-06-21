@@ -525,14 +525,14 @@ body:has(.ck-home) .platform-selector__title, body:has(.ck-home) .catalogue__leg
    trop de hauteur). Le diaporama « Promotion » passe de 465px à ~190px et les
    grands espacements (150px) sont réduits. Ciblé body:has(.ck-home).
    ════════════════════════════════════════════════════════════════════════════ */
-body:has(.ck-home) .slideshow { height: 190px !important; min-height: 0 !important; }
+body:has(.ck-home) .slideshow { height: 290px !important; min-height: 0 !important; }
 body:has(.ck-home) .slideshow .slide, body:has(.ck-home) .slideshow .slides,
 body:has(.ck-home) .slideshow .slick-list, body:has(.ck-home) .slideshow .slick-track,
 body:has(.ck-home) .slideshow .slick-slide,
 body:has(.ck-home) .slideshow .slick-slide > .localContainer {
-    height: 190px !important; min-height: 0 !important; max-height: 190px !important;
+    height: 290px !important; min-height: 0 !important; max-height: 290px !important;
 }
-body:has(.ck-home) .spacing { height: 16px !important; }
+body:has(.ck-home) .spacing { height: 46px !important; }
 .ck-home__banner { margin: .15em 0; }
 .ck-home__cols { margin: .6em 0 .8em; gap: .8em; }
 .ck-home__col { padding: .8em .9em; }
