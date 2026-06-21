@@ -488,8 +488,22 @@ body:has(.ck-home) {
         linear-gradient(180deg, #f4f6fb 0%, #f8f9fc 40%, #fbfcfe 100%) !important;
     background-attachment: fixed !important;
 }
-/* Coupe l'aurora verte animée + le séparateur blanc (réservés au fond vert) */
-body:has(.ck-home)::before { content: none !important; display: none !important; }
+/* Aurora « bulles » douces en VERT CLAIR + lente : vivante mais le texte reste net.
+   (Remplace l'aurora vert foncé ; opacités basses sur fond clair.) */
+body:has(.ck-home)::before {
+    content: ""; position: fixed; inset: -28%; z-index: -1; pointer-events: none; display: block;
+    background:
+        radial-gradient(closest-side, rgba(120,205,150,.34), transparent) 8% 16% / 55% 55% no-repeat,
+        radial-gradient(closest-side, rgba(150,225,180,.28), transparent) 86% 10% / 50% 50% no-repeat,
+        radial-gradient(closest-side, rgba(90,190,140,.30), transparent) 62% 88% / 60% 60% no-repeat,
+        radial-gradient(closest-side, rgba(175,230,200,.26), transparent) 10% 86% / 48% 48% no-repeat,
+        radial-gradient(closest-side, rgba(200,240,215,.22), transparent) 95% 78% / 52% 52% no-repeat;
+    filter: blur(62px) saturate(1.05);
+    animation: ckLiquid 26s ease-in-out infinite alternate;
+    will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) { body:has(.ck-home)::before { animation: none !important; } }
+/* Le séparateur blanc (réservé au fond vert) reste coupé */
 body:has(.ck-home) #main::before { content: none !important; display: none !important; }
 /* Les règles « texte blanc sur vert » ne doivent plus s'appliquer : on remet en sombre */
 body:has(.ck-home) .slideshow .slideshow__content h2,
