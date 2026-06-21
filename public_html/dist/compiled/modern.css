@@ -446,6 +446,23 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 .ck-home__banner { text-align: center; font-weight: 700; margin: .35em 0; line-height: 1.4; }
 .ck-home__banner--launch  { color: #0070c0; }
 .ck-home__banner--recruit { color: #00b050; font-size: .94em; }
+.ck-home__banner--promo {
+    background: #fff4d6; border: 1px solid #ffc000; color: #7a5b00;
+    border-radius: 8px; padding: .5em .85em; max-width: 860px; margin: .15em auto;
+}
+.ck-home__suggestion {
+    text-align: center; font-style: italic; color: #44546a; font-size: .9rem;
+    max-width: 900px; margin: .1em auto .5em;
+}
+/* Bloc « code postal » placé sous le 1er clic, dans la colonne du centre */
+.ck-home__postal { margin: .35em 0 .5em; }
+.ck-home__postal .content-card { padding: .6em !important; margin: 0 !important; box-shadow: none !important; border: 1px solid #d7dce6; background: #fff; }
+.ck-home__postal .form__container { margin: 0; }
+.ck-home__postal .form__row { display: flex; gap: .4em; align-items: stretch; }
+.ck-home__postal .form__column { margin: 0; }
+.ck-home__postal input#postal_code { padding: 9px 12px 9px 2.4em !important; }
+.ck-home__postal .call-to-action { padding: 9px 14px; white-space: nowrap; }
+.ck-home__postal .postalCodeSearch__result { margin-top: .5em; }
 
 /* 3 colonnes : Avantages clients | Bienvenue (3 clics) | Avantages fournisseurs */
 .ck-home__cols { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 1em; align-items: stretch; margin: .9em 0 1.2em; }
@@ -475,8 +492,8 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 
 /* Catalogue complet (noir) : résume toutes les professions de Cirkle (spec Denis) */
 .ck-home__catalogue { margin-top: 1.4em; }
-.ck-home__catalogue-note { color: #157a47; font-weight: 700; margin: 0 0 .25em; font-size: .95rem; }
-.ck-home__catalogue-contact { color: #ed7d31; font-weight: 600; margin: .15em 0 .8em; font-size: .85rem; }
+.ck-home__catalogue-note { color: #14181f; font-weight: 700; margin: 0 0 .3em; font-size: .98rem; }
+.ck-home__catalogue-contact { color: #ed7d31; font-weight: 700; margin: .15em 0 .9em; font-size: 1.08rem; }
 .ck-home__cat-row { display: grid; grid-template-columns: minmax(150px, 1fr) 3fr; gap: .8em; padding: .4em 0; border-bottom: 1px solid #eef1ec; align-items: start; }
 .ck-home__cat  { font-weight: 700; color: #14181f; }
 .ck-home__profs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .1em .8em; }
@@ -533,16 +550,19 @@ body:has(.ck-home) .platform-selector__title, body:has(.ck-home) .catalogue__leg
    ════════════════════════════════════════════════════════════════════════════ */
 /* Le header « Promotion » (diaporama) + ses espacements : même hauteur/espacement
    sur TOUTES les pages où il apparaît (accueil, connexion, inscription…). */
-body:has(.slideshow) .slideshow { height: 290px !important; min-height: 0 !important; }
+body:has(.slideshow) .slideshow { height: 240px !important; min-height: 0 !important; }
 body:has(.slideshow) .slideshow .slide, body:has(.slideshow) .slideshow .slides,
 body:has(.slideshow) .slideshow .slick-list, body:has(.slideshow) .slideshow .slick-track,
 body:has(.slideshow) .slideshow .slick-slide,
 body:has(.slideshow) .slideshow .slick-slide > .localContainer {
-    height: 290px !important; min-height: 0 !important; max-height: 290px !important;
+    height: 240px !important; min-height: 0 !important; max-height: 240px !important;
 }
 /* Espacements compactés là où il y a un header « Promotion » (diaporama) ET sur
    les pages connexion/inscription (sinon 150px de vide au-dessus du titre). */
-body:has(.slideshow) .spacing, body:has(.ck-auth) .spacing { height: 46px !important; }
+body:has(.slideshow) .spacing, body:has(.ck-auth) .spacing { height: 30px !important; }
+/* Dernier bloc CMS (« CIRKLE / Important / Suggestion ») retiré de l'accueil (Denis 21.06) :
+   la Suggestion est désormais en haut, sous la phrase « recrutement perpétuel ». */
+body:has(.ck-home) .blocs { display: none !important; }
 .ck-home__banner { margin: .15em 0; }
 .ck-home__cols { margin: .6em 0 .8em; gap: .8em; }
 .ck-home__col { padding: .8em .9em; }

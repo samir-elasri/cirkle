@@ -8,6 +8,9 @@ function createRoutes($locale)
 		'uses' => 'SearchController@search'
 	]);
 
+	// Page « Master » : aperçu de tous les formulaires en onglets, sans inscription (Denis 21.06).
+	Route::get('master', fn () => view('pages.master-forms'))->name('master-forms');
+
 	Route::post('contactForm', [
 		'as' => 'contactForm.post',
 		'uses' => 'PageController@contactUs'

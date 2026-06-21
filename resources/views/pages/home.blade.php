@@ -15,11 +15,13 @@
         {{-- Sélecteur des 4 plateformes (résidentiel/B2B × FR/EN) — choix mis en évidence en jaune --}}
         @include('partials.platform-selector')
 
-        {{-- Bannières : lancement + recrutement perpétuel --}}
-        <p class="ck-home__banner ck-home__banner--launch">{{ $t('Lancement officiel du site cirkleservices.com prévu pour le 1er août 2026', 'Official launch of cirkleservices.com is scheduled for August 1, 2026') }}</p>
+        {{-- Bannières : promotion, lancement, recrutement + suggestion --}}
+        <p class="ck-home__banner ck-home__banner--promo">{{ $t('Promotion : avant le 1er septembre 2026, aucun frais d\'abonnement ne vous sera chargé.', 'Promotion: before September 1, 2026, no subscription fee will be charged.') }}</p>
+        <p class="ck-home__banner ck-home__banner--launch">{{ $t('Lancement officiel prévu pour le 1er octobre 2026.', 'Official launch planned for October 1, 2026.') }}</p>
         <p class="ck-home__banner ck-home__banner--recruit">{{ $t("Notre processus de recrutement « perpétuel » des fournisseurs se poursuit afin d'élargir notre réseau de partenaires.", 'Our ongoing supplier recruitment continues in order to grow our network of partners.') }}</p>
+        <p class="ck-home__suggestion">{{ $t("Suggestion : profitez de votre présence pour naviguer Cirkle afin d'anticiper, prévoir et budgéter vos prochains services et/ou vos futurs projets.", 'Suggestion: use your visit to browse Cirkle to anticipate, plan and budget your next services and future projects.') }}</p>
 
-        {{-- 3 colonnes compactes : Avantages clients | Bienvenue (3 clics) | Avantages fournisseurs --}}
+        {{-- 3 colonnes compactes : Avantages clients | Bienvenue (clics + recherche) | Avantages fournisseurs --}}
         <div class="ck-home__cols">
 
             {{-- ─── Colonne 1 : Avantages membres CLIENTS (col I de la spec) ─── --}}
@@ -41,13 +43,19 @@
                 <a class="ck-home__cta ck-home__cta--client" href="{{ setting('home_client_link2_url') ?: url($loc.'/sinscrire') }}">{{ $t('Devenez membre client', 'Become a client member') }}</a>
             </div>
 
-            {{-- ─── Colonne 2 : BIENVENUE — les 3 clics (col E de la spec) ─── --}}
+            {{-- ─── Colonne 2 : BIENVENUE — les clics + la recherche (col E de la spec) ─── --}}
             <div class="ck-home__col ck-home__col--center">
                 <h3 class="ck-home__h">{{ $t('Bienvenue', 'Welcome') }}</h3>
                 <p class="ck-home__sub">{{ $t('Aux clients membres et non-membres', 'To member and non-member clients') }}</p>
-                <p class="ck-home__step"><span class="ck-home__blue">{{ $t('1er clic', '1st click') }} :</span> {{ $t('votre code postal ci-dessous (ou avoisinant, ou ailleurs). Cirkle téléchargera automatiquement', 'your postal code below (nearby or elsewhere). Cirkle will automatically load') }} <span class="ck-home__green">{{ $t('la liste des professions disponibles', 'the list of available professions') }}</span> {{ $t('en vert.', 'in green.') }}</p>
+                <p class="ck-home__step"><span class="ck-home__blue">{{ $t('1er clic', '1st click') }} :</span> {{ $t('votre code postal ci-dessous (ou avoisinant, ou ailleurs). Cirkle téléchargera automatiquement', 'your postal code below (nearby or elsewhere). Cirkle will automatically load') }} <span class="ck-home__green">{{ $t('la liste des professions disponibles en vert', 'the list of available professions in green') }}</span>.</p>
+
+                {{-- Bloc code postal directement sous le « 1er clic » (Denis 21.06). Le résultat
+                     (professions en vert) s'affiche dans .postalCodeSearch__result. --}}
+                <div class="ck-home__postal">
+                    @include('partials.providers.public-search-filters')
+                </div>
+
                 <p class="ck-home__step"><span class="ck-home__blue">{{ $t('2e clic', '2nd click') }} :</span> {{ $t('sur la profession de votre choix — Cirkle vous connecte directement avec les fournisseurs membres.', 'on the profession of your choice — Cirkle connects you directly with member suppliers.') }}</p>
-                <p class="ck-home__step"><span class="ck-home__blue">{{ $t('3e clic', '3rd click') }} :</span> {{ $t('sur le fournisseur de votre choix — Cirkle vous connecte directement avec son courriel.', 'on the supplier of your choice — Cirkle connects you directly with their email.') }}</p>
                 <div class="ck-home__warn">{{ $t('Important : toute communication à l’extérieur de Cirkle n’est plus la responsabilité de cirkleservices.com.', 'Important: any communication outside Cirkle is no longer the responsibility of cirkleservices.com.') }}</div>
                 <div class="ck-home__legend ck-home__legend--recruit"><img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"> = {{ $t('un ou plusieurs fournisseurs recrutent du personnel', 'one or more suppliers are recruiting staff') }}</div>
                 <div class="ck-home__legend ck-home__legend--promo"><span class="ck-promo-badge">PROMO</span> = {{ $t('un ou plusieurs fournisseurs en promotion', 'one or more suppliers have a promotion') }}</div>
@@ -67,19 +75,14 @@
                 <p class="ck-home__sub">{{ $t('« Choix de 6 options »', '“Choice of 6 options”') }}</p>
                 <ul class="ck-home__list ck-home__list--supplier">
                     <li>{{ $t('Vos promotions', 'Your promotions') }} <span class="ck-promo-badge">PROMO</span></li>
-                    <li>{{ $t('Offre d’emploi', 'Job offer') }} <img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"></li>
-                    <li>{{ $t('6 photos', '6 photos') }}</li>
+                    <li>{{ $t('Offre d’emploi / recrutement', 'Job offer / recruiting') }} <img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"></li>
+                    <li>{{ $t('12 photos', '12 photos') }}</li>
                     <li>{{ $t('Votre formulaire d’estimation', 'Your estimate form') }}</li>
-                    <li>{{ $t('Liste de vos diplômes et permis', 'List of your diplomas and licenses') }}</li>
+                    <li>{{ $t('Vos diplômes académiques', 'Your academic diplomas') }}</li>
+                    <li>{{ $t('Vos permis, licences et associations', 'Your licenses & associations') }}</li>
                 </ul>
                 <a class="ck-home__cta" href="{{ setting('home_provider_link2_url') ?: url($loc.'/sinscrire/fournisseur') }}">{{ $t('Devenez membre fournisseur', 'Become a supplier member') }}</a>
             </div>
-        </div>
-
-        {{-- Recherche par code postal (le « 1er clic ») — pleine largeur, juste sous les textes.
-             Le résultat (professions en vert) s'affiche dans .postalCodeSearch__result. --}}
-        <div class="tile-row">
-            @include('partials.providers.public-search-filters')
         </div>
 
         {{-- Catalogue complet (noir) : résume toutes les professions de Cirkle (spec Denis) --}}
