@@ -1,6 +1,6 @@
 {!! $blocs !!}
 
-<section>
+<section class="ck-auth">
     <div class="optimal-content-width">
   
         <div class="content-card">

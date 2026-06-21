@@ -1,4 +1,4 @@
-<section>
+<section class="ck-auth ck-auth--single">
 	<div class="narrow-content-width">
 		<div class="content-card">
 			{!! Form::open(['url' => urlRouteName('subscriber.login'), 'class' => 'form']) !!}

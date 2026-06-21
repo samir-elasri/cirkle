@@ -1,8 +1,8 @@
 {!! $blocs !!}
 
-<section>
+<section class="ck-auth ck-auth--single">
     <div class="optimal-content-width">
-  
+
         <div class="content-card">
 
             <div class="content-card__header">

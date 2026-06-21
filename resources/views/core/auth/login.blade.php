@@ -1,6 +1,6 @@
 {!! $blocs !!}
 <section class="with-background page">
-	<div class="with-backgroundpage__content login optimal-content-width">
+	<div class="with-backgroundpage__content login optimal-content-width ck-auth ck-auth--single">
 		@include('core.partials.spacing', ['spacing' => $default_bloc_spacing])
 		{{-- Bouton retour demandé par Denis sur la page de connexion : revient à la page
 		     précédente si possible, sinon à l'accueil. --}}

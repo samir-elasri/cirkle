@@ -519,3 +519,65 @@ body:has(.ck-home) .main__title h1, body:has(.ck-home) .main__title,
 body:has(.ck-home) .platform-selector__title, body:has(.ck-home) .catalogue__legend {
     color: var(--ck-ink) !important; text-shadow: none !important;
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ACCUEIL — COMPACTER (Denis : « moins d'espace » ; le header « Promotion » prend
+   trop de hauteur). Le diaporama « Promotion » passe de 465px à ~190px et les
+   grands espacements (150px) sont réduits. Ciblé body:has(.ck-home).
+   ════════════════════════════════════════════════════════════════════════════ */
+body:has(.ck-home) .slideshow { height: 190px !important; min-height: 0 !important; }
+body:has(.ck-home) .slideshow .slide, body:has(.ck-home) .slideshow .slides,
+body:has(.ck-home) .slideshow .slick-list, body:has(.ck-home) .slideshow .slick-track,
+body:has(.ck-home) .slideshow .slick-slide,
+body:has(.ck-home) .slideshow .slick-slide > .localContainer {
+    height: 190px !important; min-height: 0 !important; max-height: 190px !important;
+}
+body:has(.ck-home) .spacing { height: 16px !important; }
+.ck-home__banner { margin: .15em 0; }
+.ck-home__cols { margin: .6em 0 .8em; gap: .8em; }
+.ck-home__col { padding: .8em .9em; }
+.ck-home__catalogue { margin-top: .8em; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CONNEXION / INSCRIPTION — carte professionnelle & attrayante (Denis : rendre les
+   boîtes d'inscription « + professionnel et plus attirant »). Ciblé .ck-auth /
+   .login → n'affecte pas le reste du site. .ck-auth--wide = formulaires larges.
+   ════════════════════════════════════════════════════════════════════════════ */
+.ck-auth .content-card, .ck-auth.login {
+    max-width: 560px; margin: 26px auto; background: #fff;
+    border: 1px solid #e8ebf2; border-radius: 16px;
+    box-shadow: 0 16px 46px rgba(22,27,38,.10);
+    padding: 30px 32px 26px; position: relative; overflow: hidden;
+}
+.ck-auth--wide .content-card { max-width: 920px; }
+.ck-auth .content-card::before, .ck-auth.login::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, #ffd200, #00b050);
+}
+.ck-auth .content-card__header { border: none !important; padding: 0 !important; margin: 6px 0 16px !important; }
+.ck-auth .content-card__header--title { font-size: 1.5rem !important; font-weight: 900 !important; line-height: 1.18; }
+.ck-auth .content-card__label { color: #69716b; margin-top: 4px; }
+.ck-auth .form__column, .ck-auth.login .form__column { margin-bottom: 14px; }
+.ck-auth label, .ck-auth.login label { display: block; font-weight: 600; color: #2a2f3a; margin-bottom: 5px; }
+.ck-auth input:not([type=checkbox]):not([type=radio]):not([type=submit]),
+.ck-auth select, .ck-auth textarea,
+.ck-auth.login input:not([type=submit]) {
+    width: 100%; box-sizing: border-box; padding: 12px 14px;
+    border: 1.5px solid #d7dce6; border-radius: 10px; background: #fbfcfe;
+    font-size: .98rem; transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.ck-auth input:focus, .ck-auth select:focus, .ck-auth textarea:focus, .ck-auth.login input:focus {
+    border-color: #00b050; box-shadow: 0 0 0 3px rgba(0,176,80,.16); background: #fff; outline: none;
+}
+.ck-auth .content-card__footer { border: none !important; padding: 0 !important; margin-top: 12px; }
+/* Bouton plein-largeur seulement sur les formulaires à bouton unique (connexion + client) */
+.ck-auth--single .content-card__footer .call-to-action,
+.ck-auth--single button[type=submit],
+.ck-auth--single input[type=submit] {
+    width: 100%; padding: 13px 18px; font-size: 1rem; font-weight: 800;
+}
+.ck-auth.login .row { margin-top: 4px; }
+.ck-auth.login .login__footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; font-size: .9rem; }
+.ck-auth.login .login__footer a { color: #0070c0; font-weight: 600; text-decoration: none; }
+.ck-auth.login .login__footer a:hover { text-decoration: underline; }
+.ck-auth.login .login__back a { font-size: .85rem; }
