@@ -116,6 +116,9 @@ input[type="number"]:focus, input[type="tel"]:focus, input[type="search"]:focus,
     outline: none !important; border-color: var(--ck-accent-dark) !important;
     box-shadow: 0 0 0 4px rgba(255,210,0,.3) !important;
 }
+/* Champ « code postal » : laisser de la place à l'icône GPS (le padding global
+   ci-dessus écrasait le retrait qui dégageait l'icône → texte collé dessus). */
+.postal-code__icon > input#postal_code { padding-left: 2.6em !important; }
 label { font-weight: 600; color: var(--ck-ink); }
 sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important; min-height: 48px; }
 /* on NE touche PAS au gris pâle des champs « info fournisseur » du 2350 */
@@ -525,14 +528,18 @@ body:has(.ck-home) .platform-selector__title, body:has(.ck-home) .catalogue__leg
    trop de hauteur). Le diaporama « Promotion » passe de 465px à ~190px et les
    grands espacements (150px) sont réduits. Ciblé body:has(.ck-home).
    ════════════════════════════════════════════════════════════════════════════ */
-body:has(.ck-home) .slideshow { height: 290px !important; min-height: 0 !important; }
-body:has(.ck-home) .slideshow .slide, body:has(.ck-home) .slideshow .slides,
-body:has(.ck-home) .slideshow .slick-list, body:has(.ck-home) .slideshow .slick-track,
-body:has(.ck-home) .slideshow .slick-slide,
-body:has(.ck-home) .slideshow .slick-slide > .localContainer {
+/* Le header « Promotion » (diaporama) + ses espacements : même hauteur/espacement
+   sur TOUTES les pages où il apparaît (accueil, connexion, inscription…). */
+body:has(.slideshow) .slideshow { height: 290px !important; min-height: 0 !important; }
+body:has(.slideshow) .slideshow .slide, body:has(.slideshow) .slideshow .slides,
+body:has(.slideshow) .slideshow .slick-list, body:has(.slideshow) .slideshow .slick-track,
+body:has(.slideshow) .slideshow .slick-slide,
+body:has(.slideshow) .slideshow .slick-slide > .localContainer {
     height: 290px !important; min-height: 0 !important; max-height: 290px !important;
 }
-body:has(.ck-home) .spacing { height: 46px !important; }
+/* Espacements compactés là où il y a un header « Promotion » (diaporama) ET sur
+   les pages connexion/inscription (sinon 150px de vide au-dessus du titre). */
+body:has(.slideshow) .spacing, body:has(.ck-auth) .spacing { height: 46px !important; }
 .ck-home__banner { margin: .15em 0; }
 .ck-home__cols { margin: .6em 0 .8em; gap: .8em; }
 .ck-home__col { padding: .8em .9em; }
