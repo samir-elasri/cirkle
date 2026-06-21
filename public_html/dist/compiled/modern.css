@@ -543,6 +543,12 @@ body:has(.slideshow) .spacing, body:has(.ck-auth) .spacing { height: 46px !impor
 .ck-home__banner { margin: .15em 0; }
 .ck-home__cols { margin: .6em 0 .8em; gap: .8em; }
 .ck-home__col { padding: .8em .9em; }
+/* Ligne d'instruction du sélecteur de plateforme : bandeau jaune pâle (spec A7 = #FFE699) */
+body:has(.ck-home) .platform-selector__title {
+    background: #fff3c4 !important; border: 1px solid #ffe699;
+    border-radius: 8px; padding: .55em .9em;
+    display: block; max-width: 860px; margin-left: auto; margin-right: auto;
+}
 .ck-home__catalogue { margin-top: .8em; }
 
 /* ════════════════════════════════════════════════════════════════════════════
