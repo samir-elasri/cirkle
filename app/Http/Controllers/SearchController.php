@@ -37,7 +37,10 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $postalCode = $request->input('postal_code');
-        $providerType = $request->input('provider_type');
+        // Les boutons radio résidentiel/B2B ont été retirés (le type vient du sélecteur de
+        // plateforme, en session). On retombe donc sur le type stocké, sinon « residential ».
+        $providerType = $request->input('provider_type')
+            ?: ($this->searchDataService->getStoredProviderType() ?: 'residential');
 
         $this->searchDataService->storePostalCode($postalCode);
         $this->searchDataService->storeProviderType($providerType);

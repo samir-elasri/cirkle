@@ -1,50 +1,104 @@
-<section>
+{{-- PAGE D'ACCUEIL — refonte compacte « tout sur une page » d'après la spec de Denis
+     (docs/CIRKLE PAGE ACCUEIL 010626.xlsx) : direct au but, peu d'espace, en couleur.
+     Bilingue via le helper local $t (FR par défaut / EN). --}}
+@php
+    $loc = app()->getLocale();
+    $t = fn ($fr, $en) => $loc === 'en' ? $en : $fr;
+    $eBadge = asset_with_version('/dist/img/cirkle-e-badge.png');
+    // Catalogue complet (noir) : catégories (parents) -> professions (sous-catégories)
+    $profsByCat = ($subcategories ?? collect())->groupBy('service_category_id');
+@endphp
+
+<section class="ck-home">
     <div class="optimal-content-width">
-        @include('partials.help-note', ['text' => __('main.help.home')])
 
-        @include('partials.help-note', ['text' => __('main.help.platform')])
-        @include ('partials.platform-selector')
+        {{-- Sélecteur des 4 plateformes (résidentiel/B2B × FR/EN) — choix mis en évidence en jaune --}}
+        @include('partials.platform-selector')
 
-        <div class="tile-row">
-            @include ('partials.providers.public-search-filters')
+        {{-- Bannières : lancement + recrutement perpétuel --}}
+        <p class="ck-home__banner ck-home__banner--launch">{{ $t('Lancement officiel du site cirkleservices.com prévu pour le 1er août 2026', 'Official launch of cirkleservices.com is scheduled for August 1, 2026') }}</p>
+        <p class="ck-home__banner ck-home__banner--recruit">{{ $t("Notre processus de recrutement « perpétuel » des fournisseurs se poursuit afin d'élargir notre réseau de partenaires.", 'Our ongoing supplier recruitment continues in order to grow our network of partners.') }}</p>
+
+        {{-- 3 colonnes compactes : Avantages clients | Bienvenue (3 clics) | Avantages fournisseurs --}}
+        <div class="ck-home__cols">
+
+            {{-- ─── Colonne 1 : Avantages membres CLIENTS (col I de la spec) ─── --}}
+            <div class="ck-home__col">
+                <h3 class="ck-home__h">{{ $t('Avantages membres clients', 'Client member benefits') }}</h3>
+                <p class="ck-home__sub">{{ $t('2 clics et connexion avec les fournisseurs', '2 clicks and you are connected with suppliers') }}</p>
+                <p class="ck-home__step">{{ $t('Réduisez votre temps de recherche. Recevez les informations des professionnels :', 'Cut your search time. Get the professionals’ information:') }}</p>
+                <ul class="ck-home__list ck-home__list--client">
+                    <li>{{ $t('Toutes leurs compétences', 'All their skills') }}</li>
+                    <li>{{ $t('Leurs offres de promotions', 'Their promotional offers') }} <span class="ck-promo-badge">PROMO</span></li>
+                    <li>{{ $t('Leur système d’évaluation', 'Their rating system') }}</li>
+                    <li>{{ $t('Leurs photos, diplômes et permis', 'Their photos, diplomas and licenses') }}</li>
+                    <li>{{ $t('Leurs recrutements d’employé(e)s', 'Their staff recruitment') }} <img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"></li>
+                    <li>{{ $t('Comparer 2 fournisseurs ou plus', 'Compare 2 or more suppliers') }}</li>
+                    <li>{{ $t('Satisfaction, fiabilité, qualité des informations', 'Satisfaction, reliability, quality of information') }}</li>
+                    <li>{{ $t('Service personnalisé et innovation', 'Personalized service and innovation') }}</li>
+                    <li>{{ $t('Vos fournisseurs, catégories et professions favoris', 'Your favourite suppliers, categories and professions') }}</li>
+                </ul>
+                <a class="ck-home__cta ck-home__cta--client" href="{{ setting('home_client_link2_url') ?: url($loc.'/sinscrire') }}">{{ $t('Devenez membre client', 'Become a client member') }}</a>
+            </div>
+
+            {{-- ─── Colonne 2 : BIENVENUE — les 3 clics (col E de la spec) ─── --}}
+            <div class="ck-home__col ck-home__col--center">
+                <h3 class="ck-home__h">{{ $t('Bienvenue', 'Welcome') }}</h3>
+                <p class="ck-home__sub">{{ $t('Aux clients membres et non-membres', 'To member and non-member clients') }}</p>
+                <p class="ck-home__step"><span class="ck-home__blue">{{ $t('1er clic', '1st click') }} :</span> {{ $t('votre code postal ci-dessous (ou avoisinant, ou ailleurs). Cirkle téléchargera automatiquement', 'your postal code below (nearby or elsewhere). Cirkle will automatically load') }} <span class="ck-home__green">{{ $t('la liste des professions disponibles', 'the list of available professions') }}</span> {{ $t('en vert.', 'in green.') }}</p>
+                <p class="ck-home__step"><span class="ck-home__blue">{{ $t('2e clic', '2nd click') }} :</span> {{ $t('sur la profession de votre choix — Cirkle vous connecte directement avec les fournisseurs membres.', 'on the profession of your choice — Cirkle connects you directly with member suppliers.') }}</p>
+                <p class="ck-home__step"><span class="ck-home__blue">{{ $t('3e clic', '3rd click') }} :</span> {{ $t('sur le fournisseur de votre choix — Cirkle vous connecte directement avec son courriel.', 'on the supplier of your choice — Cirkle connects you directly with their email.') }}</p>
+                <div class="ck-home__warn">{{ $t('Important : toute communication à l’extérieur de Cirkle n’est plus la responsabilité de cirkleservices.com.', 'Important: any communication outside Cirkle is no longer the responsibility of cirkleservices.com.') }}</div>
+                <div class="ck-home__legend ck-home__legend--recruit"><img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"> = {{ $t('un ou plusieurs fournisseurs recrutent du personnel', 'one or more suppliers are recruiting staff') }}</div>
+                <div class="ck-home__legend ck-home__legend--promo"><span class="ck-promo-badge">PROMO</span> = {{ $t('un ou plusieurs fournisseurs en promotion', 'one or more suppliers have a promotion') }}</div>
+            </div>
+
+            {{-- ─── Colonne 3 : Avantages membres FOURNISSEURS (col G de la spec) ─── --}}
+            <div class="ck-home__col">
+                <h3 class="ck-home__h">{{ $t('Avantages membres fournisseurs', 'Supplier member benefits') }}</h3>
+                <ul class="ck-home__list ck-home__list--supplier">
+                    <li>{{ $t('Hébergement : frais inclus', 'Hosting: fees included') }}</li>
+                    <li>{{ $t('Référencement : inclus (SEO, mots-clés)', 'SEO: included (keywords)') }}</li>
+                    <li>{{ $t('Programmation et publicité : frais inclus', 'Development and advertising: fees included') }}</li>
+                    <li>{{ $t('Courriel aux clients : nouveau fournisseur / nouvelle promotion', 'Email to clients: new supplier / new promotion') }}</li>
+                    <li>{{ $t('Visibilité, partenariat, collaboration, croissance', 'Visibility, partnership, collaboration, growth') }}</li>
+                    <li>{{ $t('Expansion de votre réseau et accompagnement', 'Grow your network, with support') }}</li>
+                </ul>
+                <p class="ck-home__sub">{{ $t('« Choix de 6 options »', '“Choice of 6 options”') }}</p>
+                <ul class="ck-home__list ck-home__list--supplier">
+                    <li>{{ $t('Vos promotions', 'Your promotions') }} <span class="ck-promo-badge">PROMO</span></li>
+                    <li>{{ $t('Offre d’emploi', 'Job offer') }} <img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"></li>
+                    <li>{{ $t('6 photos', '6 photos') }}</li>
+                    <li>{{ $t('Votre formulaire d’estimation', 'Your estimate form') }}</li>
+                    <li>{{ $t('Liste de vos diplômes et permis', 'List of your diplomas and licenses') }}</li>
+                </ul>
+                <a class="ck-home__cta" href="{{ setting('home_provider_link2_url') ?: url($loc.'/sinscrire/fournisseur') }}">{{ $t('Devenez membre fournisseur', 'Become a supplier member') }}</a>
+            </div>
         </div>
 
+        {{-- Recherche par code postal (le « 1er clic ») — pleine largeur, juste sous les textes.
+             Le résultat (professions en vert) s'affiche dans .postalCodeSearch__result. --}}
         <div class="tile-row">
-            <div class="content-card content-card--half-width content-card--with-icon">
-                <div class="content-card__header">
-                    <div><img src="/dist/img/client_advantage.svg" alt=""></div>
-                    <h3>
-                        {!! setting('home_client_advantage_title1') !!}
-                        <br>
-                        <span class="color-black">{!! setting('home_client_advantage_title2') !!}</span>
-                    </h3>
+            @include('partials.providers.public-search-filters')
+        </div>
+
+        {{-- Catalogue complet (noir) : résume toutes les professions de Cirkle (spec Denis) --}}
+        <div class="ck-home__catalogue">
+            <p class="ck-home__catalogue-note">{{ $t('Recrutement continu en cours — liste complète des professions actuellement disponibles sur Cirkle :', 'Ongoing recruitment — complete list of professions currently available on Cirkle:') }}</p>
+            <p class="ck-home__catalogue-contact">{{ $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à servclient@cirkleservices.com', 'Suppliers: if your profession is not listed, email us at servclient@cirkleservices.com') }}</p>
+
+            @foreach ($categories as $category)
+                @php $profs = ($profsByCat[$category->id] ?? collect())->filter(fn ($p) => !empty($p->title)); @endphp
+                @if (!$category->title || $profs->isEmpty()) @continue @endif
+                <div class="ck-home__cat-row">
+                    <div class="ck-home__cat">{{ $category->title }}</div>
+                    <div class="ck-home__profs">
+                        @foreach ($profs as $prof)
+                            <span class="ck-home__prof">{{ $prof->title }}</span>
+                        @endforeach
+                    </div>
                 </div>
-
-                {!! setting('home_client_advantage_content') !!}
-
-                <div class="content-card__footer">
-                    <a href="{{ setting('home_client_link1_url') }}" class="call-to-action cta-alt">{{ setting('home_client_link1_label') }}</a>
-                    <a href="{{ setting('home_client_link2_url') }}" class="call-to-action">{{ setting('home_client_link2_label') }}</a>
-                </div>
-            </div>
-
-            <div class="content-card content-card--half-width content-card--with-icon">
-                <div class="content-card__header">
-                    <div><img src="/dist/img/supplier_advantage.svg" alt=""></div>
-                    <h3>
-                        {!! setting('home_provider_advantage_title1') !!}
-                        <br>
-                        <span class="color-black">{!! setting('home_provider_advantage_title2') !!}</span>
-                    </h3>
-                </div>
-
-                {!! setting('home_provider_advantage_content') !!}
-
-                <div class="content-card__footer">
-                    <a href="{{ setting('home_provider_link1_url') }}" class="call-to-action cta-alt">{{ setting('home_provider_link1_label') }}</a>
-                    <a href="{{ setting('home_provider_link2_url') }}" class="call-to-action">{{ setting('home_provider_link2_label') }}</a>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
