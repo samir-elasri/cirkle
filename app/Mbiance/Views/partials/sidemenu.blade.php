@@ -19,9 +19,9 @@
 		</ul>
 
 		<div class="sidebar-brand">
-			<a href="https://mbiance.com" alt="mbiance inc." title="mbiance">
-				<img src="/dist/admin/img/mbiance-logo.png" style="max-width:200px" />
-				<img src="/dist/admin/img/m-logo.png" style="max-width:60px" />
+			<a href="/" title="Cirkle">
+				<img src="{{ setting('main_logo_image') }}" alt="Cirkle" style="max-width:180px" />
+				<img src="/favicon-cirkle.png" alt="Cirkle" style="max-width:42px" />
 			</a>
 		</div>
 
