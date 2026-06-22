@@ -20,7 +20,7 @@
         @include('partials.platform-selector')
 
         {{-- Bannières : promotion, lancement, recrutement + suggestion --}}
-        <p class="ck-home__banner ck-home__banner--promo">{{ $t('Promotion : avant le 1er septembre 2026, aucun frais d\'abonnement ne vous sera chargé.', 'Promotion: before September 1, 2026, no subscription fee will be charged.') }}</p>
+        <p class="ck-home__banner ck-home__banner--promo">{{ $t('Promotion : avant le 1er octobre 2026, vous recevrez un crédit de 100,00 $.', 'Promotion: before October 1, 2026, you will receive a $100.00 credit.') }}</p>
         <p class="ck-home__banner ck-home__banner--launch">{{ $t('Lancement officiel prévu pour le 1er octobre 2026.', 'Official launch planned for October 1, 2026.') }}</p>
         <p class="ck-home__banner ck-home__banner--recruit">{{ $t("Notre processus de recrutement « perpétuel » des fournisseurs se poursuit afin d'élargir notre réseau de partenaires.", 'Our ongoing supplier recruitment continues in order to grow our network of partners.') }}</p>
         <p class="ck-home__suggestion">{{ $t("Suggestion : profitez de votre présence pour naviguer Cirkle afin d'anticiper, prévoir et budgéter vos prochains services et/ou vos futurs projets.", 'Suggestion: use your visit to browse Cirkle to anticipate, plan and budget your next services and future projects.') }}</p>

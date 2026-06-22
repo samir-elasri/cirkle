@@ -235,6 +235,10 @@ body:has(.slideshow)::before {
 .slideshow .slides, .slideshow .slick-list, .slideshow .slick-track,
 .slideshow .slide, .slideshow .slides-mobile, .slideshow .slides-mobile .slide { background: transparent !important; animation: none !important; }
 .slideshow .slide img, .slideshow .slide video { display: none !important; }
+/* Accueil : on RÉACTIVE les images du diaporama pour en faire un vrai slider de
+   caricatures en haut (demande Steve via Denis, 22.06). Steve ajoute les images
+   dans le diaporama via l'admin; elles défilent automatiquement. */
+body:has(.ck-home) .slideshow .slide img { display: block !important; width: 100%; height: 100%; object-fit: contain; }
 .slideshow .slideshow__content h2, .slideshow .slideshow__text, .slideshow .slideshow__sub-text,
 .slideshow .slides-mobile__content, .slideshow .slides-mobile__content h2 { color: #ffffff !important; text-shadow: 0 2px 16px rgba(0,0,0,.45); }
 
@@ -458,7 +462,7 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 }
 /* Bloc « code postal » placé sous le 1er clic, dans la colonne du centre */
 .ck-home__postal { margin: .35em 0 .5em; }
-.ck-home__postal .content-card { padding: .6em !important; margin: 0 !important; box-shadow: none !important; border: 1px solid #d7dce6; background: #fff; }
+.ck-home__postal .content-card { padding: .7em !important; margin: 0 !important; box-shadow: none !important; border: 1px solid #bfe3cf; background: #eef9f1; border-radius: 10px; }
 .ck-home__postal .form__container { margin: 0; }
 .ck-home__postal .form__row { display: flex; gap: .4em; align-items: stretch; }
 .ck-home__postal .form__column { margin: 0; }
