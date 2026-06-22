@@ -39,6 +39,52 @@
 			</div>
 		</div>
 
+		{{-- ── Fiches déjà importées ───────────────────────────────────────────────
+		     Liste de ce qui a été téléversé (pour vérifier / faire une capture d'écran). --}}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h2><i class="fa fa-list"></i> Fiches importées ({{ $fiches->count() }})</h2>
+					</div>
+					<div class="panel-body">
+						@if($fiches->isEmpty())
+							<p style="margin:0; color:#a94442; font-size:16px;">
+								<i class="fa fa-info-circle"></i>
+								<strong>Aucune fiche importée pour le moment.</strong>
+								Téléversez un fichier MASTER 2350 ci-dessus pour créer la première.
+							</p>
+						@else
+							<table class="table table-striped table-bordered" style="margin:0;">
+								<thead>
+									<tr>
+										<th>TITRE INTERNE</th>
+										<th>Catégorie</th>
+										<th>Profession</th>
+										<th>Plateforme</th>
+										<th>Services</th>
+										<th>Importée le</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach($fiches as $f)
+										<tr>
+											<td><strong>{{ $f->label }}</strong></td>
+											<td>{{ optional($parents->get($f->service_category_id))->title ?? '—' }}</td>
+											<td>{{ $f->title ?? '—' }}</td>
+											<td>{{ $f->provider_type === 'business' ? 'B2B' : ($f->provider_type === 'residential' ? 'Résidentiel' : '—') }}</td>
+											<td>{{ $serviceCounts[$f->id] ?? 0 }}</td>
+											<td>{{ optional($f->created_at)->format('Y-m-d H:i') }}</td>
+										</tr>
+									@endforeach
+								</tbody>
+							</table>
+						@endif
+					</div>
+				</div>
+			</div>
+		</div>
+
 		{{-- ── Création manuelle (optionnelle) ─────────────────────────────────────
 		     Alternative au fichier Excel : saisir une fiche à la main. --}}
 		{{ Form::open(['url' => urlRouteName('admin.fiche.store')]) }}

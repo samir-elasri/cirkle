@@ -24,20 +24,22 @@ How to test every v1 feature on the **live site**: <https://cirkleservices.com>
 
 ---
 
-## 0. Test accounts (ready to use)
+## 0. Test accounts (current)
 
-> ⚠️ **These are temporary TEST credentials on the live site.** Rotate or delete them before the public launch (Aug 1). Don't share publicly.
+> ⚠️ **Temporary TEST credentials on the live site.** Rotate/delete before the public launch. Don't share publicly.
 
 | Role | Login URL | Email | Password |
 |------|-----------|-------|----------|
-| **Admin** (back office) | <https://cirkleservices.com/admin> | `admin-test@cirkle.test` | `Cirkle#Admin2026` |
-| **Client** (normal user) | <https://cirkleservices.com/fr/profil> | `client-test@cirkle.test` | `Cirkle#Client2026` |
-| **Fournisseur** (supplier) | <https://cirkleservices.com/fr/profil> | `demo-arboriste@cirkleservices.com` | `Cirkle#Fourn2026` |
+| **Admin** (back office) | <https://cirkleservices.com/admin> | `admin-test@cirkle.test` | `CirkleTest!2026` |
 
-There are only **two kinds of user**: the **admin** (back office, `users` table) and **members** (`subscribers` — each is either a *client* or a *fournisseur*, flagged by `is_provider`). The fournisseur test account above is the fully-populated **demo fiche** (member **F02362**, profession *Arboriste*, postal code **H2X 1Y4**), so it already has competences, paid tabs (Permis / Diplômes / Estimation) and 2 reviews to look at.
+Denis also has his **own admin** accounts (`esquirecdn@outlook.com`, `dave_pare@yahoo.com`) with his own passwords. Admin accounts live in the `users` table and **do not** affect the member counter (which counts `subscribers`).
 
-Useful demo URLs:
-- Demo fournisseur fiche: <https://cirkleservices.com/fr/fournisseur/78>
+> 🧹 **Clean slate (2026-06-22).** The catalogue **and** the old `client-test` / `demo-arboriste` accounts + the demo fiche were **removed** so Denis can import his real 200 fiches from scratch. Right now there are **0 professions** and **1 real member** (Denis's client `esquirecdn@outlook.com`). Any section below that uses the *demo Arboriste fiche (`/fr/fournisseur/78`)* will work again **once ≥1 fiche is imported** (admin → **/admin/fiche**). To test member features now, **create a fresh signup** (§2).
+
+There are only **two kinds of user**: the **admin** (back office, `users` table) and **members** (`subscribers` — each a *client* or *fournisseur*, flagged by `is_provider`).
+
+Useful URLs:
+- Admin fiche import **+ list of imported fiches**: <https://cirkleservices.com/admin/fiche>
 - Terms: <https://cirkleservices.com/fr/conditions-d-utilisation> · Privacy: <https://cirkleservices.com/fr/politique-de-confidentialite>
 
 ---
@@ -53,7 +55,7 @@ Useful demo URLs:
 
 ### 1.2 As admin (back office)
 1. Go to **<https://cirkleservices.com/admin>** → you're redirected to the login page.
-2. Email `admin-test@cirkle.test` / password `Cirkle#Admin2026` → **Login**.
+2. Email `admin-test@cirkle.test` / password `CirkleTest!2026` → **Login**.
 3. You land on the admin dashboard (left sidebar = all manageable entities: subscribers, evaluations, categories, services, settings, etc.).
 
 ---

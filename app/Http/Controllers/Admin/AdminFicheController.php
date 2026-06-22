@@ -11,7 +11,15 @@ use Illuminate\Http\Request;
 class AdminFicheController extends AdminBaseController
 {
     public function create() {
-        return View::make('fiche.create');
+        // Liste des fiches déjà importées (chaque profession = un TITRE INTERNE),
+        // pour voir en un coup d'œil ce qui a été téléversé (ou rien).
+        $fiches = ServiceCategory::whereNotNull('service_category_id')
+            ->orderByDesc('id')->get();
+        $parents = ServiceCategory::whereNull('service_category_id')->get()->keyBy('id');
+        $serviceCounts = Service::selectRaw('service_category_id, COUNT(*) as c')
+            ->groupBy('service_category_id')->pluck('c', 'service_category_id');
+
+        return View::make('fiche.create', compact('fiches', 'parents', 'serviceCounts'));
     }
 
     public function store(Request $request) {
