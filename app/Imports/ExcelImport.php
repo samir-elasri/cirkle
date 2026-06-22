@@ -154,14 +154,13 @@ class ExcelImport
                             break; // entièrement rouge ou vide : disparaît
                         }
                         // Champ de saisie (format 18.06.26) : « PRÉCISEZ » en gris pâle dans la
-                        // colonne C marque le champ (remplace l'ancien « X » en colonne D, disparu).
+                        // colonne C marque le champ. On lit UNIQUEMENT les colonnes A, B, C — les
+                        // colonnes D et + sont les notes personnelles de Denis (à ignorer, 22.06).
                         // On retire le mot-marqueur du libellé — le champ « Précisez » le remplace.
                         $hasInput = (bool) preg_match('/PR[ÉE]CISEZ|PAR\s+FOURNISSEUR/iu', $c);
                         if ($hasInput) {
                             $c = trim(preg_replace('/\s*:?\s*(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR)\s*:?\s*$/iu', '', $c));
                             $html = $this->stripInputMarker($html);
-                        } else {
-                            $hasInput = ($d === 'X'); // compat ancien format (X en colonne D)
                         }
                         $entry = [
                             'title' => $c,
