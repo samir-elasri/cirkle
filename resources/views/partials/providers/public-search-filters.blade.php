@@ -1,9 +1,12 @@
 <div data-component="postalCodeSearch" data-url="{{ urlRouteName('search-component') }}">
     <div class="content-card">
         <form>
-            {{-- Titre + description retirés (Denis 21.06) : le texte « 1er clic » au-dessus
-                 explique déjà. Type (résidentiel/B2B) vient du sélecteur de plateforme : champ caché. --}}
-            <input type="hidden" name="provider_type" value="{{ $selectedProviderType ?? 'residential' }}">
+            {{-- Titre + description retirés (Denis 21.06) : le texte « 1er clic » au-dessus explique déjà.
+                 IMPORTANT : le composant JS gelé « postalCodeSearch » lit #provider-type-residential.checked
+                 et #provider-type-business.checked — on garde donc les 2 radios mais CACHÉS (le type vient
+                 du sélecteur de plateforme). Les retirer faisait planter le clic « Rechercher » (null.checked). --}}
+            <input type="radio" name="provider_type" id="provider-type-residential" value="residential" @checked(($selectedProviderType ?? 'residential') !== 'business') hidden>
+            <input type="radio" name="provider_type" id="provider-type-business" value="business" @checked(($selectedProviderType ?? null) === 'business') hidden>
             <div class="form__container">
                 <div class="form__row">
                     <div class="form__column">
