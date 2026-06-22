@@ -448,7 +448,9 @@ details.details > summary { font-weight: 700 !important; cursor: pointer; paddin
 .ck-home__banner--recruit { color: #00b050; font-size: .94em; }
 .ck-home__banner--promo {
     background: #fff4d6; border: 1px solid #ffc000; color: #7a5b00;
-    border-radius: 8px; padding: .5em .85em; max-width: 860px; margin: .15em auto;
+    border-radius: 8px; padding: .5em .85em; max-width: 860px;
+    /* centré : margin-left/right auto en !important pour battre la règle .ck-home__banner plus bas */
+    margin: .15em auto !important; text-align: center !important;
 }
 .ck-home__suggestion {
     text-align: center; font-style: italic; color: #44546a; font-size: .9rem;
