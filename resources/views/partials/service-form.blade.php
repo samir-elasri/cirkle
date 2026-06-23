@@ -42,16 +42,18 @@
         @if (!$service->title) @continue @endif
         <div class="form__column {{ $service->gap_before ? 'form__column--gap-before' : '' }}">
             <div class="form__row">
+                @php $svcChecked = in_array($service->id, old('services') ?? $existingServices ?? (session('registerFormData.services') ?? [])); @endphp
                 <sl-checkbox
                     name="services[]"
                     value="{{ $service->id }}"
-                    @if (in_array($service->id, old('services') ?? $existingServices ?? (session('registerFormData.services') ?? []))) checked @endif
+                    @checked($svcChecked)
                 >
                     <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
                 @if ($service->has_input || !empty($service->input_label))
-                    <textarea class="supplier-input" rows="1"
+                    <textarea class="supplier-input @if(!$svcChecked) supplier-input--locked @endif" rows="1"
                            name="service_input[{{ $service->id }}]"
+                           @if(!$svcChecked) disabled @endif
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
                            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                     >{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}</textarea>
@@ -98,16 +100,18 @@
         @if (!$service->title) @continue @endif
         <div class="form__column {{ $service->gap_before ? 'form__column--gap-before' : '' }}">
             <div class="form__row">
+                @php $capChecked = in_array($service->id, old('capabilities') ?? $existingCapabilities ?? (session('registerFormData.capabilities') ?? [])); @endphp
                 <sl-checkbox
                     name="capabilities[]"
                     value="{{ $service->id }}"
-                    @if (in_array($service->id, old('capabilities') ?? $existingCapabilities ?? (session('registerFormData.capabilities') ?? []))) checked @endif
+                    @checked($capChecked)
                 >
                     <span class="service-literal">{!! $service->formatted_title ?: e($service->title) !!}</span>
                 </sl-checkbox>
                 @if ($service->has_input || !empty($service->input_label))
-                    <textarea class="supplier-input" rows="1"
+                    <textarea class="supplier-input @if(!$capChecked) supplier-input--locked @endif" rows="1"
                            name="capability_input[{{ $service->id }}]"
+                           @if(!$capChecked) disabled @endif
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
                            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                     >{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}</textarea>

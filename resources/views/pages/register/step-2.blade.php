@@ -128,3 +128,20 @@
         </div>
     </div>
 </section>
+
+{{-- « Précisez » verrouillé tant que le « O » du service n'est pas coché (Denis 22.06).
+     Écouteur DÉLÉGUÉ sur document : fonctionne même quand le formulaire 2350 est injecté
+     par AJAX (innerHTML) — un <script> injecté par innerHTML ne s'exécute pas. --}}
+<script>
+    document.addEventListener('sl-change', function (e) {
+        var box = (e.target && e.target.closest) ? e.target.closest('sl-checkbox') : null;
+        if (!box || !box.closest('.form-2350')) return;
+        var row = box.closest('.form__row');
+        if (!row) return;
+        var input = row.querySelector('.supplier-input');
+        if (!input) return;
+        input.disabled = !box.checked;
+        input.classList.toggle('supplier-input--locked', !box.checked);
+        if (box.checked) { input.focus(); }
+    });
+</script>
