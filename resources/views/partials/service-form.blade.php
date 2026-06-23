@@ -25,6 +25,8 @@
         font: inherit; resize: vertical; overflow: hidden; box-sizing: border-box;
     }
     .form-2350 .supplier-input::placeholder { color: #b0b0b0 !important; font-style: italic; }
+    /* « Précisez » verrouillé tant que le « O » du service n'est pas coché (demande Denis 22.06) */
+    .form-2350 .supplier-input--locked { opacity: .45 !important; cursor: not-allowed; background: #efefef !important; }
 </style>
 
 <div class="form-2350">
@@ -39,7 +41,7 @@
     @foreach ($serviceCategory->services as $service)
         @if (!$service->title) @continue @endif
         <div class="form__column {{ $service->gap_before ? 'form__column--gap-before' : '' }}">
-            <div class="form__row" @if ($service->has_input || !empty($service->input_label)) data-component="step2ConditionnalCheckboxInput" @endif>
+            <div class="form__row">
                 <sl-checkbox
                     name="services[]"
                     value="{{ $service->id }}"
@@ -95,7 +97,7 @@
     @foreach ($serviceCategory->capabilities as $service)
         @if (!$service->title) @continue @endif
         <div class="form__column {{ $service->gap_before ? 'form__column--gap-before' : '' }}">
-            <div class="form__row" @if ($service->has_input || !empty($service->input_label)) data-component="step2ConditionnalCheckboxInput" @endif>
+            <div class="form__row">
                 <sl-checkbox
                     name="capabilities[]"
                     value="{{ $service->id }}"
@@ -130,12 +132,34 @@
 
 </div>{{-- /.form-2350 --}}
 
-{{-- Ajuste la hauteur des champs « Précisez » déjà remplis (mode édition). En inscription
-     le formulaire arrive par AJAX : oninput suffit (pas de valeur pré-remplie à étendre). --}}
+{{-- « Précisez » verrouillé tant que le « O » du service n'est pas coché (Denis 22.06) :
+     - désactivé + grisé quand la case n'est pas cochée;
+     - et son « name » est retiré pour qu'un service non coché n'envoie aucune précision.
+     (Remplace l'ancien composant gelé step2ConditionnalCheckboxInput, cassé depuis le
+     passage de <input> à <textarea>.) Ajuste aussi la hauteur des champs déjà remplis. --}}
 <script>
     (function () {
-        document.querySelectorAll('.form-2350 textarea.supplier-input').forEach(function (t) {
-            if (t.value.trim() !== '') { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+        document.querySelectorAll('.form-2350 .form__row').forEach(function (row) {
+            var box = row.querySelector('sl-checkbox');
+            var input = row.querySelector('.supplier-input');
+            if (!input) return;
+            if (input.value.trim() !== '') { input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; }
+            if (!box) return;
+            var originalName = input.getAttribute('name') || '';
+            function sync() {
+                if (box.checked) {
+                    input.disabled = false;
+                    if (originalName) input.setAttribute('name', originalName);
+                    input.classList.remove('supplier-input--locked');
+                } else {
+                    input.disabled = true;
+                    input.removeAttribute('name');
+                    input.classList.add('supplier-input--locked');
+                }
+            }
+            sync();
+            box.addEventListener('sl-change', sync);
+            if (window.customElements) { customElements.whenDefined('sl-checkbox').then(sync); }
         });
     })();
 </script>
