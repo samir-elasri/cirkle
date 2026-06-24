@@ -11,6 +11,9 @@ function createRoutes($locale)
 	// Page « Master » : aperçu de tous les formulaires en onglets, sans inscription (Denis 21.06).
 	Route::get('master', fn () => view('pages.master-forms'))->name('master-forms');
 
+	// Page CONCLUSION : ouverte (obligatoirement) depuis le bas du 2350 (Denis 24.06).
+	Route::get('conclusion', fn () => view('pages.conclusion'))->name('conclusion');
+
 	Route::post('contactForm', [
 		'as' => 'contactForm.post',
 		'uses' => 'PageController@contactUs'

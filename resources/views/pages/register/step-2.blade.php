@@ -112,6 +112,25 @@
                     </script>
                 @endif
 
+                {{-- Lien OBLIGATOIRE vers la page CONCLUSION au bas du 2350 (Denis 24.06).
+                     Le fournisseur doit l'ouvrir + cocher avant de continuer. --}}
+                @if(!isset($isEdit) || !$isEdit)
+                    @php $ccLoc = app()->getLocale(); @endphp
+                    <div class="form__column" style="margin-top:1.5em;padding:14px 16px;border:2px solid #ffd200;border-radius:10px;background:#fffbe9">
+                        <p style="margin:0 0 10px;font-weight:700">
+                            {{ $ccLoc === 'en' ? 'Before continuing, please open and read the Conclusion page.' : 'Avant de continuer, veuillez ouvrir et lire la page Conclusion.' }}
+                        </p>
+                        <a href="{{ urlRouteName('conclusion') }}" target="_blank" rel="noopener" class="call-to-action">
+                            {{ $ccLoc === 'en' ? 'Open the CONCLUSION page' : 'Ouvrir la page CONCLUSION' }}
+                        </a>
+                        <div style="margin-top:12px">
+                            <sl-checkbox name="conclusion_read" value="1" required @if(old('conclusion_read')) checked @endif>
+                                {{ $ccLoc === 'en' ? 'I have read the Conclusion page.' : "J'ai lu la page Conclusion." }}
+                            </sl-checkbox>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="content-card__footer">
                     @if(isset($isEdit) && $isEdit)
                         <button type="submit" class="call-to-action">
