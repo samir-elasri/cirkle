@@ -14,7 +14,7 @@
 
             @include('partials.help-note', ['text' => __('main.help.register-step4')])
 
-            {!! Form::open(['url' => urlRouteName('subscriber.register.storeStep4')]) !!}
+            {!! Form::open(['up-submit' => 'false', 'url' => urlRouteName('subscriber.register.storeStep4')]) !!}
 
                 {{-- 1) Durée du forfait --}}
                 <div class="form__column ">

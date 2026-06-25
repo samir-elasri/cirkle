@@ -11,7 +11,7 @@
                 </div>
             </div>
 
-            {!! Form::open(['url' => urlRouteName('subscriber.register.storeBasic')]) !!}
+            {!! Form::open(['up-submit' => 'false', 'url' => urlRouteName('subscriber.register.storeBasic')]) !!}
                 <input type="hidden" name="preference_language" value="{{ App::getLocale() }}">
 
                 <div class="form__column ">

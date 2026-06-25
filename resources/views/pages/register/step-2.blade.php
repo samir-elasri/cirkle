@@ -20,8 +20,9 @@
             </div>
 
             {!! Form::open([
-                'url' => isset($isEdit) && $isEdit 
-                    ? urlRouteName('subscriber.profile.updateStep2') 
+                'up-submit' => 'false',
+                'url' => isset($isEdit) && $isEdit
+                    ? urlRouteName('subscriber.profile.updateStep2')
                     : urlRouteName('subscriber.register.storeStep2')
             ]) !!}
                 @if (empty($isEdit))

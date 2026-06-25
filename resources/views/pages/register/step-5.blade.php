@@ -18,7 +18,7 @@
                 @endif
             </div>
 
-            {!! Form::open(['url' => isset($isEdit) && $isEdit ? urlRouteName('subscriber.profile.updateStep5') : urlRouteName('subscriber.register.storeStep5')]) !!}
+            {!! Form::open(['up-submit' => 'false', 'url' => isset($isEdit) && $isEdit ? urlRouteName('subscriber.profile.updateStep5') : urlRouteName('subscriber.register.storeStep5')]) !!}
 
                 {{-- <div>
                     <img src="/dist/img/info.svg" alt="">
