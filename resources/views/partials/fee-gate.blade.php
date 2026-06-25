@@ -20,9 +20,17 @@
 <div class="fee-gate" data-fee-gate>
     <div class="fee-gate__title">{{ __('auth.register.fee_title') }}</div>
 
-    @if (!is_null($serviceCategory->fiche_fee))
-        <div class="fee-gate__amount">{{ prettyPrice($serviceCategory->fiche_fee) }}</div>
-    @endif
+    {{-- Frais UNIQUE selon la plateforme (résidentiel / B2B). Le montant affiché suit le
+         bouton « choix de la plateforme » de l'étape 2 (mis à jour par le script de step-2).
+         Les deux montants sont fournis en data-* pour basculer sans recharger. --}}
+    @php
+        $ckFeeRes = \App\Support\FicheFee::residential();
+        $ckFeeBus = \App\Support\FicheFee::business();
+        $ckFeeDefault = \App\Support\FicheFee::for($serviceCategory->provider_type);
+    @endphp
+    <div class="fee-gate__amount"
+         data-fee-residential="{{ prettyPrice($ckFeeRes) }}"
+         data-fee-business="{{ prettyPrice($ckFeeBus) }}">{{ prettyPrice($ckFeeDefault) }}</div>
 
     @if (!empty($serviceCategory->fiche_fee_text))
         <div class="fee-gate__text">{!! nl2br(e($serviceCategory->fiche_fee_text)) !!}</div>

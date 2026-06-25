@@ -93,7 +93,7 @@
                         <p style="margin:0 0 10px;font-weight:700">
                             {{ $ccLoc === 'en' ? 'Before continuing, please open and read the Conclusion page.' : 'Avant de continuer, veuillez ouvrir et lire la page Conclusion.' }}
                         </p>
-                        <a href="{{ urlRouteName('conclusion') }}" target="_blank" rel="noopener" class="call-to-action">
+                        <a href="{{ urlRouteName('conclusion') }}" target="_blank" class="call-to-action">
                             {{ $ccLoc === 'en' ? 'Open the CONCLUSION page' : 'Ouvrir la page CONCLUSION' }}
                         </a>
                         <div style="margin-top:12px">
@@ -162,5 +162,30 @@
         cc.addEventListener('sl-change', function () {
             if (cc.checked && err) { err.style.display = 'none'; }
         });
+    })();
+
+    /* Frais UNIQUE selon la plateforme : le montant affiché dans la porte d'acceptation
+       suit le bouton « choix de la plateforme » (résidentiel 75 $ / B2B 100 $). Aucun
+       Blade ici — les deux montants viennent des data-* de .fee-gate__amount. */
+    (function () {
+        function currentType() {
+            var g = document.querySelector('sl-radio-group[name="provider_type"]');
+            return (g && g.value === 'business') ? 'business' : 'residential';
+        }
+        function applyFee() {
+            var amt = document.querySelector('.fee-gate__amount');
+            if (!amt) return;
+            var v = amt.getAttribute('data-fee-' + currentType());
+            if (v) { amt.textContent = v; }
+        }
+        document.addEventListener('sl-change', function (e) {
+            var t = e.target;
+            if (t && t.getAttribute && t.getAttribute('name') === 'provider_type') { applyFee(); }
+        });
+        var container = document.getElementById('service-container');
+        if (container && window.MutationObserver) {
+            new MutationObserver(applyFee).observe(container, { childList: true, subtree: true });
+        }
+        applyFee();
     })();
 </script>

@@ -33,7 +33,7 @@
 <body>
     <div class="cc-top">
         @if($logo)<img src="{{ $logo }}" alt="Cirkle">@endif
-        <button type="button" class="cc-back" onclick="if(window.opener){window.close();} window.history.length>1 && window.history.back();">← {{ $t('Retour', 'Back') }}</button>
+        <button type="button" class="cc-back" onclick="window.close(); if(window.history.length>1){window.history.back();}">← {{ $t('Retour', 'Back') }}</button>
     </div>
 
     <div class="cc-wrap">
@@ -78,7 +78,7 @@
         <p class="cc-strong">{{ $t('Nous vous souhaitons beaucoup de succès !', 'We wish you great success!') }}</p>
         <p style="margin-top:1em">servclient@cirkleservices.com</p>
 
-        <button type="button" class="cc-back cc-bottomback" onclick="if(window.opener){window.close();} window.history.length>1 && window.history.back();">← {{ $t('Retour au formulaire', 'Back to the form') }}</button>
+        <button type="button" class="cc-back cc-bottomback" onclick="window.close(); if(window.history.length>1){window.history.back();}">← {{ $t('Retour au formulaire', 'Back to the form') }}</button>
     </div>
 </body>
 </html>

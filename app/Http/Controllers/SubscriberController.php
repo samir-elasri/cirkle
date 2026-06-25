@@ -1489,9 +1489,9 @@ class SubscriberController extends Controller
 					Cart::add($subscriptionItem);
 				}
 
-				// Frais de la fiche : variables par profession (feature #6), repli sur le réglage global
-				$ficheCategory = ServiceCategory::find($request->session()->get('registerFormData.service_category_id'));
-				$registrationFee = $ficheCategory?->fiche_fee ?? setting('registration_fee') ?? 0;
+				// Frais UNIQUE de la fiche (feature #6) : montant fixe selon la PLATEFORME
+				// choisie (résidentiel 75 $ / B2B 100 $), pas selon la profession (Denis).
+				$registrationFee = \App\Support\FicheFee::for($request->session()->get('registerFormData.provider_type'));
 				if ($registrationFee > 0) {
 					$purchase = new Purchase();
 					$purchase->fill([
