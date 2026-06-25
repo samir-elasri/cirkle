@@ -52,6 +52,7 @@
                         <sl-select
                             data-component="step2ServiceSelector"
                             data-url="{{ urlRouteName('subscriber.register.step2-service-form') }}"
+                            data-accept-url="{{ urlRouteName('subscriber.register.accept-fee') }}"
                             name="service_category_id"
                             id="service_category_id"
                             value="{{ old('service_category_id') ?? (isset($subscriber) ? $subscriber->service_category_id : (session('registerFormData.service_category_id') ?? '')) }}"
@@ -83,12 +84,13 @@
                          puis recharge le conteneur avec le vrai formulaire. Vanilla JS (build gelée). --}}
                     <script>
                         window.cirkleAcceptFee = function (categoryId, button) {
+                            var ckUrls = document.getElementById('service_category_id');
                             var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                             var container = document.getElementById('service-container');
                             var errorEl = document.querySelector('[data-fee-gate-error]');
                             if (button) { button.disabled = true; }
 
-                            fetch(@json(urlRouteName('subscriber.register.accept-fee')), {
+                            fetch(ckUrls.dataset.acceptUrl, {
                                 method: 'POST',
                                 headers: {
                                     'X-CSRF-TOKEN': token,
@@ -99,7 +101,7 @@
                             })
                             .then(function (r) { if (!r.ok) { throw new Error('accept failed'); } return r.json(); })
                             .then(function () {
-                                return fetch(@json(urlRouteName('subscriber.register.step2-service-form')) + '?service_category_id=' + encodeURIComponent(categoryId), {
+                                return fetch(ckUrls.dataset.url + '?service_category_id=' + encodeURIComponent(categoryId), {
                                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                                 });
                             })
