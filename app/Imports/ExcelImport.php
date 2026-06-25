@@ -308,7 +308,10 @@ class ExcelImport
         $categoryModel->service_category_id = $parentModel->id;
         $categoryModel->title = $profession;
         $categoryModel->provider_type = $this->providerType($clientele);
-        $categoryModel->fiche_fee = $this->ficheFee($titreInterne);
+        // Frais de la fiche : valeur du TITRE INTERNE si présente, sinon flat par plateforme
+        // (Denis 24.06 : résidentiel 75 $, B2B 100 $).
+        $categoryModel->fiche_fee = $this->ficheFee($titreInterne)
+            ?? ($categoryModel->provider_type === 'business' ? 100 : 75);
         $categoryModel->fiche_fee_text = $feeText ? implode('<br>', $feeText) : null;
         $categoryModel->customers_text = implode('<br>', $customersText);
         $categoryModel->capabilities_text = implode('<br>', $capabilitiesText);

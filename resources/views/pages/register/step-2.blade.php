@@ -116,7 +116,7 @@
                      Le fournisseur doit l'ouvrir + cocher avant de continuer. --}}
                 @if(!isset($isEdit) || !$isEdit)
                     @php $ccLoc = app()->getLocale(); @endphp
-                    <div class="form__column" style="margin-top:1.5em;padding:14px 16px;border:2px solid #ffd200;border-radius:10px;background:#fffbe9">
+                    <div class="form__column" id="conclusion_block" style="margin-top:1.5em;padding:14px 16px;border:2px solid #ffd200;border-radius:10px;background:#fffbe9">
                         <p style="margin:0 0 10px;font-weight:700">
                             {{ $ccLoc === 'en' ? 'Before continuing, please open and read the Conclusion page.' : 'Avant de continuer, veuillez ouvrir et lire la page Conclusion.' }}
                         </p>
@@ -124,9 +124,12 @@
                             {{ $ccLoc === 'en' ? 'Open the CONCLUSION page' : 'Ouvrir la page CONCLUSION' }}
                         </a>
                         <div style="margin-top:12px">
-                            <sl-checkbox name="conclusion_read" value="1" required @if(old('conclusion_read')) checked @endif>
+                            <sl-checkbox name="conclusion_read" value="1" @if(old('conclusion_read')) checked @endif>
                                 {{ $ccLoc === 'en' ? 'I have read the Conclusion page.' : "J'ai lu la page Conclusion." }}
                             </sl-checkbox>
+                        </div>
+                        <div id="conclusion_error" style="display:none;color:#b00020;font-weight:700;margin-top:10px">
+                            {{ $ccLoc === 'en' ? 'Please open the Conclusion page and tick the box before continuing.' : 'Veuillez ouvrir la page Conclusion et cocher la case avant de continuer.' }}
                         </div>
                     </div>
                 @endif
@@ -163,4 +166,26 @@
         input.classList.toggle('supplier-input--locked', !box.checked);
         if (box.checked) { input.focus(); }
     });
+
+    {{-- Conclusion OBLIGATOIRE : bloque « Suivant » avec un message clair si pas cochée
+         (au lieu d'un « required » qui bloquait silencieusement). --}}
+    (function () {
+        var cc = document.querySelector('sl-checkbox[name="conclusion_read"]');
+        if (!cc) return;
+        var form = cc.closest('form');
+        if (!form) return;
+        var err = document.getElementById('conclusion_error');
+        form.addEventListener('submit', function (e) {
+            if (!cc.checked) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (err) { err.style.display = 'block'; }
+                var block = document.getElementById('conclusion_block');
+                (block || cc).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, true);
+        cc.addEventListener('sl-change', function () {
+            if (cc.checked && err) { err.style.display = 'none'; }
+        });
+    })();
 </script>

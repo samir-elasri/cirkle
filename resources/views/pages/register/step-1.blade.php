@@ -56,8 +56,8 @@
                             {!! $error !!}
                         @endforeach
                     </div>
-                    <sl-select name="legal_form_id"
-                               value="{{ old('legal_form_id') ?? (isset($subscriber) ? $subscriber->legal_form_id : (session('registerFormData.legal_form_id') ?? '')) }}" 
+                    <sl-select name="legal_form_id" style="width:100%;display:block"
+                               value="{{ old('legal_form_id') ?? (isset($subscriber) ? $subscriber->legal_form_id : (session('registerFormData.legal_form_id') ?? '')) }}"
                                placeholder="{{ __('auth.register.legal_form_id') }}">
                         @foreach ($legalForms as $category)
                             <sl-option value="{{ $category->id }}">{{ $category->title }}</sl-option>
