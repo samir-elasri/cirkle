@@ -30,7 +30,7 @@ class ExcelImport
     /** @var array<string> Avertissements non bloquants accumulés pendant l'import */
     public array $warnings = [];
 
-    public function import(string $path): array
+    public function import(string $path, ?string $originalName = null): array
     {
         // Lecture sur une COPIE temporaire : la détection de format (ZipArchive)
         // peut réécrire/normaliser silencieusement le fichier source (+quelques octets).
@@ -40,16 +40,21 @@ class ExcelImport
         }
 
         try {
-            return $this->importFromCopy($tmp);
+            $worksheet = IOFactory::createReaderForFile($tmp)->load($tmp)->getSheet(0);
+            // Un seul importeur, deux formats (auto-détection) :
+            //  - « master_fr »   : MASTER 2350 FR, libellés de section en colonne A.
+            //  - « english_2col »: format anglais de Denis (25.06) — col A = « O », texte en col B.
+            if ($this->detectFormat($worksheet) === 'english_2col') {
+                return $this->importEnglish2col($worksheet, $originalName ?? basename($path));
+            }
+            return $this->importFromCopy($worksheet);
         } finally {
             @unlink($tmp);
         }
     }
 
-    private function importFromCopy(string $path): array
+    private function importFromCopy(Worksheet $worksheet): array
     {
-        $reader = IOFactory::createReaderForFile($path);
-        $worksheet = $reader->load($path)->getSheet(0);
         $highestRow = $worksheet->getHighestDataRow();
 
         // ── Métadonnées de la fiche ──
@@ -371,6 +376,194 @@ class ExcelImport
     }
 
     /**
+     * Détecte le format du classeur :
+     *   - « master_fr »    : libellés de section dans la colonne A (TITRE INTERNE, SECTION…).
+     *   - « english_2col » : colonne A uniquement « O »/vide, tout le texte en colonne B.
+     * Lève une exception si le format n'est reconnu ni l'un ni l'autre (jamais d'import muet).
+     */
+    private function detectFormat(Worksheet $worksheet): string
+    {
+        $hi = min(80, $worksheet->getHighestDataRow());
+        $colAhasLabels = false;
+        $colAonlyO = true;
+
+        for ($r = 1; $r <= $hi; $r++) {
+            $a = trim($this->flatten($this->plainText($worksheet->getCell("A{$r}"))));
+            if ($a === '' || $a === 'O') {
+                continue;
+            }
+            $colAonlyO = false;
+            if (preg_match('/TITRE INTERNE|SECTION|GORIE|PROFESSION|CIBLE|LANGUE/', $a)) {
+                $colAhasLabels = true;
+                break;
+            }
+        }
+
+        if ($colAhasLabels) {
+            return 'master_fr';
+        }
+        if ($colAonlyO) {
+            return 'english_2col';
+        }
+
+        throw new \RuntimeException('Format de fiche non reconnu (ni MASTER 2350 FR, ni format anglais 2 colonnes).');
+    }
+
+    /**
+     * Importeur du format ANGLAIS « 2 colonnes » de Denis (25.06) :
+     *   col A = « O » (service cochable)   col B = le texte affiché
+     * AUCUN libellé de section en colonne A. Métadonnées positionnelles (code interne,
+     * plateforme, langue, catégorie, profession) dans les 1res lignes de la colonne B.
+     * Le NOM DE FICHIER (WW0001RE / WW0001B2BE) est la source FIABLE du code + de la
+     * plateforme — le contenu est parfois incohérent (« B2BRESIDENTIAL », « W000RE »…).
+     *
+     * Limites v1 (signalées dans les warnings) : tous les « O » hors OPTIONS et lignes de
+     * prix sont importés comme SERVICES (compétences fusionnées); les forfaits/province
+     * (non encore utilisés) et les mots-clés ne sont pas importés.
+     */
+    private function importEnglish2col(Worksheet $worksheet, ?string $originalName): array
+    {
+        $highestRow = $worksheet->getHighestDataRow();
+
+        // ── Ligne du code interne (col B commence par « W#### ») ──
+        $titleRow = null;
+        for ($r = 1; $r <= min(40, $highestRow); $r++) {
+            if (preg_match('/^W{1,2}\d{3,4}/i', trim($this->plainText($worksheet->getCell("B{$r}"))))) {
+                $titleRow = $r;
+                break;
+            }
+        }
+        if ($titleRow === null) {
+            throw new \RuntimeException('Fiche anglaise invalide : code interne (W####) introuvable en colonne B.');
+        }
+
+        // ── Métadonnées : 5 premières valeurs non vides après le code ──
+        // ordre observé sur les 4 fichiers : [plateforme, langue, catégorie, profession, sous-titre]
+        $meta = [];
+        for ($r = $titleRow + 1; $r <= $highestRow && count($meta) < 5; $r++) {
+            $b = trim($this->plainText($worksheet->getCell("B{$r}")));
+            if ($b === '' || preg_match('/^[….]{3,}/u', $b)) {
+                continue;
+            }
+            $meta[] = $b;
+        }
+        $platformStr = $meta[0] ?? '';
+        $langStr     = $meta[1] ?? '';
+        $categorie   = $meta[2] ?? null;
+        $profession  = $meta[3] ?? null;
+
+        $langue = (stripos($langStr, 'FREN') !== false || stripos($langStr, 'FRAN') !== false) ? 'fr' : 'en';
+
+        // ── Code interne + plateforme : le NOM DE FICHIER prime (contenu peu fiable) ──
+        $code = strtoupper(trim(explode(' ', trim((string) pathinfo($originalName ?? '', PATHINFO_FILENAME)))[0] ?? ''));
+        $providerType = null;
+        if ($code !== '') {
+            if (str_contains($code, 'B2B')) {
+                $providerType = 'business';
+            } elseif (preg_match('/RE$/', $code) || str_contains($code, 'RESID')) {
+                $providerType = 'residential';
+            }
+        }
+        $providerType = $providerType ?? $this->providerType($platformStr) ?? 'residential';
+        $titreInterne = $code !== '' ? $code : trim($this->plainText($worksheet->getCell("B{$titleRow}")));
+
+        if (!$titreInterne || !$categorie || !$profession) {
+            throw new \RuntimeException('Fiche anglaise invalide : code, catégorie ou profession manquant.');
+        }
+
+        // ── Services : tous les « O » (hors OPTIONS / prix) jusqu'à la section TARIF ──
+        $services = [];
+        for ($r = $titleRow + 1; $r <= $highestRow; $r++) {
+            $b = $this->plainText($worksheet->getCell("B{$r}"));
+            $bt = trim($b);
+            $bFlat = $this->flatten($bt);
+
+            // Frontière : la zone services/compétences se termine au début des forfaits/tarifs.
+            if (str_contains($bFlat, 'TARIF') || str_contains($bFlat, 'CENSUS') || str_contains($bFlat, 'RECENSEMENT')) {
+                break;
+            }
+            if (trim($this->plainText($worksheet->getCell("A{$r}"))) !== 'O') {
+                continue;
+            }
+            if ($bt === '' || preg_match('/^OPTION\b/i', $bt)) {
+                continue; // ligne vide, ou OPTION payante (gérée séparément par l'app)
+            }
+            if (preg_match('/^\s*\d[\d.,\s]*\$\s*$/u', $bt) || preg_match('/\d+\s*(MONTH|MOIS)/i', $bt)) {
+                continue; // ligne de prix (forfait)
+            }
+
+            $hasInput = (bool) preg_match('/SPECIFY\s*:/i', $bt); // équivalent anglais de « PRÉCISEZ »
+            $title = $bt;
+            $html = $this->formattedText($worksheet->getCell("B{$r}"));
+            if ($hasInput) {
+                $title = trim(preg_replace('/\s*:?\s*SPECIFY\s*:?\s*$/i', '', $bt));
+                $html = trim(preg_replace('/SPECIFY\s*:?/i', '', $html));
+            }
+            if ($title === '') {
+                continue;
+            }
+            $services[] = [
+                'title' => $title,
+                'formatted_title' => $html !== '' ? $html : e($title),
+                'has_input' => $hasInput,
+                'source_row' => $r,
+                'gap_before' => false,
+            ];
+        }
+
+        if (empty($services)) {
+            throw new \RuntimeException('Fiche anglaise invalide : aucun service « O » trouvé.');
+        }
+
+        app()->setLocale(in_array($langue, getLocales(), true) ? $langue : 'en');
+
+        // ── Persistance (mêmes règles que le format FR; frais = forfait plat par plateforme) ──
+        $parentModel = ServiceCategory::firstOrCreate(['label' => $categorie]);
+        if (empty($parentModel->title)) {
+            $parentModel->title = $categorie;
+            $parentModel->save();
+        }
+
+        $categoryModel = ServiceCategory::firstOrCreate(['label' => $titreInterne]);
+        $categoryModel->service_category_id = $parentModel->id;
+        $categoryModel->title = $profession;
+        $categoryModel->provider_type = $providerType;
+        $categoryModel->fiche_fee = \App\Support\FicheFee::for($providerType);
+        $categoryModel->fiche_fee_text = null;
+        $categoryModel->customers_text = '';
+        $categoryModel->capabilities_text = '';
+        $categoryModel->keywords_json = json_encode([], JSON_UNESCAPED_UNICODE);
+        $categoryModel->save();
+
+        // Ré-import idempotent : purge les anciens services de la fiche non liés à un fournisseur
+        Service::where('service_category_id', $categoryModel->id)
+            ->whereNotIn('id', \App\Models\SubscriberService::pluck('service_id')->filter())
+            ->delete();
+
+        foreach ($services as $entry) {
+            Service::create(['service_category_id' => $categoryModel->id, 'type' => 'service'] + $entry);
+        }
+
+        return [
+            'profession' => $profession,
+            'provider_type' => $categoryModel->provider_type,
+            'fiche_fee' => $categoryModel->fiche_fee,
+            'locale' => app()->getLocale(),
+            'services' => count($services),
+            'capabilities' => 0,
+            'prices' => [],
+            'province_prices' => 0,
+            'website_forfaits' => 0,
+            'keywords' => 0,
+            'titre_interne' => $titreInterne,
+            'format' => 'english_2col',
+            'warnings' => array_merge($this->warnings, [
+                'Format anglais 2 colonnes : compétences fusionnées avec les services; forfaits/province et mots-clés non importés (v1).',
+            ]),
+        ];
+    }
+
+    /**
      * Frais de la fiche, lus dans le TITRE INTERNE : « 0001 RF 75/100/100 » → 75.
      * Premier nombre situé APRÈS le code alpha (RF/B2B/…), pour ne pas prendre l'identifiant.
      */
@@ -545,11 +738,13 @@ class ExcelImport
     {
         $flat = $this->flatten($clientele ?? '');
 
-        if (str_contains($flat, 'B2B') || str_contains($flat, 'BUSINESS') || str_contains($flat, 'AFFAIRE')) {
-            return 'business';
-        }
+        // RÉSIDENTIEL testé d'abord : certains fichiers anglais écrivent « B2BRESIDENTIAL »
+        // (contient « B2B » mais désigne bel et bien le résidentiel).
         if (str_contains($flat, 'RESIDENTIEL') || str_contains($flat, 'RESIDENTIAL')) {
             return 'residential';
+        }
+        if (str_contains($flat, 'B2B') || str_contains($flat, 'BUSINESS') || str_contains($flat, 'AFFAIRE')) {
+            return 'business';
         }
 
         return null;

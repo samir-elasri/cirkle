@@ -21,7 +21,12 @@ class AdminExcelController extends BaseController
 
         try {
             $import = new ExcelImport();
-            $stats = $import->import($request->file('file')->getRealPath());
+            // On passe le NOM D'ORIGINE : le format anglais en dépend (code interne + plateforme),
+            // car getRealPath() ne donne qu'un fichier temporaire au nom aléatoire.
+            $stats = $import->import(
+                $request->file('file')->getRealPath(),
+                $request->file('file')->getClientOriginalName()
+            );
 
             $message = sprintf(
                 'Import fait : %s (%s, %s) — %d services, %d capacités, %d mots-clés, prix : %s.',
