@@ -1010,19 +1010,19 @@ class SubscriberController extends Controller
 			return redirect()->back()->with('error', __('main.errorOccurred'));
 		}
 
-		// Acceptation des frais de fiche (feature #6) — bouton NON-JS du fee-gate.
-		// À ce stade le 2350 n'est pas encore soumis : on enregistre seulement
-		// l'acceptation + le choix de profession, puis on recharge l'étape 2 pour
-		// que le 2350 s'affiche (rendu serveur, sans dépendre d'un <script> inline).
-		if ($request->input('ck_fee_action') === 'accept') {
-			$accept = $request->only(['provider_type', 'service_category_id']);
-			if (!empty($accept['service_category_id'])) {
-				$request->session()->put("fee_accepted.{$accept['service_category_id']}", true);
-				$request->session()->put('registerFormData', array_merge(
-					$request->session()->get('registerFormData'),
-					$accept
-				));
-			}
+		// Porte d'acceptation des frais (feature #6) — robuste, 100% NON-JS.
+		// Au stade de la porte, le 2350 n'est PAS encore affiché : le seul bouton est
+		// « J'accepte ces frais ». Donc toute soumission alors que les frais ne sont
+		// pas encore acceptés = l'utilisateur accepte. On enregistre puis on recharge
+		// l'étape 2 (le 2350 est alors rendu côté serveur). Aucune dépendance au nom du
+		// bouton soumetteur (Shoelace/Unpoly peuvent l'omettre) ni à un <script> inline.
+		$ckCatId = $request->input('service_category_id');
+		if ($ckCatId && !$this->ficheFeeAccepted($request, $ckCatId)) {
+			$request->session()->put("fee_accepted.{$ckCatId}", true);
+			$request->session()->put('registerFormData', array_merge(
+				$request->session()->get('registerFormData'),
+				$request->only(['provider_type', 'service_category_id'])
+			));
 			return Redirect::to(urlRouteName('register-supplier-step-2'));
 		}
 

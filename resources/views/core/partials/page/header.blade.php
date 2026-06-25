@@ -58,7 +58,7 @@
 				</style>
 				<div class="header__member-counter" title="@lang('main.memberCounterTitle')">
 					<span class="header__member-counter-label">@lang('main.memberCounter')</span>
-					<span class="header__member-counter-value">{{ $latestMemberNumber }}</span>
+					<span class="header__member-counter-value">{{ number_format((int) $latestMemberNumber) }}</span>
 				</div>
 			@endif
 
