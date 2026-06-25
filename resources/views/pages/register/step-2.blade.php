@@ -176,15 +176,19 @@
             var amt = document.querySelector('.fee-gate__amount');
             if (!amt) return;
             var v = amt.getAttribute('data-fee-' + currentType());
-            if (v) { amt.textContent = v; }
+            // garde anti-boucle : ne réécrit que si la valeur change réellement.
+            if (v && amt.textContent !== v) { amt.textContent = v; }
         }
         document.addEventListener('sl-change', function (e) {
             var t = e.target;
             if (t && t.getAttribute && t.getAttribute('name') === 'provider_type') { applyFee(); }
         });
+        // On observe UNIQUEMENT les enfants directs de #service-container (l'injection AJAX
+        // de la porte). PAS de subtree : sinon applyFee() qui modifie .fee-gate__amount
+        // (descendant) re-déclenchait l'observateur → boucle infinie qui gelait la page.
         var container = document.getElementById('service-container');
         if (container && window.MutationObserver) {
-            new MutationObserver(applyFee).observe(container, { childList: true, subtree: true });
+            new MutationObserver(applyFee).observe(container, { childList: true });
         }
         applyFee();
     })();
