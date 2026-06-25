@@ -20,7 +20,6 @@
             </div>
 
             {!! Form::open([
-                'up-submit' => 'false',
                 'url' => isset($isEdit) && $isEdit
                     ? urlRouteName('subscriber.profile.updateStep2')
                     : urlRouteName('subscriber.register.storeStep2')
@@ -66,58 +65,29 @@
                     </div>
                 @endif
 
+                @php
+                    // Le 2350 ne s'affiche qu'une fois les frais acceptés (ou en édition).
+                    // Le bouton « J'accepte » de la porte (fee-gate) est un submit NON-JS qui
+                    // recharge l'étape 2 ; le 2350 est alors rendu côté serveur (aucun <script> requis).
+                    $ckCatId = old('service_category_id') ?? (isset($subscriber) ? $subscriber->service_category_id : (session('registerFormData.service_category_id') ?? ''));
+                    $ckCat = $ckCatId ? \App\Models\ServiceCategory::find($ckCatId) : null;
+                    $ck2350Shown = $ckCat && ((isset($isEdit) && $isEdit) || session("fee_accepted.{$ckCat->id}"));
+                @endphp
+
                 <div id="service-container">
-                    @if($serviceCategoryID = old('service_category_id') ?? (isset($subscriber) ? $subscriber->service_category_id : (session('registerFormData.service_category_id') ?? '')))
-                        @php($ficheCategory = \App\Models\ServiceCategory::find($serviceCategoryID))
-                        @if($ficheCategory)
-                            @if(empty($isEdit) && !session("fee_accepted.{$ficheCategory->id}"))
-                                @include('partials.fee-gate', ['serviceCategory' => $ficheCategory])
-                            @else
-                                @include('partials.service-form', ['serviceCategory' => $ficheCategory])
-                            @endif
+                    @if($ckCat)
+                        @if($ck2350Shown)
+                            @include('partials.service-form', ['serviceCategory' => $ckCat])
+                        @else
+                            @include('partials.fee-gate', ['serviceCategory' => $ckCat])
                         @endif
                     @endif
                 </div>
 
-                @if(empty($isEdit))
-                    {{-- Porte d'acceptation des frais (feature #6) : enregistre l'acceptation
-                         puis recharge le conteneur avec le vrai formulaire. Vanilla JS (build gelée). --}}
-                    <script>
-                        window.cirkleAcceptFee = function (categoryId, button) {
-                            var ckUrls = document.getElementById('service_category_id');
-                            var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                            var container = document.getElementById('service-container');
-                            var errorEl = document.querySelector('[data-fee-gate-error]');
-                            if (button) { button.disabled = true; }
-
-                            fetch(ckUrls.dataset.acceptUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': token,
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: 'service_category_id=' + encodeURIComponent(categoryId)
-                            })
-                            .then(function (r) { if (!r.ok) { throw new Error('accept failed'); } return r.json(); })
-                            .then(function () {
-                                return fetch(ckUrls.dataset.url + '?service_category_id=' + encodeURIComponent(categoryId), {
-                                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                                });
-                            })
-                            .then(function (r) { return r.text(); })
-                            .then(function (html) { container.innerHTML = html; })
-                            .catch(function () {
-                                if (button) { button.disabled = false; }
-                                if (errorEl) { errorEl.style.display = 'block'; }
-                            });
-                        };
-                    </script>
-                @endif
-
                 {{-- Lien OBLIGATOIRE vers la page CONCLUSION au bas du 2350 (Denis 24.06).
-                     Le fournisseur doit l'ouvrir + cocher avant de continuer. --}}
-                @if(!isset($isEdit) || !$isEdit)
+                     Le fournisseur doit l'ouvrir + cocher avant de continuer.
+                     N'apparaît qu'avec le 2350 (après acceptation des frais). --}}
+                @if((!isset($isEdit) || !$isEdit) && $ck2350Shown)
                     @php $ccLoc = app()->getLocale(); @endphp
                     <div class="form__column" id="conclusion_block" style="margin-top:1.5em;padding:14px 16px;border:2px solid #ffd200;border-radius:10px;background:#fffbe9">
                         <p style="margin:0 0 10px;font-weight:700">
@@ -144,9 +114,11 @@
                         </button>
                     @else
                         <a href="{{ urlRouteName('register-supplier-step-1') }}" class="call-to-action">{{ __('main.previous') }}</a>
-                        <button type="submit" class="call-to-action">
-                            {{ __('main.next') }}
-                        </button>
+                        @if($ck2350Shown)
+                            <button type="submit" class="call-to-action">
+                                {{ __('main.next') }}
+                            </button>
+                        @endif
                     @endif
                 </div>
             {!! Form::close() !!}

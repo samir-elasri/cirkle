@@ -15,7 +15,7 @@
 
             @include('partials.help-note', ['text' => __('main.help.register-step3')])
 
-            {!! Form::open(['up-submit' => 'false', 'url' => urlRouteName('subscriber.register.storeStep3')]) !!}
+            {!! Form::open(['url' => urlRouteName('subscriber.register.storeStep3')]) !!}
 
                 <div class="form__column ">
                     <div class="color-primary">{{ __('auth.register.provider_type') }}</div>

@@ -28,11 +28,10 @@
         <div class="fee-gate__text">{!! nl2br(e($serviceCategory->fiche_fee_text)) !!}</div>
     @endif
 
-    <button type="button"
-            class="call-to-action"
-            onclick="cirkleAcceptFee({{ (int) $serviceCategory->id }}, this)">
+    {{-- Bouton NON-JS : soumet le formulaire principal avec un drapeau; storeStep2 enregistre
+         l'acceptation et recharge l'étape 2 avec le 2350. (Fiable même si Unpoly/AJAX empêche
+         l'exécution des <script> inline — voir [[cirkle-blade-no-compile-in-script]].) --}}
+    <button type="submit" name="ck_fee_action" value="accept" class="call-to-action">
         {{ __('auth.register.fee_accept') }}
     </button>
-
-    <div class="fee-gate__error" data-fee-gate-error>{{ __('main.errorOccurred') }}</div>
 </div>

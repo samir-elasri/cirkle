@@ -21,9 +21,7 @@
 
             @include('partials.help-note', ['text' => __('main.help.register-step1')])
 
-            {{-- up-submit=false : plein chargement (Unpoly casse les <script> inline du fee-gate, etc.) --}}
             {!! Form::open([
-                'up-submit' => 'false',
                 'url' => isset($isEdit) && $isEdit
                     ? urlRouteName('subscriber.profile.updateStep1')
                     : urlRouteName('subscriber.register.storeStep1')

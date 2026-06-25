@@ -1010,6 +1010,22 @@ class SubscriberController extends Controller
 			return redirect()->back()->with('error', __('main.errorOccurred'));
 		}
 
+		// Acceptation des frais de fiche (feature #6) — bouton NON-JS du fee-gate.
+		// À ce stade le 2350 n'est pas encore soumis : on enregistre seulement
+		// l'acceptation + le choix de profession, puis on recharge l'étape 2 pour
+		// que le 2350 s'affiche (rendu serveur, sans dépendre d'un <script> inline).
+		if ($request->input('ck_fee_action') === 'accept') {
+			$accept = $request->only(['provider_type', 'service_category_id']);
+			if (!empty($accept['service_category_id'])) {
+				$request->session()->put("fee_accepted.{$accept['service_category_id']}", true);
+				$request->session()->put('registerFormData', array_merge(
+					$request->session()->get('registerFormData'),
+					$accept
+				));
+			}
+			return Redirect::to(urlRouteName('register-supplier-step-2'));
+		}
+
 		$data = $request->all([
 			'provider_type',
 			'service_category_id',
