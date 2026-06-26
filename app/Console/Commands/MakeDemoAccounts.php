@@ -4,6 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Core\Subscriber;
 use App\Models\Core\User;
+use App\Models\Service;
+use App\Models\ServiceCategory;
+use App\Models\SubscriberService;
 use Illuminate\Console\Command;
 
 /**
@@ -61,6 +64,32 @@ class MakeDemoAccounts extends Command
         if (!is_null($supplier->member_number)) {
             $supplier->member_number = null;
             $supplier->save();
+        }
+
+        // ── Rattache une fiche 2350 de démo pour que « Mon formulaire 2350 » ne soit pas vide.
+        // Choix générique : une profession qui a des services, de préférence résidentielle et
+        // française (WW0001RF Arboriste sur prod). Quelques services cochés pour l'illustrer.
+        $cat = ServiceCategory::whereNotNull('service_category_id')->get()
+            ->filter(fn ($c) => Service::where('service_category_id', $c->id)->exists())
+            ->sortByDesc(fn ($c) => ($c->provider_type === 'residential' ? 2 : 0)
+                + (str_contains((string) $c->label, 'RF') ? 1 : 0))
+            ->first();
+
+        if ($cat) {
+            $supplier->service_category_id = $cat->id;
+            $supplier->provider_type = $cat->provider_type;
+            $supplier->save();
+
+            $supplier->subscriberServices()->delete();
+            $pick = Service::where('service_category_id', $cat->id)
+                ->orderBy('type')->orderBy('id')->limit(15)->get();
+            foreach ($pick as $svc) {
+                SubscriberService::create([
+                    'subscriber_id' => $supplier->id,
+                    'service_id' => $svc->id,
+                ]);
+            }
+            $this->line('  Fiche démo  : ' . $cat->label . ' (#' . $cat->id . ', ' . $pick->count() . ' services cochés)');
         }
 
         $this->info('Comptes démo prêts :');
