@@ -81,9 +81,7 @@
             <section class="mf-panel mf-p5">
                 <div class="mf-panel__msg">
                     <strong>{{ $t('Formulaire 2350', '2350 form') }}</strong><br>
-                    {{ $t('Le formulaire 2350 s\'affiche à l\'inscription fournisseur, après le choix d\'une profession. Il devient visible ici dès que vous importez votre première fiche.', 'The 2350 form appears during supplier signup, after choosing a profession. It becomes visible here as soon as you import your first fiche.') }}
-                    <br>
-                    <a href="{{ url('admin/fiche') }}" target="_blank">{{ $t('Importer une fiche 2350', 'Import a 2350 fiche') }}</a>
+                    {{ $t("Le formulaire 2350 (vos compétences) s'affiche dans l'onglet « Inscription fournisseur » : choisissez une profession, acceptez les frais, et la liste complète apparaît.", 'The 2350 form (your competencies) appears under the "Supplier signup" tab: choose a profession, accept the fee, and the full list appears.') }}
                 </div>
             </section>
         </div>
