@@ -229,7 +229,6 @@ class SubscriberController extends Controller
 			'postal_code'         => 'required',
 			'phone'               => 'required',
 			'start_date'          => 'required',
-			'business_hours'      => 'required',
 			'provider_type'       => 'required',
 			'service_category_id' => 'required',
 			'services'            => 'required|array',
@@ -293,6 +292,15 @@ class SubscriberController extends Controller
 			'subscription_id', 'zone_type', 'postal_codes', 'subscription_state_id',
 		]);
 		$form['zone_type'] = $zoneType;
+
+		// Heures d'affaires : 7 champs (Lundi…Dimanche) → une seule chaîne stockée.
+		if (is_array($form['business_hours'] ?? null)) {
+			$lines = [];
+			foreach ($form['business_hours'] as $day => $hours) {
+				if (trim((string) $hours) !== '') { $lines[] = $day . ' : ' . trim($hours); }
+			}
+			$form['business_hours'] = implode("\n", $lines);
+		}
 
 		// Ne garder que les « précisez » des services/compétences réellement cochés (comme storeStep2)
 		$form['service_input'] = (!empty($form['service_input']) && !empty($form['services']))

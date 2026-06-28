@@ -18,28 +18,25 @@ How to test every v1 feature on the **live site**: <https://cirkleservices.com>
 | *« tous les services liés mis à jour automatiquement ? » → **non*** | When a master template changes, should existing suppliers' fiches auto-update? **No.** | ✅ Already the case — each supplier's filled form is independent; editing a template never overwrites a supplier's saved copy. |
 | *« utilise l'ancien [2350] et on vérifie après »* | Use the existing master 2350 file for now; refine after launch. | ✅ Using the existing `1 WEB MASTER 2350 … 010626.xlsx`. |
 | *« la 1ère mise en ligne doit être PARFAITE »* | First launch must be perfect. | 🎯 Ongoing — this guide + his round-by-round testing is how we get there. |
-| **(found during testing)** supplier registration: step 3 → *Suivant* → **« Page introuvable »** | Step 4 crashed for every profession — a bad translation key blew up once the registration fee was > 0, so **no supplier could finish signing up**. | ✅ **Fixed & live.** Full flow re-tested end-to-end on prod (steps 1→6 → cart, incl. the auto-client). Suppliers can now register all the way through, and the **options are visible at step 5**. |
 
 > **How to delete a member account** (he asked): log in to **/admin** → **Subscribers** → search the email → **Delete**. The email is unique, so deleting frees it for a fresh signup.
 
 ---
 
-## 0. Test accounts (current)
+## 0. Test accounts (ready to use)
 
-> ⚠️ **Temporary TEST credentials on the live site.** Rotate/delete before the public launch. Don't share publicly.
+> ⚠️ **These are temporary TEST credentials on the live site.** Rotate or delete them before the public launch (Aug 1). Don't share publicly.
 
 | Role | Login URL | Email | Password |
 |------|-----------|-------|----------|
-| **Admin** (back office) | <https://cirkleservices.com/admin> | `admin-test@cirkle.test` | `CirkleTest!2026` |
+| **Admin** (back office) | <https://cirkleservices.com/admin> | `admin-test@cirkle.test` | `Cirkle#Admin2026` |
+| **Client** (normal user) | <https://cirkleservices.com/fr/profil> | `client-test@cirkle.test` | `Cirkle#Client2026` |
+| **Fournisseur** (supplier) | <https://cirkleservices.com/fr/profil> | `demo-arboriste@cirkleservices.com` | `Cirkle#Fourn2026` |
 
-Denis also has his **own admin** accounts (`esquirecdn@outlook.com`, `dave_pare@yahoo.com`) with his own passwords. Admin accounts live in the `users` table and **do not** affect the member counter (which counts `subscribers`).
+There are only **two kinds of user**: the **admin** (back office, `users` table) and **members** (`subscribers` — each is either a *client* or a *fournisseur*, flagged by `is_provider`). The fournisseur test account above is the fully-populated **demo fiche** (member **F02362**, profession *Arboriste*, postal code **H2X 1Y4**), so it already has competences, paid tabs (Permis / Diplômes / Estimation) and 2 reviews to look at.
 
-> 🧹 **Clean slate (2026-06-22).** The catalogue **and** the old `client-test` / `demo-arboriste` accounts + the demo fiche were **removed** so Denis can import his real 200 fiches from scratch. Right now there are **0 professions** and **1 real member** (Denis's client `esquirecdn@outlook.com`). Any section below that uses the *demo Arboriste fiche (`/fr/fournisseur/78`)* will work again **once ≥1 fiche is imported** (admin → **/admin/fiche**). To test member features now, **create a fresh signup** (§2).
-
-There are only **two kinds of user**: the **admin** (back office, `users` table) and **members** (`subscribers` — each a *client* or *fournisseur*, flagged by `is_provider`).
-
-Useful URLs:
-- Admin fiche import **+ list of imported fiches**: <https://cirkleservices.com/admin/fiche>
+Useful demo URLs:
+- Demo fournisseur fiche: <https://cirkleservices.com/fr/fournisseur/78>
 - Terms: <https://cirkleservices.com/fr/conditions-d-utilisation> · Privacy: <https://cirkleservices.com/fr/politique-de-confidentialite>
 
 ---
@@ -55,7 +52,7 @@ Useful URLs:
 
 ### 1.2 As admin (back office)
 1. Go to **<https://cirkleservices.com/admin>** → you're redirected to the login page.
-2. Email `admin-test@cirkle.test` / password `CirkleTest!2026` → **Login**.
+2. Email `admin-test@cirkle.test` / password `Cirkle#Admin2026` → **Login**.
 3. You land on the admin dashboard (left sidebar = all manageable entities: subscribers, evaluations, categories, services, settings, etc.).
 
 ---
@@ -174,7 +171,7 @@ Log in as the **client**:
 
 **Cancel at term end:** as a fournisseur with an active subscription, **Mon espace → Fournisseur → Annuler mon abonnement** → it stays active until the end date (no refund), and won't renew.
 
-**Renewal reminders & grace (automatic, server-side):** 10 days before expiry the member gets a renewal email; after expiry there is a 10-day grace (per the cahier de charges, configurable), then the fiche is hidden. This runs from the daily cron — needs the N0C cron set to `php artisan schedule:run` (see §14).
+**Renewal reminders & grace (automatic, server-side):** 7 days before expiry the member gets a renewal email; after expiry there's a 7-day grace, then the fiche is hidden. This runs from the daily cron — needs the N0C cron set to `php artisan schedule:run` (see §14).
 
 ---
 

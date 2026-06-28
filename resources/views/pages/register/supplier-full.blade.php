@@ -24,27 +24,42 @@
             {!! Form::open(['url' => urlRouteName('subscriber.register.storeSupplierFull')]) !!}
                 <input type="hidden" name="preference_language" value="{{ App::getLocale() }}">
 
-                {{-- ───────────── 1) VOS COORDONNÉES ───────────── --}}
-                <div class="registration-title">1. {{ app()->getLocale() === 'en' ? 'Your details' : 'Vos coordonnées' }}</div>
+                {{-- ───────────── 1) COORDONNÉES ─────────────
+                     Denis 28.06 : les TITRES restent et le fournisseur remplit À CÔTÉ du titre. --}}
+                @php $t = fn ($fr, $en) => app()->getLocale() === 'en' ? $en : $fr; @endphp
+                <style>
+                    .ck-coord { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+                    .ck-coord > label { min-width:210px; font-weight:600; }
+                    .ck-coord > input, .ck-coord > sl-select { flex:1 1 240px; }
+                    @media (max-width:560px){ .ck-coord > label { min-width:100%; } }
+                </style>
+                <div class="registration-title">1. {{ $t('Coordonnées', 'Contact details') }}</div>
 
-                <div class="form__column"><input type="text" name="company_name" value="{{ old('company_name') }}" placeholder="{{ __('auth.register.company_name') }}"></div>
-                <div class="form__column"><input type="text" name="owner_names" value="{{ old('owner_names') }}" placeholder="{{ __('auth.register.owner_names') }}"></div>
-                <div class="form__column">
-                    <sl-select name="legal_form_id" style="width:100%;display:block" value="{{ old('legal_form_id') }}" placeholder="{{ __('auth.register.legal_form_id') }}">
+                <div class="form__column ck-coord"><label>{{ __('auth.register.company_name') }}</label><input type="text" name="company_name" value="{{ old('company_name') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.owner_names') }}</label><input type="text" name="owner_names" value="{{ old('owner_names') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.legal_form_id') }}</label>
+                    <sl-select name="legal_form_id" value="{{ old('legal_form_id') }}" placeholder="{{ __('main.choose') }}">
                         @foreach ($legalForms as $lf)<sl-option value="{{ $lf->id }}">{{ $lf->title }}</sl-option>@endforeach
                     </sl-select>
                 </div>
-                <div class="form__column"><input type="text" name="federal_tax_number" value="{{ old('federal_tax_number') }}" placeholder="{{ __('auth.register.federal_tax_number') }}"></div>
-                <div class="form__column"><input type="text" name="street" value="{{ old('street') }}" placeholder="{{ __('auth.register.street') }}"></div>
-                <div class="form__column"><input type="text" name="city" value="{{ old('city') }}" placeholder="{{ __('auth.register.city') }}"></div>
-                <div class="form__column"><input type="text" name="postal_code" value="{{ old('postal_code') }}" placeholder="{{ __('auth.register.postal_code') }}"></div>
-                <div class="form__column"><input type="text" name="phone" value="{{ old('phone') }}" placeholder="{{ __('auth.register.phone') }}"></div>
-                <div class="form__column"><input type="text" name="toll_free_phone" value="{{ old('toll_free_phone') }}" placeholder="{{ __('auth.register.toll_free_phone') }}"></div>
-                <div class="form__column"><input type="text" name="fax" value="{{ old('fax') }}" placeholder="{{ __('auth.register.fax') }}"></div>
-                <div class="form__column"><input type="email" name="email" value="{{ old('email') }}" placeholder="{{ __('auth.register.email') }}"></div>
-                <div class="form__column"><label for="start_date">{{ __('auth.register.start_date') }}</label><input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}"></div>
-                <div class="form__column"><input type="text" name="business_hours" value="{{ old('business_hours') }}" placeholder="{{ __('auth.register.business_hours') }}"></div>
-                <div class="form__column"><input type="text" name="insurance_coverage" value="{{ old('insurance_coverage') }}" placeholder="{{ __('auth.register.insurance_coverage') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.federal_tax_number') }}</label><input type="text" name="federal_tax_number" value="{{ old('federal_tax_number') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.street') }}</label><input type="text" name="street" value="{{ old('street') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.city') }}</label><input type="text" name="city" value="{{ old('city') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.postal_code') }}</label><input type="text" name="postal_code" value="{{ old('postal_code') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.phone') }}</label><input type="text" name="phone" value="{{ old('phone') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.toll_free_phone') }}</label><input type="text" name="toll_free_phone" value="{{ old('toll_free_phone') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.fax') }}</label><input type="text" name="fax" value="{{ old('fax') }}"></div>
+                <div class="form__column ck-coord"><label>{{ $t('Adresse courriel', 'Email address') }}</label><input type="email" name="email" value="{{ old('email') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.start_date') }}</label><input type="date" name="start_date" value="{{ old('start_date') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.insurance_coverage') }}</label><input type="text" name="insurance_coverage" value="{{ old('insurance_coverage') }}"></div>
+
+                {{-- Heures d'affaires : les 7 jours (Denis 28.06) --}}
+                <div class="form__column">
+                    <label style="font-weight:700;display:block;margin-bottom:6px">{{ $t("Heures d'affaires", 'Business hours') }}</label>
+                    @foreach(['Lundi'=>'Monday','Mardi'=>'Tuesday','Mercredi'=>'Wednesday','Jeudi'=>'Thursday','Vendredi'=>'Friday','Samedi'=>'Saturday','Dimanche'=>'Sunday'] as $fr => $en)
+                        <div class="ck-coord" style="margin-bottom:6px"><label>{{ $t($fr, $en) }} :</label><input type="text" name="business_hours[{{ $fr }}]" value="{{ old('business_hours.'.$fr) }}" placeholder="{{ $t('ex. 9 h – 17 h (ou Fermé)', 'e.g. 9 a.m. – 5 p.m. (or Closed)') }}"></div>
+                    @endforeach
+                </div>
 
                 {{-- ───────────── 2) VOTRE 2350 ───────────── --}}
                 <div class="registration-title">2. {{ app()->getLocale() === 'en' ? 'Your 2350' : 'Votre 2350' }}</div>
