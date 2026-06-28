@@ -128,19 +128,22 @@ sl-input::part(base), sl-select::part(combobox) { border-radius: 12px !important
 .content-card {
     background: var(--ck-bg-card) !important; border: 1px solid var(--ck-line) !important;
     border-radius: 20px !important; box-shadow: var(--ck-shadow-lg) !important;
-    padding: clamp(24px, 4vw, 46px) !important; margin: 30px auto !important; max-width: 800px;
+    padding: clamp(18px, 3vw, 32px) !important; margin: 18px auto !important; max-width: 800px;
 }
 .content-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-    border-bottom: 1px solid var(--ck-line); padding-bottom: 20px; margin-bottom: 26px; }
+    border-bottom: 1px solid var(--ck-line); padding-bottom: 13px; margin-bottom: 16px; }
 .content-card__header--title { font-size: clamp(1.5rem, 2.6vw, 1.9rem) !important; font-weight: 900 !important; margin: 0 0 5px; }
 .content-card__label { font-size: .92rem; color: var(--ck-ink-soft); }
 .content-card .registration-title, .form-2350 .registration-title {
-    font-size: 1.22rem !important; font-weight: 800 !important; margin: 26px 0 15px;
+    font-size: 1.22rem !important; font-weight: 800 !important; margin: 16px 0 10px;
     padding-bottom: 8px; border-bottom: 3px solid var(--ck-accent); display: inline-block;
 }
-.content-card .form__column { margin-bottom: 20px; }
+.content-card .form__column { margin-bottom: 13px; }
+/* 2350 : liste dense — Denis « minimiser les espaces ». Chaque service tenait sur 20px de marge. */
+.form-2350 .form__column { margin-bottom: 6px !important; }
+.form-2350 .form__column--gap-before { margin-top: .65em !important; }
 .content-card__footer { display: flex; align-items: center; justify-content: space-between; gap: 14px;
-    margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--ck-line); }
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--ck-line); }
 
 /* ── Sélecteur des 4 plateformes : on garde le JAUNE, on modernise l'écrin ── */
 .platform-selector__tiles { gap: 14px !important; }
