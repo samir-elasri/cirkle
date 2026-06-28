@@ -28,10 +28,15 @@
                      Denis 28.06 : les TITRES restent et le fournisseur remplit À CÔTÉ du titre. --}}
                 @php $t = fn ($fr, $en) => app()->getLocale() === 'en' ? $en : $fr; @endphp
                 <style>
-                    .ck-coord { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-                    .ck-coord > label { min-width:210px; font-weight:600; }
-                    .ck-coord > input, .ck-coord > sl-select { flex:1 1 240px; }
-                    @media (max-width:560px){ .ck-coord > label { min-width:100%; } }
+                    .ck-coord { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+                    .ck-coord > label { min-width:200px; font-weight:600; }
+                    .ck-coord > input, .ck-coord > sl-select { flex:0 1 360px; max-width:360px; }
+                    .ck-hours select { flex:0 0 auto; width:135px; max-width:135px; padding:9px 10px !important; }
+                    .ck-hours span { color:#666; }
+                    @media (max-width:560px){
+                        .ck-coord > label { min-width:100%; }
+                        .ck-coord > input, .ck-coord > sl-select { max-width:100%; }
+                    }
                 </style>
                 <div class="registration-title">1. {{ $t('Coordonnées', 'Contact details') }}</div>
 
@@ -53,11 +58,32 @@
                 <div class="form__column ck-coord"><label>{{ __('auth.register.start_date') }}</label><input type="date" name="start_date" value="{{ old('start_date') }}"></div>
                 <div class="form__column ck-coord"><label>{{ __('auth.register.insurance_coverage') }}</label><input type="text" name="insurance_coverage" value="{{ old('insurance_coverage') }}"></div>
 
-                {{-- Heures d'affaires : les 7 jours (Denis 28.06) --}}
+                {{-- Heures d'affaires : 7 jours, heure de début → heure de fin (dropdowns 15 min). --}}
+                @php
+                    $times = [];
+                    for ($h = 0; $h < 24; $h++) {
+                        for ($m = 0; $m < 60; $m += 15) {
+                            $ap = $h < 12 ? 'am' : 'pm';
+                            $hh = ($h % 12) ?: 12;
+                            $times[] = sprintf('%d:%02d %s', $hh, $m, $ap);
+                        }
+                    }
+                @endphp
                 <div class="form__column">
                     <label style="font-weight:700;display:block;margin-bottom:6px">{{ $t("Heures d'affaires", 'Business hours') }}</label>
                     @foreach(['Lundi'=>'Monday','Mardi'=>'Tuesday','Mercredi'=>'Wednesday','Jeudi'=>'Thursday','Vendredi'=>'Friday','Samedi'=>'Saturday','Dimanche'=>'Sunday'] as $fr => $en)
-                        <div class="ck-coord" style="margin-bottom:6px"><label>{{ $t($fr, $en) }} :</label><input type="text" name="business_hours[{{ $fr }}]" value="{{ old('business_hours.'.$fr) }}" placeholder="{{ $t('ex. 9 h – 17 h (ou Fermé)', 'e.g. 9 a.m. – 5 p.m. (or Closed)') }}"></div>
+                        <div class="ck-coord ck-hours" style="margin-bottom:6px">
+                            <label>{{ $t($fr, $en) }} :</label>
+                            <select name="business_hours[{{ $fr }}][start]">
+                                <option value="">{{ $t('Fermé', 'Closed') }}</option>
+                                @foreach($times as $tm)<option value="{{ $tm }}" @selected(old('business_hours.'.$fr.'.start') === $tm)>{{ $tm }}</option>@endforeach
+                            </select>
+                            <span>{{ $t('à', 'to') }}</span>
+                            <select name="business_hours[{{ $fr }}][end]">
+                                <option value="">—</option>
+                                @foreach($times as $tm)<option value="{{ $tm }}" @selected(old('business_hours.'.$fr.'.end') === $tm)>{{ $tm }}</option>@endforeach
+                            </select>
+                        </div>
                     @endforeach
                 </div>
 

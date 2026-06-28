@@ -293,11 +293,17 @@ class SubscriberController extends Controller
 		]);
 		$form['zone_type'] = $zoneType;
 
-		// Heures d'affaires : 7 champs (Lundi…Dimanche) → une seule chaîne stockée.
+		// Heures d'affaires : 7 jours (début → fin) → une seule chaîne stockée.
 		if (is_array($form['business_hours'] ?? null)) {
 			$lines = [];
-			foreach ($form['business_hours'] as $day => $hours) {
-				if (trim((string) $hours) !== '') { $lines[] = $day . ' : ' . trim($hours); }
+			foreach ($form['business_hours'] as $day => $hrs) {
+				if (is_array($hrs)) {
+					$start = trim((string) ($hrs['start'] ?? ''));
+					$end   = trim((string) ($hrs['end'] ?? ''));
+					if ($start !== '' && $end !== '') { $lines[] = $day . ' : ' . $start . ' – ' . $end; }
+				} elseif (trim((string) $hrs) !== '') {
+					$lines[] = $day . ' : ' . trim((string) $hrs);
+				}
 			}
 			$form['business_hours'] = implode("\n", $lines);
 		}
