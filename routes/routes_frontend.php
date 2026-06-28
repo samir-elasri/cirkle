@@ -260,6 +260,12 @@ function createRoutes($locale)
 			'uses' => 'SubscriberController@storeStep6'
 		])->middleware('recaptcha');
 
+		// Inscription fournisseur UNE PAGE (round 2 : handler combiné). Route parallèle.
+		Route::post('register-supplier-1page', [
+			'as'   => 'subscriber.register.storeSupplierFull',
+			'uses' => 'SubscriberController@storeSupplierFull'
+		])->middleware('recaptcha');
+
 		Route::get('register-step2-service-form', [
 			'as'   => 'subscriber.register.step2-service-form',
 			'uses' => 'SubscriberController@step2ServiceForm'

@@ -167,6 +167,59 @@ class SubscriberController extends Controller
 		return $params;
 	}
 
+	/**
+	 * Inscription fournisseur SUR UNE SEULE PAGE (Denis 28.06 : « pas plusieurs fenêtres,
+	 * tous les form en un seul endroit »). Route parallèle — l'assistant 6 étapes reste en
+	 * place tant que cette version n'est pas validée. On charge ici TOUTES les données des
+	 * étapes (coordonnées, 2350, forfaits, provinces, options) + une carte de prix pour
+	 * TOUTES les professions, car la profession est choisie sur la page (prix calculé côté
+	 * client, sans AJAX).
+	 */
+	public function createSupplierFull(&$params, Request $request) {
+		$subscriber = auth('subscribers')->user();
+		if ($subscriber && $subscriber->registration_completed) {
+			return Redirect::to(urlRouteName('home'))->with('error', __('auth.already-loggedin'));
+		}
+
+		$params['legalForms'] = Category::getListByIdentifier('legal_forms');
+
+		$params['subcategories'] = ServiceCategory::where('active', '=', true)
+			->whereNotNull('service_category_id')
+			->get()
+			->sortBy('title')
+			->filter(fn ($m) => !empty($m->title));
+
+		$params['subscriptions'] = Subscription::where('active', '=', true)->orderBy('position')->get();
+
+		// Carte des prix [categorie][abonnement][zone] = coût (zone : « postal » ou id de province).
+		$priceMap = [];
+		foreach (SubscriptionPrice::all() as $p) {
+			$zone = $p->state_id === null ? 'postal' : (string) $p->state_id;
+			$priceMap[$p->service_category_id][$p->subscription_id][$zone] = (float) $p->cost;
+		}
+		$params['priceMap'] = $priceMap;
+
+		$provinceIds = SubscriptionPrice::whereNotNull('state_id')->pluck('state_id')->unique()->values()->all();
+		$params['provinces'] = $provinceIds
+			? State::whereIn('states.id', $provinceIds)->orderByTranslation('title')->get()
+			: collect();
+
+		$params['profileOptions'] = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
+
+		return $params;
+	}
+
+	/**
+	 * Soumission de l'inscription fournisseur UNE PAGE. Round 1 : la mise en page est en
+	 * revue par Denis; l'enregistrement combiné (validations + compte + paiement) est câblé
+	 * au round 2. Pour l'instant on renvoie sur la page avec un message clair (aucune perte
+	 * de données : l'assistant 6 étapes reste la voie active).
+	 */
+	public function storeSupplierFull(Request $request) {
+		return redirect()->back()->withInput()
+			->with('error', "Aperçu de la nouvelle page unique : l'enregistrement sera activé très bientôt. Pour t'inscrire maintenant, utilise le formulaire en plusieurs étapes.");
+	}
+
 	public function step2ServiceForm(Request $request) {
 		$serviceCategory = ServiceCategory::findOrFail($request->input('service_category_id'));
 

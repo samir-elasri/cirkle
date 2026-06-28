@@ -250,6 +250,23 @@ return [
 				'sharing'      => true,
 			]
 		],
+		'register-supplier-full'        => [
+			'methods' => 'get',
+			'uri'     => [
+				'fr' => '/sinscrire/fournisseur-1page',
+				'en' => '/register/supplier-1page',
+			],
+			'view'    => 'pages.register.supplier-full',
+			'uses'    => 'App\\Http\\Controllers\\SubscriberController@createSupplierFull',
+			'admin'   => [
+				'title'        => true,
+				'metas'        => true,
+				'customs'      => true,
+				'right_column' => false,
+				'blocs'        => true,
+				'sharing'      => true,
+			]
+		],
 		'lost-password'   => [
 			'methods' => 'get',
 			'uri'     => [
