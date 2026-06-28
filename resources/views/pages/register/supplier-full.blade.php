@@ -30,12 +30,18 @@
                 <style>
                     .ck-coord { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
                     .ck-coord > label { min-width:200px; font-weight:600; }
-                    .ck-coord > input, .ck-coord > sl-select { flex:0 1 360px; max-width:360px; }
-                    .ck-hours select { flex:0 0 auto; width:135px; max-width:135px; padding:9px 10px !important; }
+                    /* champs compacts (pas de gros blocs) : on réduit la hauteur + on borne la largeur */
+                    .ck-coord > input, .ck-coord > select {
+                        flex:0 1 320px; max-width:320px;
+                        padding:8px 12px !important; font-size:.95rem !important; box-shadow:none !important;
+                    }
+                    .ck-coord > sl-select { flex:0 1 320px; max-width:320px; }
+                    .ck-coord > sl-select::part(combobox) { min-height:38px; }
+                    .ck-hours select { flex:0 0 auto; width:118px; max-width:118px; padding:7px 8px !important; }
                     .ck-hours span { color:#666; }
                     @media (max-width:560px){
                         .ck-coord > label { min-width:100%; }
-                        .ck-coord > input, .ck-coord > sl-select { max-width:100%; }
+                        .ck-coord > input, .ck-coord > select, .ck-coord > sl-select { max-width:100%; }
                     }
                 </style>
                 <div class="registration-title">1. {{ $t('Coordonnées', 'Contact details') }}</div>
@@ -75,12 +81,10 @@
                         <div class="ck-coord ck-hours" style="margin-bottom:6px">
                             <label>{{ $t($fr, $en) }} :</label>
                             <select name="business_hours[{{ $fr }}][start]">
-                                <option value="">{{ $t('Fermé', 'Closed') }}</option>
                                 @foreach($times as $tm)<option value="{{ $tm }}" @selected(old('business_hours.'.$fr.'.start') === $tm)>{{ $tm }}</option>@endforeach
                             </select>
                             <span>{{ $t('à', 'to') }}</span>
                             <select name="business_hours[{{ $fr }}][end]">
-                                <option value="">—</option>
                                 @foreach($times as $tm)<option value="{{ $tm }}" @selected(old('business_hours.'.$fr.'.end') === $tm)>{{ $tm }}</option>@endforeach
                             </select>
                         </div>
