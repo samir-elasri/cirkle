@@ -234,6 +234,7 @@ class SubscriberController extends Controller
 			'service_category_id' => 'required',
 			'services'            => 'required|array',
 			'capabilities'        => 'nullable|array', // certaines fiches (anglaises) n'en ont pas
+			'accept_fee'          => 'accepted',       // acceptation des frais de fiche (Denis)
 			'subscription_id'     => 'required',
 			'password'            => 'required|regex:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/',
 			'password_confirmation' => 'required_with:password|same:password',
@@ -251,6 +252,7 @@ class SubscriberController extends Controller
 			'provider_type' => __('auth.register.provider_type'),
 			'service_category_id' => __('auth.register.service_category_id'),
 			'services' => __('auth.register.services'),
+			'accept_fee' => app()->getLocale() === 'en' ? 'Competence-sheet fees' : 'Frais de fiche',
 			'subscription_id' => __('auth.register.subscription_id'),
 			'postal_codes' => __('auth.register.postal_codes'),
 			'subscription_state_id' => 'Province',

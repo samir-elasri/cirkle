@@ -154,8 +154,10 @@ return [
 				'fr' => '/sinscrire/fournisseur',
 				'en' => '/register/supplier',
 			],
-			'view'    => 'pages.register.step-1',
-			'uses'    => 'App\\Http\\Controllers\\SubscriberController@createStep1',
+			// Bouton principal « Inscription fournisseur » → inscription SUR UNE SEULE PAGE
+			// (Denis 28.06). L'ancien assistant 6 étapes reste accessible à /sinscrire/fournisseur/2…6.
+			'view'    => 'pages.register.supplier-full',
+			'uses'    => 'App\\Http\\Controllers\\SubscriberController@createSupplierFull',
 			'admin'   => [
 				'title'        => true,
 				'metas'        => true,

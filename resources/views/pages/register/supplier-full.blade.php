@@ -78,6 +78,14 @@
                             ? 'A one-time competence-sheet fee applies (residential $75 / B2B $100), added at payment.'
                             : 'Des frais uniques de fiche s\'appliquent (résidentiel 75 $ / B2B 100 $), ajoutés au paiement.' }}
                     </div>
+                    <div style="margin-top:8px">
+                        <sl-checkbox name="accept_fee" value="1" @if(old('accept_fee')) checked @endif>
+                            {{ app()->getLocale() === 'en' ? 'I accept these competence-sheet fees.' : "J'accepte ces frais de fiche." }}
+                        </sl-checkbox>
+                    </div>
+                    <div class="form__row--error">
+                        @foreach($errors->get('accept_fee', '<small style="color: red">:message</small>') as $error){!! $error !!}@endforeach
+                    </div>
                 </div>
                 <div id="service-container"></div>
 
