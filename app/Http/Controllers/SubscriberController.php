@@ -210,14 +210,175 @@ class SubscriberController extends Controller
 	}
 
 	/**
-	 * Soumission de l'inscription fournisseur UNE PAGE. Round 1 : la mise en page est en
-	 * revue par Denis; l'enregistrement combiné (validations + compte + paiement) est câblé
-	 * au round 2. Pour l'instant on renvoie sur la page avec un message clair (aucune perte
-	 * de données : l'assistant 6 étapes reste la voie active).
+	 * Soumission de l'inscription fournisseur SUR UNE SEULE PAGE (Denis 28.06).
+	 * Valide TOUT d'un coup (coordonnées + 2350 + forfait/zone + options + mot de passe),
+	 * reconstitue les mêmes modèles de session que les étapes 1→5, puis délègue à storeStep6
+	 * (création du compte + panier abonnement/frais/options + redirection paiement) — AUCUNE
+	 * duplication de la logique critique de compte/paiement.
 	 */
 	public function storeSupplierFull(Request $request) {
-		return redirect()->back()->withInput()
-			->with('error', "Aperçu de la nouvelle page unique : l'enregistrement sera activé très bientôt. Pour t'inscrire maintenant, utilise le formulaire en plusieurs étapes.");
+		$zoneType = ($request->input('zone_type') === 'province') ? 'province' : 'postal';
+
+		$rules = [
+			'email'               => 'required|email|unique:subscribers,email',
+			'company_name'        => 'required',
+			'legal_form_id'       => 'required',
+			'federal_tax_number'  => 'required',
+			'street'              => 'required',
+			'city'                => 'required',
+			'postal_code'         => 'required',
+			'phone'               => 'required',
+			'start_date'          => 'required',
+			'business_hours'      => 'required',
+			'provider_type'       => 'required',
+			'service_category_id' => 'required',
+			'services'            => 'required|array',
+			'capabilities'        => 'nullable|array', // certaines fiches (anglaises) n'en ont pas
+			'subscription_id'     => 'required',
+			'password'            => 'required|regex:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/',
+			'password_confirmation' => 'required_with:password|same:password',
+			'accept_condition'    => 'accepted',
+		];
+		$rules[$zoneType === 'province' ? 'subscription_state_id' : 'postal_codes'] =
+			$zoneType === 'province' ? 'required|exists:states,id' : 'required|array';
+
+		$validator = Validator::make($request->all(), $rules);
+		$validator->setAttributeNames([
+			'email' => __('auth.register.email'),
+			'company_name' => __('auth.register.company_name'),
+			'legal_form_id' => __('auth.register.legal_form_id'),
+			'federal_tax_number' => __('auth.register.federal_tax_number'),
+			'provider_type' => __('auth.register.provider_type'),
+			'service_category_id' => __('auth.register.service_category_id'),
+			'services' => __('auth.register.services'),
+			'subscription_id' => __('auth.register.subscription_id'),
+			'postal_codes' => __('auth.register.postal_codes'),
+			'subscription_state_id' => 'Province',
+			'password' => __('auth.register.password'),
+			'password_confirmation' => __('auth.register.password_confirmation'),
+			'accept_condition' => __('auth.register.terms'),
+		]);
+
+		$selectedCategory = $request->input('service_category_id');
+		$validator->after(function ($v) use ($request, $zoneType, $selectedCategory) {
+			$stateId = $zoneType === 'province' ? ($request->input('subscription_state_id') ?: null) : null;
+			$exists = SubscriptionPrice::where('subscription_id', '=', $request->input('subscription_id') ?: 0)
+				->where('service_category_id', '=', $selectedCategory)
+				->where('state_id', '=', $stateId)
+				->exists();
+			if (!$exists) {
+				$v->errors()->add('subscription_id', "Ce forfait n'est pas disponible pour cette zone.");
+			}
+			if ($zoneType === 'postal') {
+				$filled = collect($request->input('postal_codes', []))->filter(fn ($c) => trim((string) $c) !== '')->count();
+				if ($filled < 1) {
+					$v->errors()->add('postal_codes', 'Veuillez saisir au moins un code postal.');
+				}
+			}
+		});
+
+		if ($validator->fails()) {
+			return redirect()->back()->withInput()->withErrors($validator);
+		}
+
+		// ── registerFormData : toutes les données des étapes 1, 2, 4 ──
+		$form = $request->all([
+			'preference_language', 'company_name', 'owner_names', 'legal_form_id', 'federal_tax_number',
+			'street', 'city', 'postal_code', 'phone', 'toll_free_phone', 'fax', 'email', 'start_date',
+			'insurance_coverage', 'business_hours',
+			'provider_type', 'service_category_id', 'services', 'service_input', 'custom_services',
+			'capabilities', 'capability_input', 'custom_capabilities',
+			'subscription_id', 'zone_type', 'postal_codes', 'subscription_state_id',
+		]);
+		$form['zone_type'] = $zoneType;
+
+		// Ne garder que les « précisez » des services/compétences réellement cochés (comme storeStep2)
+		$form['service_input'] = (!empty($form['service_input']) && !empty($form['services']))
+			? array_intersect_key($form['service_input'], array_flip(array_map('intval', $form['services'])))
+			: [];
+		$form['capability_input'] = (!empty($form['capability_input']) && !empty($form['capabilities']))
+			? array_intersect_key($form['capability_input'], array_flip(array_map('intval', $form['capabilities'])))
+			: [];
+
+		$request->session()->put('registerFormData', $form);
+
+		// ── Modèles en mémoire (logique étape 3) ──
+		$subscriber = new Subscriber();
+		$subscriber->fill([
+			...$form,
+			'registration_completed' => false,
+			'active' => false,
+			'is_provider' => true,
+			'is_public' => false,
+		]);
+
+		$subscriberServices = collect();
+		foreach (($form['services'] ?? []) as $element) {
+			$subscriberServices->push(new SubscriberService(['service_id' => $element]));
+		}
+		foreach (($form['custom_services'] ?? []) as $element) {
+			$ss = new SubscriberService(['service_id' => null]);
+			$ss->service = new Service(['title' => $element, 'type' => 'service']);
+			$subscriberServices->push($ss);
+		}
+		foreach (($form['service_input'] ?? []) as $key => $element) {
+			$existing = $subscriberServices->first(fn ($ss) => $ss->service_id == $key);
+			if ($existing) { $existing->custom_value = $element; }
+			else { $subscriberServices->push(new SubscriberService(['service_id' => $key, 'custom_value' => $element])); }
+		}
+		foreach (($form['capabilities'] ?? []) as $element) {
+			$subscriberServices->push(new SubscriberService(['service_id' => $element]));
+		}
+		foreach (($form['custom_capabilities'] ?? []) as $element) {
+			$ss = new SubscriberService(['service_id' => null]);
+			$ss->service = new Service(['title' => $element, 'type' => 'service']);
+			$subscriberServices->push($ss);
+		}
+		foreach (($form['capability_input'] ?? []) as $key => $element) {
+			$existing = $subscriberServices->first(fn ($ss) => $ss->service_id == $key);
+			if ($existing) { $existing->custom_value = $element; }
+			else { $subscriberServices->push(new SubscriberService(['service_id' => $key, 'custom_value' => $element])); }
+		}
+
+		// ── Zone + abonnement (logique étape 4) ──
+		$postalCodes = collect();
+		if ($zoneType === 'postal') {
+			foreach (($form['postal_codes'] ?? []) as $pc) {
+				if (trim((string) $pc) !== '') { $postalCodes->push(new PostalCode(['postal_code' => $pc])); }
+			}
+		}
+		$subscriber->fill(['subscription_id' => $form['subscription_id']]);
+
+		// ── Options activées (logique étape 5) — l'url/site web s'ajoute depuis le profil ──
+		$optionFlags = [
+			'license' => 'profile_license', 'diploma' => 'profile_diploma', 'promotion' => 'profile_promotion',
+			'image' => 'profile_image', 'estimation' => 'profile_estimation', 'job_offer' => 'profile_job_offer',
+		];
+		foreach ($optionFlags as $opt => $prefix) {
+			if ($request->input($opt)) {
+				$subscriber->{$prefix . '_active'} = true;
+				$subscriber->{$prefix . '_activation_datetime'} = now();
+			}
+		}
+
+		$request->session()->put('subscriber_model', $subscriber);
+		$request->session()->put('subscriber_services', $subscriberServices);
+		$request->session()->put('postal_codes', $postalCodes);
+		$request->session()->put('registerFormData.step-5-validated', true);
+
+		// ── Compte + panier + paiement : on réutilise storeStep6 tel quel ──
+		return $this->storeStep6($request);
+	}
+
+	/**
+	 * Variante INLINE du 2350 pour la page unique : renvoie directement le formulaire de
+	 * services (sans la porte d'acceptation des frais — sur la page unique, le frais est
+	 * affiché en note et facturé au paiement). Injecté dans #service-container au choix de
+	 * la profession par le composant gelé step2ServiceSelector.
+	 */
+	public function step2ServiceFormInline(Request $request) {
+		$serviceCategory = ServiceCategory::findOrFail($request->input('service_category_id'));
+		return View::make('partials.service-form', compact('serviceCategory'));
 	}
 
 	public function step2ServiceForm(Request $request) {

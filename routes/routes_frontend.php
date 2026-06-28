@@ -271,6 +271,12 @@ function createRoutes($locale)
 			'uses' => 'SubscriberController@step2ServiceForm'
 		]);
 
+		// 2350 inline (page unique) : renvoie directement les services, sans la porte de frais.
+		Route::get('register-step2-service-form-inline', [
+			'as'   => 'subscriber.register.step2-service-form-inline',
+			'uses' => 'SubscriberController@step2ServiceFormInline'
+		]);
+
 		// Porte d'acceptation des frais de la fiche (feature #6) — AJAX, sans recaptcha
 		// (appel programmatique; protégé par le jeton CSRF de la page)
 		Route::post('register-accept-fiche-fee', [

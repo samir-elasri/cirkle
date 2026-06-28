@@ -63,8 +63,7 @@
                     <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:0 0 6px">{{ __('auth.register.service_category_id') }}</div>
                     <sl-select
                         data-component="step2ServiceSelector"
-                        data-url="{{ urlRouteName('subscriber.register.step2-service-form') }}"
-                        data-accept-url="{{ urlRouteName('subscriber.register.accept-fee') }}"
+                        data-url="{{ urlRouteName('subscriber.register.step2-service-form-inline') }}"
                         name="service_category_id" id="service_category_id"
                         value="{{ old('service_category_id') }}" placeholder="{{ __('main.choose') }}">
                         @foreach ($subcategories as $category)
@@ -72,6 +71,13 @@
                             <sl-option value="{{ $category->id }}">{{ $category->title }}</sl-option>
                         @endforeach
                     </sl-select>
+                </div>
+                <div class="form__column">
+                    <div class="ui info message" style="background:#fff9e6;border:1px solid #e6b800;border-radius:10px;padding:10px 14px;font-size:.92rem">
+                        💡 {{ app()->getLocale() === 'en'
+                            ? 'A one-time competence-sheet fee applies (residential $75 / B2B $100), added at payment.'
+                            : 'Des frais uniques de fiche s\'appliquent (résidentiel 75 $ / B2B 100 $), ajoutés au paiement.' }}
+                    </div>
                 </div>
                 <div id="service-container"></div>
 
@@ -133,8 +139,10 @@
                 <div class="registration-title">4. {{ app()->getLocale() === 'en' ? 'Options' : 'Options' }}</div>
                 <div class="form__column">
                     @foreach($profileOptions as $option)
+                        @if($option === 'url') @continue @endif
                         <div style="padding:3px 0"><sl-checkbox name="{{ $option }}" value="1" @if(old($option)) checked @endif>{{ setting("{$option}_title", $option) }}</sl-checkbox></div>
                     @endforeach
+                    <div style="font-size:.85rem;color:#777;margin-top:6px">{{ app()->getLocale() === 'en' ? 'Details (and the website option) can be added from your profile after signup.' : 'Les détails (et l\'option site web) s\'ajoutent depuis votre profil après l\'inscription.' }}</div>
                 </div>
 
                 {{-- ───────────── 5) MOT DE PASSE & CONDITIONS ───────────── --}}
