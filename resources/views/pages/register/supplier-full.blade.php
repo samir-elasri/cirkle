@@ -28,24 +28,26 @@
                      Denis 28.06 : les TITRES restent et le fournisseur remplit À CÔTÉ du titre. --}}
                 @php $t = fn ($fr, $en) => app()->getLocale() === 'en' ? $en : $fr; @endphp
                 <style>
-                    .ck-coord { display:flex; align-items:center; justify-content:flex-start; gap:10px; flex-wrap:wrap; margin-bottom:4px; text-align:left; }
-                    .ck-coord > label { min-width:200px; font-weight:600; text-align:left !important; }
-                    /* Hauteur FORCÉE (sélecteur très spécifique + height explicite) : la règle
-                       globale input{padding:13px} rendait les champs énormes. */
-                    section.ck-auth .ck-coord > input,
-                    section.ck-auth .ck-coord > select {
-                        flex:0 1 320px; max-width:320px;
+                    /* .form__column du thème = flex COLONNE + centré → on force LIGNE + gauche.
+                       Titre à gauche, champ rempli À CÔTÉ (Denis). */
+                    .ck-coord { display:flex !important; flex-direction:row !important; align-items:center !important;
+                        justify-content:flex-start !important; gap:12px; flex-wrap:wrap; margin-bottom:6px; text-align:left; }
+                    .ck-coord > label { flex:0 0 210px; max-width:210px; font-weight:600; text-align:left !important; margin:0; }
+                    .ck-coord > input, .ck-coord > select, .ck-coord > sl-select { flex:1 1 240px; min-width:0; max-width:none; }
+                    section.ck-auth .ck-coord > input, section.ck-auth .ck-coord > select {
                         height:38px !important; min-height:38px !important; max-height:38px !important;
                         padding:2px 12px !important; font-size:.95rem !important; line-height:1.2 !important;
                         box-shadow:none !important; box-sizing:border-box !important;
                     }
-                    section.ck-auth .ck-coord > sl-select { flex:0 1 320px; max-width:320px; }
                     section.ck-auth .ck-coord > sl-select::part(combobox) { min-height:38px !important; }
-                    section.ck-auth .ck-hours select { width:118px !important; max-width:118px !important; flex:0 0 auto !important; }
-                    .ck-hours span { color:#666; }
+                    /* Heures d'affaires : jour + début + fin sur UNE ligne, dropdowns compacts. */
+                    .ck-coord.ck-hours { gap:8px; }
+                    .ck-coord.ck-hours > label { flex:0 0 90px; max-width:90px; }
+                    .ck-hours select { flex:0 0 auto !important; width:120px !important; max-width:120px !important; height:38px !important; min-height:38px !important; }
+                    .ck-hours span { color:#666; flex:0 0 auto; }
                     @media (max-width:560px){
-                        .ck-coord > label { min-width:100%; }
-                        section.ck-auth .ck-coord > input, section.ck-auth .ck-coord > select, .ck-coord > sl-select { max-width:100%; }
+                        .ck-coord { flex-direction:column !important; align-items:stretch !important; }
+                        .ck-coord > label { flex-basis:auto; max-width:100%; }
                     }
                 </style>
                 <div class="registration-title">1. {{ $t('Coordonnées', 'Contact details') }}</div>
