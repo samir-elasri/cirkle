@@ -30,18 +30,22 @@
                 <style>
                     .ck-coord { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
                     .ck-coord > label { min-width:200px; font-weight:600; }
-                    /* champs compacts (pas de gros blocs) : on réduit la hauteur + on borne la largeur */
-                    .ck-coord > input, .ck-coord > select {
+                    /* Hauteur FORCÉE (sélecteur très spécifique + height explicite) : la règle
+                       globale input{padding:13px} rendait les champs énormes. */
+                    section.ck-auth .ck-coord > input,
+                    section.ck-auth .ck-coord > select {
                         flex:0 1 320px; max-width:320px;
-                        padding:8px 12px !important; font-size:.95rem !important; box-shadow:none !important;
+                        height:38px !important; min-height:38px !important; max-height:38px !important;
+                        padding:2px 12px !important; font-size:.95rem !important; line-height:1.2 !important;
+                        box-shadow:none !important; box-sizing:border-box !important;
                     }
-                    .ck-coord > sl-select { flex:0 1 320px; max-width:320px; }
-                    .ck-coord > sl-select::part(combobox) { min-height:38px; }
-                    .ck-hours select { flex:0 0 auto; width:118px; max-width:118px; padding:7px 8px !important; }
+                    section.ck-auth .ck-coord > sl-select { flex:0 1 320px; max-width:320px; }
+                    section.ck-auth .ck-coord > sl-select::part(combobox) { min-height:38px !important; }
+                    section.ck-auth .ck-hours select { width:118px !important; max-width:118px !important; flex:0 0 auto !important; }
                     .ck-hours span { color:#666; }
                     @media (max-width:560px){
                         .ck-coord > label { min-width:100%; }
-                        .ck-coord > input, .ck-coord > select, .ck-coord > sl-select { max-width:100%; }
+                        section.ck-auth .ck-coord > input, section.ck-auth .ck-coord > select, .ck-coord > sl-select { max-width:100%; }
                     }
                 </style>
                 <div class="registration-title">1. {{ $t('Coordonnées', 'Contact details') }}</div>
