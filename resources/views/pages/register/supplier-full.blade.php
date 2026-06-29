@@ -28,8 +28,8 @@
                      Denis 28.06 : les TITRES restent et le fournisseur remplit À CÔTÉ du titre. --}}
                 @php $t = fn ($fr, $en) => app()->getLocale() === 'en' ? $en : $fr; @endphp
                 <style>
-                    .ck-coord { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
-                    .ck-coord > label { min-width:200px; font-weight:600; }
+                    .ck-coord { display:flex; align-items:center; justify-content:flex-start; gap:10px; flex-wrap:wrap; margin-bottom:4px; text-align:left; }
+                    .ck-coord > label { min-width:200px; font-weight:600; text-align:left !important; }
                     /* Hauteur FORCÉE (sélecteur très spécifique + height explicite) : la règle
                        globale input{padding:13px} rendait les champs énormes. */
                     section.ck-auth .ck-coord > input,
