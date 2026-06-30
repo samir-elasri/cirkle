@@ -38,10 +38,10 @@
                     </a>
                 </li>
 
-                {{-- Lien fixe : activer/bloquer les plateformes françaises (« À VENIR ») --}}
+                {{-- Lien fixe : activer/bloquer chaque plateforme (« À VENIR ») --}}
                 <li class="{{ Request::segment(2) === 'plateformes' ? 'active' : '' }}">
                     <a href="/admin/plateformes">
-                        <i class="fa fa-flag"></i><span class="text">Plateformes FR</span>
+                        <i class="fa fa-flag"></i><span class="text">Plateformes</span>
                     </a>
                 </li>
 
