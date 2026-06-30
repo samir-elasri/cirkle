@@ -9,8 +9,8 @@
     $currentLocale = app()->getLocale();
     $selectedType = $selectedProviderType ?? null;
     // Plateformes FRANÇAISES « À VENIR » tant que les professions anglaises ne sont pas finies
-    // (Denis 30.06). Pour les ACTIVER plus tard : mettre $frenchComingSoon = false.
-    $frenchComingSoon = true;
+    // (Denis 30.06). Réglable depuis l'admin : /admin/plateformes (settings.french_platforms_coming_soon).
+    $frenchComingSoon = (bool) setting('french_platforms_coming_soon', true);
     $platforms = [
         ['locale' => 'en', 'type' => 'residential', 'label' => __('main.platformResidentialEn')],
         ['locale' => 'fr', 'type' => 'residential', 'label' => __('main.platformResidentialFr')],

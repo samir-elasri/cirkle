@@ -269,6 +269,22 @@ return [
 				'sharing'      => true,
 			]
 		],
+		'resiliation' => [
+			'methods' => 'get',
+			'uri'     => [
+				'fr' => '/resiliation',
+				'en' => '/cancellation',
+			],
+			'view'    => 'pages.resiliation',
+			'admin'   => [
+				'title'        => true,
+				'metas'        => true,
+				'customs'      => true,
+				'right_column' => false,
+				'blocs'        => true,
+				'sharing'      => true,
+			]
+		],
 		'ideologie' => [
 			'methods' => 'get',
 			'uri'     => [

@@ -52,6 +52,10 @@ Route::namespace('Admin')->prefix('/admin')->name('admin.')->group(function () {
         Route::get('fiche', 'AdminFicheController@create')->name('fiche.create');
         Route::post('fiche', 'AdminFicheController@store')->name('fiche.store');
 
+        // Activer/désactiver les plateformes françaises (« À VENIR ») — Denis 30.06
+        Route::get('plateformes', 'AdminPlatformController@edit')->name('plateformes.edit');
+        Route::post('plateformes', 'AdminPlatformController@update')->name('plateformes.update');
+
         Route::post('excel/import', 'AdminExcelController@import')->name('excel.import');
 
 		/**

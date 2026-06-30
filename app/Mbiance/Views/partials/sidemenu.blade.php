@@ -38,6 +38,13 @@
                     </a>
                 </li>
 
+                {{-- Lien fixe : activer/bloquer les plateformes françaises (« À VENIR ») --}}
+                <li class="{{ Request::segment(2) === 'plateformes' ? 'active' : '' }}">
+                    <a href="/admin/plateformes">
+                        <i class="fa fa-flag"></i><span class="text">Plateformes FR</span>
+                    </a>
+                </li>
+
                 @foreach($menus as $menu)
 
 					@if($menu->Autorisation === "hide")

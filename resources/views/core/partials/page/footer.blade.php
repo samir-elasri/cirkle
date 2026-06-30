@@ -38,8 +38,13 @@
 				@endforeach
 			</div>
 		@endforeach
+
+		{{-- Lien statique : Résiliation (procédure d'annulation — Denis B7) --}}
+		<div class="page-footer__menu">
+			<a href="{{ urlRouteName('resiliation') }}">{{ app()->getLocale() === 'en' ? 'Cancellation' : 'Résiliation' }}</a>
+		</div>
 	</div>
-	
+
 	<div class="page-footer__copyright wide-content-width">
 		<div>
 			@php
