@@ -16,9 +16,15 @@
 
         <div class="provider-search">
             <div class="provider-search__results">
-                @foreach ($subscribers as $provider)
+                @forelse ($subscribers as $provider)
                     @include ('partials.providers.single')
-                @endforeach
+                @empty
+                    <div class="ck-help" style="text-align:center;padding:18px">
+                        {{ app()->getLocale() === 'en'
+                            ? 'No supplier is registered for this profession yet — please check back soon.'
+                            : "Aucun fournisseur n'est encore inscrit pour cette profession — revenez bientôt." }}
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>

@@ -51,6 +51,17 @@ class SearchService
             ->get();
     }
 
+    /** Tous les fournisseurs publics d'une profession (sans filtre de code postal). */
+    public function getAllSubscribersWithProfession($professionId): Collection
+    {
+        return Subscriber::where('active', true)
+            ->where('is_public', true)
+            ->where('registration_completed', true)
+            ->where('service_category_id', $professionId)
+            ->inRandomOrder()
+            ->get();
+    }
+
 
     public function getProfessionsInPostalCode(string $postalCode, string $providerType): Collection
     {

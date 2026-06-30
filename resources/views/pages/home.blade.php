@@ -101,7 +101,7 @@
                     <div class="ck-home__cat">{{ $category->title }}</div>
                     <div class="ck-home__profs">
                         @foreach ($profs as $prof)
-                            <span class="ck-home__prof">{{ $prof->title }}</span>
+                            <a class="ck-home__prof" href="{{ url($loc.'/profession/'.$prof->id) }}">{{ $prof->title }}</a>
                         @endforeach
                     </div>
                 </div>

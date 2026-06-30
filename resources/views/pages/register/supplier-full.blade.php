@@ -113,7 +113,6 @@
                 <div class="form__column">
                     <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:0 0 6px">{{ __('auth.register.service_category_id') }}</div>
                     <sl-select
-                        data-component="step2ServiceSelector"
                         data-url="{{ urlRouteName('subscriber.register.step2-service-form-inline') }}"
                         name="service_category_id" id="service_category_id"
                         value="{{ old('service_category_id') }}" placeholder="{{ __('main.choose') }}">
@@ -256,5 +255,33 @@
     [cat, sub, prov].forEach(function(el){ if (el) el.addEventListener('sl-change', update); });
     if (window.customElements && customElements.whenDefined) { customElements.whenDefined('sl-select').then(function(){ setTimeout(update,0); }); }
     setTimeout(update, 0);
+})();
+</script>
+
+{{-- Chargement FIABLE du 2350 : on n'utilise PAS le composant gelé (qui ne se déclenchait
+     pas toujours). Au choix de la profession, on charge directement la fiche du fournisseur
+     (ses services AVEC ses couleurs) dans #service-container. --}}
+<script>
+(function () {
+    var sel = document.getElementById('service_category_id');
+    var container = document.getElementById('service-container');
+    if (!sel || !container) return;
+    var url = sel.getAttribute('data-url');
+    var loadingTxt = (document.documentElement.lang === 'en') ? 'Loading the 2350 form…' : 'Chargement du formulaire 2350…';
+    var errTxt = (document.documentElement.lang === 'en') ? 'Loading error — please pick the profession again.' : 'Erreur de chargement — choisissez à nouveau la profession.';
+    function load() {
+        var id = sel.value;
+        if (!id) { container.innerHTML = ''; return; }
+        container.innerHTML = '<p style="padding:14px;color:#666">' + loadingTxt + '</p>';
+        fetch(url + '?service_category_id=' + encodeURIComponent(id), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.text(); })
+            .then(function (html) { container.innerHTML = html; })
+            .catch(function () { container.innerHTML = '<p style="padding:14px;color:#b00020">' + errTxt + '</p>'; });
+    }
+    sel.addEventListener('sl-change', load);
+    // Si une profession est déjà choisie (retour avec erreurs), on charge tout de suite.
+    if (window.customElements && customElements.whenDefined) {
+        customElements.whenDefined('sl-select').then(function () { if (sel.value) load(); });
+    }
 })();
 </script>

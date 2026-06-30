@@ -80,15 +80,20 @@ class SearchController extends Controller
 
     public function profession($params, Request $request, $id)
     {
-        if (!$this->searchDataService->hasStoredPostalCode() || !$this->searchDataService->hasStoredPostalCode()) {
-            return redirect()->to(urlRouteName('home'));
-        }
-
-        $postalCode = $this->searchDataService->getStoredPostalCode();
-        $providerType = $this->searchDataService->getStoredProviderType();
-
         $profession = $this->searchService->getCategory($id);
-        $subscribers = $this->searchService->getSubscribersWithProfessionInPostalCode($postalCode, $providerType, $profession->id);
+
+        // Avec un code postal en session : fournisseurs de la région. Sinon (ex. clic direct
+        // sur une profession du catalogue de l'accueil) : tous les fournisseurs publics de la
+        // profession — on n'efface plus l'écran avec une redirection vers l'accueil (Denis 30.06).
+        if ($this->searchDataService->hasStoredPostalCode()) {
+            $subscribers = $this->searchService->getSubscribersWithProfessionInPostalCode(
+                $this->searchDataService->getStoredPostalCode(),
+                $this->searchDataService->getStoredProviderType(),
+                $profession->id
+            );
+        } else {
+            $subscribers = $this->searchService->getAllSubscribersWithProfession($profession->id);
+        }
 
         return array_merge($params, [
             'title' => $profession->title,
