@@ -8,9 +8,9 @@
 @php
     $currentLocale = app()->getLocale();
     $selectedType = $selectedProviderType ?? null;
-    // Plateformes FRANÇAISES « À VENIR » tant que les professions anglaises ne sont pas finies
-    // (Denis 30.06). Réglable depuis l'admin : /admin/plateformes (settings.french_platforms_coming_soon).
-    $frenchComingSoon = (bool) setting('french_platforms_coming_soon', true);
+    // Plateformes « À VENIR » : liste réglable plateforme par plateforme depuis l'admin
+    // (/admin/plateformes → settings.platforms_coming_soon, JSON de clés « locale-type »).
+    $comingSoonPlatforms = json_decode(setting('platforms_coming_soon') ?? '[]', true) ?: [];
     $platforms = [
         ['locale' => 'en', 'type' => 'residential', 'label' => __('main.platformResidentialEn')],
         ['locale' => 'fr', 'type' => 'residential', 'label' => __('main.platformResidentialFr')],
@@ -71,8 +71,8 @@
     <p class="platform-selector__title">{{ __('main.platformSelectorTitle') }}</p>
     <div class="platform-selector__tiles">
         @foreach ($platforms as $platform)
-            @if ($frenchComingSoon && $platform['locale'] === 'fr')
-                {{-- Plateforme française : À VENIR (non cliquable) --}}
+            @if (in_array($platform['locale'].'-'.$platform['type'], $comingSoonPlatforms))
+                {{-- Plateforme « À VENIR » (non cliquable) --}}
                 <span class="platform-selector__tile is-soon" title="{{ __('main.platformComingSoon') }}">
                     {{ $platform['label'] }}
                     <span class="platform-selector__soon-badge">{{ __('main.platformComingSoon') }}</span>
