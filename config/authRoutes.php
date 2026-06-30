@@ -269,6 +269,22 @@ return [
 				'sharing'      => true,
 			]
 		],
+		'ideologie' => [
+			'methods' => 'get',
+			'uri'     => [
+				'fr' => '/ideologie-engagement',
+				'en' => '/ideology-commitment',
+			],
+			'view'    => 'pages.ideologie',
+			'admin'   => [
+				'title'        => true,
+				'metas'        => true,
+				'customs'      => true,
+				'right_column' => false,
+				'blocs'        => true,
+				'sharing'      => true,
+			]
+		],
 		'lost-password'   => [
 			'methods' => 'get',
 			'uri'     => [

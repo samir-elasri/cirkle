@@ -11,6 +11,7 @@
   "platformResidentialFr"  : "Résidentiel Français",
   "platformBusinessEn"     : "B2B English",
   "platformBusinessFr"     : "B2B Français",
+  "platformComingSoon"     : "À VENIR",
   "help": {
     "home": "Bienvenue sur Cirkle. Trouvez en quelques clics un professionnel près de chez vous : choisissez votre plateforme ci-dessous, entrez votre code postal, puis découvrez les fournisseurs disponibles dans votre région. Vous êtes un professionnel ? Inscrivez-vous pour être visible auprès de milliers de clients.",
     "platform": "Résidentiel : services pour les particuliers et la maison. B2B : services entre entreprises. Choisissez ensuite le français ou l'anglais selon votre préférence.",

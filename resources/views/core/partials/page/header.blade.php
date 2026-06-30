@@ -32,6 +32,11 @@
 					</div>
 				</div>
 			@endforeach
+
+			{{-- Onglet statique : Idéologie / Engagement (Denis 30.06) --}}
+			<div class="header-menu-item on-desktop">
+				<a href="{{ urlRouteName('ideologie') }}">{{ app()->getLocale() === 'en' ? 'Ideology / Commitment' : 'Idéologie / Engagement' }}</a>
+			</div>
 		</div>
 
 		<div class="header__buttons">

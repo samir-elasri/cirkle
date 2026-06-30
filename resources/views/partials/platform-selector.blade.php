@@ -8,6 +8,9 @@
 @php
     $currentLocale = app()->getLocale();
     $selectedType = $selectedProviderType ?? null;
+    // Plateformes FRANÇAISES « À VENIR » tant que les professions anglaises ne sont pas finies
+    // (Denis 30.06). Pour les ACTIVER plus tard : mettre $frenchComingSoon = false.
+    $frenchComingSoon = true;
     $platforms = [
         ['locale' => 'en', 'type' => 'residential', 'label' => __('main.platformResidentialEn')],
         ['locale' => 'fr', 'type' => 'residential', 'label' => __('main.platformResidentialFr')],
@@ -53,16 +56,33 @@
         background: #ffd54d; /* jaune : plateforme choisie en évidence */
         border-color: #e6b800;
     }
+    /* Plateforme « À VENIR » (français, pour le moment) : rouge, non cliquable. */
+    .platform-selector__tile.is-soon {
+        color: #c0392b; border-color: #e7b3ad; background: #fdf0ee;
+        cursor: not-allowed; position: relative;
+    }
+    .platform-selector__tile.is-soon:hover { background: #fdf0ee; }
+    .platform-selector__soon-badge {
+        display: block; font-size: .72em; font-weight: 800; letter-spacing: .08em; color: #c0392b; margin-top: 3px;
+    }
 </style>
 
 <div class="platform-selector">
     <p class="platform-selector__title">{{ __('main.platformSelectorTitle') }}</p>
     <div class="platform-selector__tiles">
         @foreach ($platforms as $platform)
-            <a class="platform-selector__tile {{ $currentLocale === $platform['locale'] && $selectedType === $platform['type'] ? 'is-active' : '' }}"
-               href="{{ url($platform['locale']) }}?platform={{ $platform['type'] }}">
-                {{ $platform['label'] }}
-            </a>
+            @if ($frenchComingSoon && $platform['locale'] === 'fr')
+                {{-- Plateforme française : À VENIR (non cliquable) --}}
+                <span class="platform-selector__tile is-soon" title="{{ __('main.platformComingSoon') }}">
+                    {{ $platform['label'] }}
+                    <span class="platform-selector__soon-badge">{{ __('main.platformComingSoon') }}</span>
+                </span>
+            @else
+                <a class="platform-selector__tile {{ $currentLocale === $platform['locale'] && $selectedType === $platform['type'] ? 'is-active' : '' }}"
+                   href="{{ url($platform['locale']) }}?platform={{ $platform['type'] }}">
+                    {{ $platform['label'] }}
+                </a>
+            @endif
         @endforeach
     </div>
 </div>

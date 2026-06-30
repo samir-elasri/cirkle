@@ -35,7 +35,7 @@
                 <p class="ck-home__step">{{ $t('Réduisez votre temps de recherche. Recevez les informations des professionnels :', 'Cut your search time. Get the professionals’ information:') }}</p>
                 <ul class="ck-home__list ck-home__list--client">
                     <li>{{ $t('Toutes leurs compétences', 'All their skills') }}</li>
-                    <li>{{ $t('Leurs offres de promotions', 'Their promotional offers') }} <span class="ck-promo-badge">PROMO</span></li>
+                    <li>{{ $t('Leurs PROMOTIONS FOURNISSEUR', 'Their SUPPLIER PROMOTIONS') }} <span class="ck-promo-badge">PROMO</span></li>
                     <li>{{ $t('Leur système d’évaluation', 'Their rating system') }}</li>
                     <li>{{ $t('Leurs photos, diplômes et permis', 'Their photos, diplomas and licenses') }}</li>
                     <li>{{ $t('Leurs recrutements d’employé(e)s', 'Their staff recruitment') }} <img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"></li>
@@ -62,7 +62,7 @@
                 <p class="ck-home__step"><span class="ck-home__blue">{{ $t('2e clic', '2nd click') }} :</span> {{ $t('sur la profession de votre choix — Cirkle vous connecte directement avec les fournisseurs membres.', 'on the profession of your choice — Cirkle connects you directly with member suppliers.') }}</p>
                 <div class="ck-home__warn">{{ $t('Important : toute communication à l’extérieur de Cirkle n’est plus la responsabilité de cirkleservices.com.', 'Important: any communication outside Cirkle is no longer the responsibility of cirkleservices.com.') }}</div>
                 <div class="ck-home__legend ck-home__legend--recruit"><img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"> = {{ $t('un ou plusieurs fournisseurs recrutent du personnel', 'one or more suppliers are recruiting staff') }}</div>
-                <div class="ck-home__legend ck-home__legend--promo"><span class="ck-promo-badge">PROMO</span> = {{ $t('un ou plusieurs fournisseurs en promotion', 'one or more suppliers have a promotion') }}</div>
+                <div class="ck-home__legend ck-home__legend--promo"><span class="ck-promo-badge">PROMO</span> = {{ $t('PROMOTION FOURNISSEUR : un ou plusieurs fournisseurs offrent une promotion', 'SUPPLIER PROMOTION: one or more suppliers are offering a promotion') }}</div>
             </div>
 
             {{-- ─── Colonne 3 : Avantages membres FOURNISSEURS (col G de la spec) ─── --}}
@@ -78,7 +78,7 @@
                 </ul>
                 <p class="ck-home__sub">{{ $t('« Choix de 6 options »', '“Choice of 6 options”') }}</p>
                 <ul class="ck-home__list ck-home__list--supplier">
-                    <li>{{ $t('Vos promotions', 'Your promotions') }} <span class="ck-promo-badge">PROMO</span></li>
+                    <li>{{ $t('Vos PROMOTIONS FOURNISSEUR', 'Your SUPPLIER PROMOTIONS') }} <span class="ck-promo-badge">PROMO</span></li>
                     <li>{{ $t('Offre d’emploi / recrutement', 'Job offer / recruiting') }} <img class="ck-e-badge" src="{{ $eBadge }}" alt="(e)"></li>
                     <li>{{ $t('12 photos', '12 photos') }}</li>
                     <li>{{ $t('Votre formulaire d’estimation', 'Your estimate form') }}</li>
