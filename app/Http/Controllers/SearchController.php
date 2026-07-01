@@ -47,7 +47,8 @@ class SearchController extends Controller
 
         return View::make('partials.search.search', [
             'allCategories'         => $this->searchService->getAllCategories(),
-            'allProfessions'        => $this->searchService->getAllProfessions(),
+            // Catalogue filtré par plateforme : évite le doublon RE/B2BE d'une même profession.
+            'allProfessions'        => $this->searchService->getAllProfessionsForType($providerType),
             'presentProfessions'    => $this->searchService->getProfessionsInPostalCode($postalCode, $providerType),
             'nonPresentProfessions' => $this->searchService->getProfessionsNotInPostalCode($postalCode, $providerType),
             'presentCategories'     => $this->searchService->getCategoriesInPostalCode($postalCode, $providerType),

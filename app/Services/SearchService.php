@@ -27,6 +27,19 @@ class SearchService
         return ServiceCategory::whereNotNull('service_category_id')->get();
     }
 
+    /**
+     * Catalogue des professions filtré par plateforme (résidentiel/B2B).
+     * Chaque profession est importée une fois PAR plateforme (WW0001RE, WW0001B2BE…),
+     * toutes avec le même titre : sans ce filtre, elles apparaissent en double dans le
+     * catalogue de recherche. On ne montre donc que celles de la plateforme consultée.
+     */
+    public function getAllProfessionsForType($providerType): Collection
+    {
+        return ServiceCategory::whereNotNull('service_category_id')
+            ->whereIn('provider_type', $this->getProviderTypesForSearch($providerType))
+            ->get();
+    }
+
     public function getSubscribersInPostalCode(string $postalCode, string $providerType): Collection
     {
         $subscriberIds = $this->getSubscriberIdsInPostalCode($postalCode);

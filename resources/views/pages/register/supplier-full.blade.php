@@ -102,7 +102,7 @@
 
                 <div class="form__column">
                     <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:0 0 6px">{{ __('auth.register.provider_type') }}</div>
-                    <sl-radio-group name="provider_type" value="{{ old('provider_type') }}">
+                    <sl-radio-group name="provider_type" id="provider_type" value="{{ old('provider_type') ?: 'residential' }}">
                         <div class="form__row">
                             <sl-radio value="residential">{{ __('providers.provider-type.residential') }}</sl-radio>
                             <sl-radio value="business">{{ __('providers.provider-type.business') }}</sl-radio>
@@ -112,15 +112,25 @@
 
                 <div class="form__column">
                     <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:0 0 6px">{{ __('auth.register.service_category_id') }}</div>
+                    {{-- La liste ne montre que les professions de la plateforme choisie (Résidentiel/B2B) :
+                         chaque profession existe une fois par plateforme, donc sans filtre elle apparaîtrait
+                         en double. Le filtre est appliqué côté client selon le bouton provider_type. --}}
                     <sl-select
                         data-url="{{ urlRouteName('subscriber.register.step2-service-form-inline') }}"
                         name="service_category_id" id="service_category_id"
                         value="{{ old('service_category_id') }}" placeholder="{{ __('main.choose') }}">
                         @foreach ($subcategories as $category)
                             @if (!$category->title) @continue @endif
-                            <sl-option value="{{ $category->id }}">{{ $category->title }}</sl-option>
+                            <sl-option value="{{ $category->id }}" data-provider-type="{{ $category->provider_type ?: 'residential' }}">{{ $category->title }}</sl-option>
                         @endforeach
                     </sl-select>
+                    {{-- Message si aucune profession n'existe pour la plateforme/langue choisie
+                         (ex. plateformes françaises « À VENIR ») — évite un menu vide et déroutant. --}}
+                    <div id="no-profession-note" style="display:none;background:#fff8e1;border:1px solid #ffe082;border-left:4px solid #ffc107;border-radius:8px;padding:.7em 1em;margin-top:8px;color:#5a4d00;font-size:.92rem">
+                        {{ app()->getLocale() === 'en'
+                            ? 'No profession is available for this platform yet — recruitment is underway. Please check back soon.'
+                            : "Aucune profession n'est encore disponible pour cette plateforme — le recrutement est en cours. Revenez bientôt." }}
+                    </div>
                 </div>
                 <div class="form__column">
                     <div class="ui info message" style="background:#fff9e6;border:1px solid #e6b800;border-radius:10px;padding:10px 14px;font-size:.92rem">
@@ -283,5 +293,47 @@
     if (window.customElements && customElements.whenDefined) {
         customElements.whenDefined('sl-select').then(function () { if (sel.value) load(); });
     }
+})();
+</script>
+
+{{-- Filtre de la liste des professions selon la plateforme choisie (Résidentiel/B2B).
+     Chaque profession existe une fois par plateforme (WW0001RE / WW0001B2BE…) : on n'affiche
+     que celles de la plateforme sélectionnée pour supprimer les doublons. Si la plateforme n'a
+     aucune profession (ex. français « À VENIR »), on montre une note au lieu d'un menu vide. --}}
+<script>
+(function () {
+    var group = document.getElementById('provider_type');
+    var sel   = document.getElementById('service_category_id');
+    var note  = document.getElementById('no-profession-note');
+    var container = document.getElementById('service-container');
+    if (!group || !sel) return;
+
+    function apply() {
+        var type = group.value || 'residential';
+        var visible = 0;
+        sel.querySelectorAll('sl-option').forEach(function (opt) {
+            var pt = opt.getAttribute('data-provider-type') || 'residential';
+            var show = (pt === type || pt === 'both');
+            opt.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        // Si la profession déjà choisie n'appartient plus à la plateforme, on la réinitialise
+        // (et on vide le 2350 chargé en dessous).
+        if (sel.value) {
+            var chosen = sel.querySelector('sl-option[value="' + sel.value + '"]');
+            if (chosen && chosen.style.display === 'none') {
+                sel.value = '';
+                if (container) container.innerHTML = '';
+            }
+        }
+        if (note) note.style.display = (visible === 0) ? 'block' : 'none';
+    }
+
+    group.addEventListener('sl-change', apply);
+    if (window.customElements && customElements.whenDefined) {
+        customElements.whenDefined('sl-radio-group').then(apply);
+        customElements.whenDefined('sl-select').then(apply);
+    }
+    apply();
 })();
 </script>
