@@ -100,8 +100,11 @@
                 <div class="ck-home__cat-row">
                     <div class="ck-home__cat">{{ $category->title }}</div>
                     <div class="ck-home__profs">
+                        {{-- Catalogue noir = liste de référence de TOUTES les professions de Cirkle,
+                             NON cliquable (Denis 01.07). Le client clique plutôt sur les professions
+                             en VERT qui apparaissent sous son code postal (partials/search). --}}
                         @foreach ($profs as $prof)
-                            <a class="ck-home__prof" href="{{ url($loc.'/profession/'.$prof->id) }}">{{ $prof->title }}</a>
+                            <span class="ck-home__prof">{{ $prof->title }}</span>
                         @endforeach
                     </div>
                 </div>
