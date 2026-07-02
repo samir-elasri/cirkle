@@ -301,6 +301,24 @@ return [
 				'sharing'      => true,
 			]
 		],
+		// Page « MASTER » de Denis : un onglet par formulaire du site, navigable SANS
+		// inscription ni mot de passe (demandé les 21, 25 et 30 juin). Lien non listé.
+		'master' => [
+			'methods' => 'get',
+			'uri'     => [
+				'fr' => '/master',
+				'en' => '/master',
+			],
+			'view'    => 'pages.master',
+			'admin'   => [
+				'title'        => true,
+				'metas'        => true,
+				'customs'      => true,
+				'right_column' => false,
+				'blocs'        => true,
+				'sharing'      => true,
+			]
+		],
 		'lost-password'   => [
 			'methods' => 'get',
 			'uri'     => [
