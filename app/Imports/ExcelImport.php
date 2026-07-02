@@ -136,6 +136,19 @@ class ExcelImport
             } elseif (str_contains($this->flatten($c), 'FORFAIT') && str_contains($aFlat, 'SECTION')) {
                 $state = 'prices';
                 continue;
+            } elseif (str_contains($this->flatten($c), 'TARIF PRICING')) {
+                // Fichiers anglais au format 3 colonnes (master EN 25.06) : la zone forfaits
+                // commence à « TARIF PRICING … » SANS marqueur de section en colonne A.
+                // Pas de « continue » : la ligne d'en-tête règle aussi priceLang/priceState.
+                $state = 'prices';
+            } elseif (in_array($state, ['prices', 'website', 'skip'], true)
+                && str_contains($this->flatten($c), 'CONCLUSION')) {
+                // Ligne « OBLIGATOIRE/MANDATORY … page CONCLUSION » au bas de la fiche :
+                // tout ce qui suit (après le séparateur « …… ») est la liste des mots-clés
+                // SEO — même quand le marqueur KEYWORD de la colonne A manque ou est décalé.
+                $state = 'keywords';
+                $blankStreak = 0;
+                continue;
             } elseif (str_starts_with($this->flatten($c), 'OBLIGATOIRE')) {
                 // Bloc « FRAIS POUR LA FICHE DE COMPETENCE » : c'est la porte d'acceptation
                 // des frais (feature #6). On capture son texte; les lignes « O » de ce bloc
@@ -162,9 +175,11 @@ class ExcelImport
                         // colonne C marque le champ. On lit UNIQUEMENT les colonnes A, B, C — les
                         // colonnes D et + sont les notes personnelles de Denis (à ignorer, 22.06).
                         // On retire le mot-marqueur du libellé — le champ « Précisez » le remplace.
-                        $hasInput = (bool) preg_match('/PR[ÉE]CISEZ|PAR\s+FOURNISSEUR/iu', $c);
+                        // « SPECIFY » = équivalent anglais (le master EN 25.06 est au format
+                        // 3 colonnes avec des libellés SPECIFY — même règle que PRÉCISEZ).
+                        $hasInput = (bool) preg_match('/PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY/iu', $c);
                         if ($hasInput) {
-                            $c = trim(preg_replace('/\s*:?\s*(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR)\s*:?\s*$/iu', '', $c));
+                            $c = trim(preg_replace('/\s*:?\s*(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY)\s*:?\s*$/iu', '', $c));
                             $html = $this->stripInputMarker($html);
                         }
                         $entry = [
@@ -236,8 +251,17 @@ class ExcelImport
                         $priceState = $this->provinceStateId($label, $provinceCache);
                     }
 
-                    // Ligne de prix « O » : on ne retient que la langue de la fiche
-                    if ($b === 'O' && $priceLang === ($langue ?: 'fr')
+                    // Lignes « GAIN de/of … » : économies affichées, pas des prix (elles
+                    // commencent aussi par « 3 MOIS/MONTHS … » et le « O » de Denis est
+                    // parfois décalé dessus — fichiers WW0002).
+                    if (str_contains($cFlat, 'GAIN') || str_contains($cFlat, 'RABAIS')) {
+                        break;
+                    }
+
+                    // Ligne de prix « O » : on ne retient que la langue de la fiche.
+                    // (Le « O » n'est pas exigé si la durée ouvre la ligne — O parfois décalé.)
+                    if (($b === 'O' || preg_match('/^\d+\s*(MOIS|MONTH)/iu', trim($c)))
+                        && $priceLang === ($langue ?: 'fr')
                         && preg_match('/(\d+)\s*(MOIS|MONTH)/iu', $c, $m)) {
                         $duration = (int)$m[1];
                         $cost = $this->lastAmount($c, $duration);
@@ -265,6 +289,9 @@ class ExcelImport
                             $websiteTier = (int) $mt[1]; // palier 100 / 150
                         }
                     }
+                    if (str_contains($cFlat, 'GAIN') || str_contains($cFlat, 'RABAIS')) {
+                        break; // économies affichées, pas des prix
+                    }
                     if ($b === 'O' && $priceLang === ($langue ?: 'fr') && $websiteTier
                         && preg_match('/(\d+)\s*(MOIS|MONTH)/iu', $c, $m)) {
                         $duration = (int)$m[1];
@@ -277,7 +304,10 @@ class ExcelImport
 
                 case 'keywords':
                     if (trim($c) !== '') {
-                        $keywords[] = trim($c);
+                        // séparateurs « …… » : pas des mots-clés
+                        if (!preg_match('/^[….]{3,}/u', trim($c))) {
+                            $keywords[] = trim($c);
+                        }
                         $blankStreak = 0;
                     } elseif (++$blankStreak >= 5) {
                         $state = 'done';
@@ -298,6 +328,14 @@ class ExcelImport
         }
         if (empty($services)) {
             throw new \RuntimeException('Fiche invalide : aucune ligne de service « O » trouvée.');
+        }
+
+        // Garde-fou : W#### à UN seul W = convention de Denis pour ses MASTERS (outils de
+        // travail hors site, jamais vus par les fournisseurs); les fiches réelles = WW####.
+        // Importer un master écraserait/mélangerait la fiche du même label — on avertit.
+        if (preg_match('/^W\d{3,4}/i', $titreInterne) && stripos($titreInterne, 'WW') !== 0) {
+            $this->warnings[] = "TITRE INTERNE « {$titreInterne} » ressemble à un MASTER (W#### à un seul W). "
+                . 'Les fiches réelles utilisent WW#### — vérifiez le fichier avant de publier.';
         }
 
         app()->setLocale(in_array($langue, getLocales(), true) ? $langue : 'fr');
@@ -337,7 +375,30 @@ class ExcelImport
             }
         }
 
-        $postalPrices = [];   // résumé : durée => coût (forfait code postal)
+        [$postalPrices, $provinceCount] = $this->persistForfaitPrices($forfaitPrices, $categoryModel);
+
+        return [
+            'profession' => $profession,
+            'provider_type' => $categoryModel->provider_type,
+            'fiche_fee' => $categoryModel->fiche_fee,
+            'locale' => app()->getLocale(),
+            'services' => count($services),
+            'capabilities' => count($capabilities),
+            'prices' => $postalPrices,
+            'province_prices' => $provinceCount,
+            'website_forfaits' => count($websiteForfaits),
+            'keywords' => count($keywords),
+            'warnings' => $this->warnings,
+        ];
+    }
+
+    /**
+     * Persiste les forfaits d'abonnement (code postal + provinces) d'une fiche.
+     * Retourne [postalPrices (durée => coût), provinceCount].
+     */
+    private function persistForfaitPrices(array $forfaitPrices, ServiceCategory $categoryModel): array
+    {
+        $postalPrices = [];
         $provinceCount = 0;
         foreach ($forfaitPrices as $fp) {
             $subscription = Subscription::where('duration', '=', $fp['duration'])->where('active', '=', true)->first();
@@ -360,19 +421,7 @@ class ExcelImport
             }
         }
 
-        return [
-            'profession' => $profession,
-            'provider_type' => $categoryModel->provider_type,
-            'fiche_fee' => $categoryModel->fiche_fee,
-            'locale' => app()->getLocale(),
-            'services' => count($services),
-            'capabilities' => count($capabilities),
-            'prices' => $postalPrices,
-            'province_prices' => $provinceCount,
-            'website_forfaits' => count($websiteForfaits),
-            'keywords' => count($keywords),
-            'warnings' => $this->warnings,
-        ];
+        return [$postalPrices, $provinceCount];
     }
 
     /**
@@ -473,6 +522,7 @@ class ExcelImport
 
         // ── Services : tous les « O » (hors OPTIONS / prix) jusqu'à la section TARIF ──
         $services = [];
+        $priceZoneStart = null; // 1re ligne de la zone forfaits (TARIF/CENSUS)
         for ($r = $titleRow + 1; $r <= $highestRow; $r++) {
             $b = $this->plainText($worksheet->getCell("B{$r}"));
             $bt = trim($b);
@@ -480,6 +530,7 @@ class ExcelImport
 
             // Frontière : la zone services/compétences se termine au début des forfaits/tarifs.
             if (str_contains($bFlat, 'TARIF') || str_contains($bFlat, 'CENSUS') || str_contains($bFlat, 'RECENSEMENT')) {
+                $priceZoneStart = $r;
                 break;
             }
             if (trim($this->plainText($worksheet->getCell("A{$r}"))) !== 'O') {
@@ -515,6 +566,100 @@ class ExcelImport
             throw new \RuntimeException('Fiche anglaise invalide : aucun service « O » trouvé.');
         }
 
+        // ── Forfaits + mots-clés SEO (zone après les services) ──
+        // Layout observé (WW0001RE/B2BE, WW0002RE/B2BE) :
+        //   « TARIF PRICING  POSTAL CODE » → 4 lignes « O » (montants nus 75$/216$/…
+        //   OU « 1 MONTH 100 $ » explicites — les deux existent selon le fichier);
+        //   puis un bloc par province (« ONTARIO CENSUS … » → « 1 MONTH 5,000 $ »);
+        //   puis « TARIF SUPPLIER WEB SITE » (forfait site web — config, non persisté);
+        //   puis les lignes OPTION;
+        //   puis « MANDATORY … <<CONCLUSION>> » et, après le séparateur « …… »,
+        //   la liste des mots-clés SEO jusqu'à la fin du fichier.
+        $forfaitPrices = [];
+        $keywords = [];
+        if ($priceZoneStart !== null) {
+            $zone = null;          // 'postal' | 'province' | 'website' | 'keywords'
+            $priceState = null;    // NULL = code postal, sinon id State (province)
+            $provinceCache = [];
+            $postalOrder = [1, 3, 6, 12];
+            $postalIdx = 0;        // durée implicite des montants nus, dans l'ordre du fichier
+
+            for ($r = $priceZoneStart; $r <= $highestRow; $r++) {
+                $a = trim($this->plainText($worksheet->getCell("A{$r}")));
+                $bt = trim($this->plainText($worksheet->getCell("B{$r}")));
+                if ($bt === '') {
+                    continue;
+                }
+                $bFlat = $this->flatten($bt);
+
+                if ($zone === 'keywords') {
+                    if (!preg_match('/^[….]{3,}/u', $bt)) {
+                        $keywords[] = $bt;
+                    }
+                    continue;
+                }
+                if (str_contains($bFlat, 'CONCLUSION')) {
+                    $zone = 'keywords';
+                    continue;
+                }
+
+                // En-têtes de zone
+                if (str_contains($bFlat, 'POSTAL CODE')) {
+                    $zone = 'postal';
+                    $priceState = null;
+                    $postalIdx = 0;
+                    continue;
+                }
+                if ($label = $this->provinceLabel($bFlat)) {
+                    $zone = 'province';
+                    $priceState = $this->provinceStateId($label, $provinceCache);
+                    continue;
+                }
+                if (str_contains($bFlat, 'WEB SITE') || str_contains($bFlat, 'WEBSITE')) {
+                    $zone = 'website'; // forfait site web : géré par config, pas par fiche
+                    continue;
+                }
+                if (preg_match('/^OPTION\b/i', $bt)) {
+                    $zone = null;
+                    continue;
+                }
+
+                if ($zone === null || $zone === 'website') {
+                    continue;
+                }
+                // Lignes « GAIN of … » : économies affichées, pas des prix. À exclure AVANT
+                // le motif durée (elles commencent aussi par « 3 MONTHS … ») — dans les
+                // fichiers WW0002 le « O » est décalé d'une ligne et tombe sur la ligne GAIN.
+                if (str_contains($bFlat, 'GAIN')) {
+                    continue;
+                }
+
+                // Ligne de prix : durée explicite « N MONTH(S) » en début de ligne (le « O »
+                // n'est PAS exigé — Denis le décale parfois d'une ligne), ou montant nu AVEC
+                // « O » dans la section code postal (durées 1/3/6/12 implicites, dans l'ordre).
+                if (preg_match('/^(\d+)\s*(MONTH|MOIS)/i', $bt, $m)) {
+                    $duration = (int) $m[1];
+                } elseif ($a === 'O' && $zone === 'postal' && $postalIdx < 4
+                    && preg_match('/^[\d][\d\s,.]*\$$/u', preg_replace('/\s+/', ' ', $bt))) {
+                    $duration = $postalOrder[$postalIdx];
+                } else {
+                    continue;
+                }
+
+                $cost = $this->lastAmount($bt, $duration);
+                if ($cost !== null) {
+                    $forfaitPrices[] = [
+                        'state' => $zone === 'province' ? $priceState : null,
+                        'duration' => $duration,
+                        'cost' => $cost,
+                    ];
+                    if ($zone === 'postal') {
+                        $postalIdx++;
+                    }
+                }
+            }
+        }
+
         app()->setLocale(in_array($langue, getLocales(), true) ? $langue : 'en');
 
         // ── Persistance (mêmes règles que le format FR; frais = forfait plat par plateforme) ──
@@ -532,7 +677,7 @@ class ExcelImport
         $categoryModel->fiche_fee_text = null;
         $categoryModel->customers_text = '';
         $categoryModel->capabilities_text = '';
-        $categoryModel->keywords_json = json_encode([], JSON_UNESCAPED_UNICODE);
+        $categoryModel->keywords_json = json_encode($keywords, JSON_UNESCAPED_UNICODE);
         $categoryModel->save();
 
         // Ré-import idempotent : purge les anciens services de la fiche non liés à un fournisseur
@@ -544,6 +689,11 @@ class ExcelImport
             Service::create(['service_category_id' => $categoryModel->id, 'type' => 'service'] + $entry);
         }
 
+        [$postalPrices, $provinceCount] = $this->persistForfaitPrices($forfaitPrices, $categoryModel);
+        if (empty($postalPrices)) {
+            $this->warnings[] = 'Aucun forfait CODE POSTAL trouvé : l\'inscription fournisseur échouera pour cette fiche (« forfait non disponible »).';
+        }
+
         return [
             'profession' => $profession,
             'provider_type' => $categoryModel->provider_type,
@@ -551,14 +701,14 @@ class ExcelImport
             'locale' => app()->getLocale(),
             'services' => count($services),
             'capabilities' => 0,
-            'prices' => [],
-            'province_prices' => 0,
+            'prices' => $postalPrices,
+            'province_prices' => $provinceCount,
             'website_forfaits' => 0,
-            'keywords' => 0,
+            'keywords' => count($keywords),
             'titre_interne' => $titreInterne,
             'format' => 'english_2col',
             'warnings' => array_merge($this->warnings, [
-                'Format anglais 2 colonnes : compétences fusionnées avec les services; forfaits/province et mots-clés non importés (v1).',
+                'Format anglais 2 colonnes : compétences fusionnées avec les services (v1).',
             ]),
         ];
     }
@@ -597,7 +747,7 @@ class ExcelImport
      */
     private function stripInputMarker(string $html): string
     {
-        $html = preg_replace('/(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR)\s*:?/iu', '', $html);
+        $html = preg_replace('/(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY)\s*:?/iu', '', $html);
         $html = preg_replace('/<span[^>]*>\s*<\/span>/iu', '', $html);
         return trim($html);
     }

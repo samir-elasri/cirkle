@@ -67,11 +67,21 @@
 									</tr>
 								</thead>
 								<tbody>
+									@php
+										// Titre dans la langue de l'admin (fr), sinon la première traduction
+										// non vide — les fiches ANGLAISES n'ont pas de titre fr et
+										// s'affichaient « — » dans la grille.
+										$anyTitle = function ($m) {
+											if (!$m) { return null; }
+											return $m->title
+												?: optional($m->translations->first(fn ($t) => !empty($t->title)))->title;
+										};
+									@endphp
 									@foreach($fiches as $f)
 										<tr>
 											<td><strong>{{ $f->label }}</strong></td>
-											<td>{{ optional($parents->get($f->service_category_id))->title ?? '—' }}</td>
-											<td>{{ $f->title ?? '—' }}</td>
+											<td>{{ $anyTitle($parents->get($f->service_category_id)) ?? '—' }}</td>
+											<td>{{ $anyTitle($f) ?? '—' }}</td>
 											<td>{{ $f->provider_type === 'business' ? 'B2B' : ($f->provider_type === 'residential' ? 'Résidentiel' : '—') }}</td>
 											<td>{{ $serviceCounts[$f->id] ?? 0 }}</td>
 											<td>{{ optional($f->created_at)->format('Y-m-d H:i') }}</td>
