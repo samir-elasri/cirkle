@@ -264,19 +264,29 @@
                             </sl-checkbox>
                         </div>
                         <div id="url_option_body" style="display:{{ old('url') ? 'block' : 'none' }};padding-left:4px">
-                            <select name="url_forfait" id="url_forfait" style="height:38px;padding:2px 12px;margin-bottom:8px">
+                            {{-- Select natif stylé (hauteur/largeur explicites : la SCSS gelée
+                                 laissait un select minuscule au texte tronqué) + un optgroup par
+                                 palier (100 $ / 150 $) — sinon « 1 MOIS — 100 $ » et
+                                 « 1 MOIS — 150 $ » se confondent. --}}
+                            <label for="url_forfait" style="display:block;font-weight:600;margin-bottom:4px">
+                                {{ app()->getLocale() === 'en' ? 'Website plan — duration and price (ONE choice)' : 'Forfait site web — durée et prix (UN seul choix)' }}
+                            </label>
+                            <select name="url_forfait" id="url_forfait"
+                                    style="display:block;width:100%;max-width:420px;height:44px;padding:8px 12px;font-size:.95rem;line-height:1.3;border:1px solid #d9d9d9;border-radius:8px;background:#fff;margin-bottom:10px;box-sizing:border-box">
                                 <option value="">{{ __('main.choose') }}</option>
                                 @foreach($wfTiers as $tier => $durations)
-                                    @foreach($durations as $months => $price)
-                                        <option value="{{ $tier }}-{{ $months }}" @selected(old('url_forfait') === $tier.'-'.$months)>
-                                            {{ $months }} {{ app()->getLocale() === 'en' ? ($months > 1 ? 'MONTHS' : 'MONTH') : 'MOIS' }} — {{ number_format($price, 0) }} $
-                                        </option>
-                                    @endforeach
+                                    <optgroup label="{{ app()->getLocale() === 'en' ? 'WEBSITE PLAN' : 'FORFAIT SITE WEB' }} {{ $tier }} $">
+                                        @foreach($durations as $months => $price)
+                                            <option value="{{ $tier }}-{{ $months }}" @selected(old('url_forfait') === $tier.'-'.$months)>
+                                                {{ $months }} {{ app()->getLocale() === 'en' ? ($months > 1 ? 'MONTHS' : 'MONTH') : 'MOIS' }} — {{ number_format($price, 0) }} $
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
                             </select>
                             <input type="text" name="website_url" value="{{ old('website_url') }}" autocomplete="off"
                                    placeholder="{{ app()->getLocale() === 'en' ? 'Your website address (https://…)' : 'L\'adresse de votre site web (https://…)' }}"
-                                   style="height:38px;padding:2px 12px;width:100%;max-width:420px">
+                                   style="display:block;height:44px;padding:8px 12px;width:100%;max-width:420px;border:1px solid #d9d9d9;border-radius:8px;box-sizing:border-box">
                         </div>
                         <div class="form__row--error">
                             @foreach($errors->get('url_forfait', '<small style="color: red">:message</small>') as $error){!! $error !!}@endforeach
