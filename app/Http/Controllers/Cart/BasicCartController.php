@@ -41,6 +41,14 @@ class BasicCartController extends Controller
 	{
 		/** @var Subscriber $subscriber */
 		$subscriber = Auth::guard('subscribers')->user();
+
+		// Panier ouvert SANS être connecté (session expirée, lien direct…) :
+		// createCartOrder exige un Subscriber → c'était une erreur 500 (Denis 02.07,
+		// 01:53). On redirige vers la connexion avec un message clair.
+		if (!$subscriber) {
+			return Redirect::to(urlRouteName('profile'))->with('error', __('auth.must-be-connected'));
+		}
+
 		$items = Cart::getCart();
 		$coupon = Cart::getCoupon();
 		$totals = Cart::getTotals();
