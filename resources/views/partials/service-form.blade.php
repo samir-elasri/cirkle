@@ -22,7 +22,10 @@
     }
     .form-2350 textarea.supplier-input {
         min-height: 2.4em; line-height: 1.4; padding: 7px 10px; width: 100%;
-        font: inherit; resize: vertical; overflow: hidden; box-sizing: border-box;
+        /* overflow VISIBLE en défilement : avec « hidden », si l'auto-agrandissement ne
+           suivait pas, la 2e ligne devenait invisible — Denis : « je ne peux pas écrire
+           dans plusieurs lignes ». */
+        font: inherit; resize: vertical; overflow-y: auto; box-sizing: border-box;
     }
     .form-2350 .supplier-input::placeholder { color: #b0b0b0 !important; font-style: italic; }
     /* « Précisez » verrouillé tant que le « O » du service n'est pas coché (demande Denis 22.06) */

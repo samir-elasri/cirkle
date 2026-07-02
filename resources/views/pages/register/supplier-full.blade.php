@@ -22,6 +22,26 @@
                 <div class="form__column"><div class="ui info message" style="background:#fff8e1;border:1px solid #ffd200;border-radius:10px;padding:12px 16px">{{ session('error') }}</div></div>
             @endif
 
+            {{-- Sommaire d'erreurs EN HAUT : après un envoi refusé, la page recharge en haut
+                 et les messages de champ sont loin plus bas — Denis : « je clique enter et
+                 plus rien d'inscrit ». Ici il voit immédiatement CE QUI a bloqué. --}}
+            @if($errors->any())
+                <div class="form__column" id="ck-error-summary">
+                    <div style="background:#fdecea;border:2px solid #d93025;border-radius:10px;padding:14px 18px">
+                        <p style="margin:0 0 8px;font-weight:700;color:#b00020">
+                            {{ app()->getLocale() === 'en'
+                                ? '⚠ Your registration was NOT saved — please correct the following and submit again:'
+                                : "⚠ Votre inscription n'a PAS été enregistrée — corrigez les points suivants puis soumettez à nouveau :" }}
+                        </p>
+                        <ul style="margin:0;padding-left:1.2em;color:#b00020">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
             {!! Form::open(['url' => urlRouteName('subscriber.register.storeSupplierFull')]) !!}
                 <input type="hidden" name="preference_language" value="{{ App::getLocale() }}">
 
@@ -67,7 +87,8 @@
                 <div class="form__column ck-coord"><label>{{ __('auth.register.phone') }}</label><input type="text" name="phone" value="{{ old('phone') }}"></div>
                 <div class="form__column ck-coord"><label>{{ __('auth.register.toll_free_phone') }}</label><input type="text" name="toll_free_phone" value="{{ old('toll_free_phone') }}"></div>
                 <div class="form__column ck-coord"><label>{{ __('auth.register.fax') }}</label><input type="text" name="fax" value="{{ old('fax') }}"></div>
-                <div class="form__column ck-coord"><label>{{ $t('Adresse courriel', 'Email address') }}</label><input type="email" name="email" value="{{ old('email') }}"></div>
+                {{-- autocomplete off : le navigateur de Denis remplissait « demo.fourn… » tout seul --}}
+                <div class="form__column ck-coord"><label>{{ $t('Adresse courriel', 'Email address') }}</label><input type="email" name="email" value="{{ old('email') }}" autocomplete="off"></div>
                 <div class="form__column ck-coord"><label>{{ __('auth.register.start_date') }}</label><input type="date" name="start_date" value="{{ old('start_date') }}"></div>
                 <div class="form__column ck-coord"><label>{{ __('auth.register.insurance_coverage') }}</label><input type="text" name="insurance_coverage" value="{{ old('insurance_coverage') }}"></div>
 
@@ -178,56 +199,106 @@
                     </sl-select>
                 </div>
 
+                {{-- Deux SECTIONS visibles (Denis 02.07 : « 1 section pour code postal,
+                     1 section pour province ») — comme dans son 2350. Le radio de chaque
+                     section choisit la zone; la section non retenue reste visible, estompée. --}}
                 <style>
-                    .zone-toggle { display:inline-flex; border:2px solid #d9d9d9; border-radius:10px; overflow:hidden; margin-top:4px; }
-                    .zone-toggle .zone-opt { display:flex; align-items:center; gap:8px; padding:10px 18px; cursor:pointer; font-weight:600; color:#555; background:#fff; user-select:none; }
-                    .zone-toggle .zone-opt + .zone-opt { border-left:2px solid #d9d9d9; }
-                    .zone-toggle .zone-opt input { position:absolute; opacity:0; pointer-events:none; }
-                    .zone-toggle .zone-opt.is-active { background:#ffd200; color:#222; }
+                    .zone-section { border:2px solid #d9d9d9; border-radius:10px; padding:12px 16px; margin-bottom:10px; }
+                    .zone-section.is-active { border-color:#ffd200; background:#fffdf2; }
+                    .zone-section:not(.is-active) .zone-body { opacity:.45; }
+                    .zone-section .zone-head { display:flex; align-items:center; gap:10px; font-weight:700; cursor:pointer; margin:0 0 8px; }
+                    .postal-code-input { text-transform:uppercase; }
                 </style>
-                <div class="form__column">
-                    <label style="font-weight:700">{{ app()->getLocale() === 'en' ? 'Service area' : 'Zone desservie' }}</label>
-                    <div class="zone-toggle">
-                        <label class="zone-opt is-active"><input type="radio" name="zone_type" value="postal" checked><span>📍 {{ app()->getLocale() === 'en' ? 'By postal code' : 'Par code postal' }}</span></label>
-                        @if($provinces->isNotEmpty())
-                            <label class="zone-opt"><input type="radio" name="zone_type" value="province"><span>🍁 {{ app()->getLocale() === 'en' ? 'By province' : 'Par province' }}</span></label>
-                        @endif
-                    </div>
-                </div>
 
-                <div class="form__column" id="postal_block">
-                    <label for="postal_codes">{{ __('auth.register.postal_codes') }}</label>
-                    <div>{{ app()->getLocale() === 'en' ? 'The plan includes' : 'Le forfait inclut' }} <span id="max_postal_codes">—</span> {{ app()->getLocale() === 'en' ? 'postal codes.' : 'codes postaux.' }}</div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap">
-                        @for ($i = 0; $i < ($subscriptions->max('max_postal_codes') ?: 10); $i++)
-                            <input style="width:7ch" class="postal-code-input" data-i="{{$i}}" type="text" name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) }}">
-                        @endfor
+                <div class="form__column zone-section is-active" id="postal_section">
+                    <label class="zone-head"><input type="radio" name="zone_type" value="postal" checked>
+                        📍 {{ app()->getLocale() === 'en' ? 'BY POSTAL CODE' : 'PAR CODE POSTAL' }}</label>
+                    <div class="zone-body">
+                        {{-- Denis 02.07 : « ENTER 6 DIGITS », 10 boîtes vides, la 1re boîte
+                             par elle-même puis un espace, les 9 autres ensuite. --}}
+                        <div style="margin-bottom:6px">{{ app()->getLocale() === 'en'
+                            ? 'ENTER 6 CHARACTERS per postal code (ex.: H9P2T2) — 1 to 10 postal codes, billed per code.'
+                            : 'ENTREZ 6 CARACTÈRES par code postal (ex. : H9P2T2) — 1 à 10 codes postaux, facturés par code.' }}</div>
+                        <div style="margin-bottom:10px">
+                            <input style="width:9ch" class="postal-code-input" data-i="0" type="text" maxlength="7"
+                                   name="postal_codes[0]" value="{{ old('postal_codes.0') }}" placeholder="H9P2T2" autocomplete="off">
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            @for ($i = 1; $i < 10; $i++)
+                                <input style="width:9ch" class="postal-code-input" data-i="{{$i}}" type="text" maxlength="7"
+                                       name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) }}" autocomplete="off">
+                            @endfor
+                        </div>
+                        <div class="ui segment" style="display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;margin-top:10px;background:#fff">
+                            <strong>{{ app()->getLocale() === 'en' ? 'Price' : 'Prix' }}</strong>
+                            <strong id="postal_price_display">—</strong>
+                        </div>
                     </div>
                 </div>
 
                 @if($provinces->isNotEmpty())
-                    <div class="form__column" id="province_block" style="display:none">
-                        <label for="subscription_state_id">Province</label>
-                        <sl-select name="subscription_state_id" id="subscription_state_id" value="{{ old('subscription_state_id') }}">
-                            @foreach($provinces as $province)<sl-option value="{{ $province->id }}">{{ $province->title }}</sl-option>@endforeach
-                        </sl-select>
+                    <div class="form__column zone-section" id="province_section">
+                        <label class="zone-head"><input type="radio" name="zone_type" value="province">
+                            🍁 {{ app()->getLocale() === 'en' ? 'BY PROVINCE' : 'PAR PROVINCE' }}</label>
+                        <div class="zone-body">
+                            <sl-select name="subscription_state_id" id="subscription_state_id" value="{{ old('subscription_state_id') }}" placeholder="{{ __('main.choose') }}">
+                                @foreach($provinces as $province)<sl-option value="{{ $province->id }}">{{ $province->title }}</sl-option>@endforeach
+                            </sl-select>
+                            <div class="ui segment" style="display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;margin-top:10px;background:#fff">
+                                <strong>{{ app()->getLocale() === 'en' ? 'Price' : 'Prix' }}</strong>
+                                <strong id="province_price_display">—</strong>
+                            </div>
+                        </div>
                     </div>
                 @endif
 
-                <div class="form__column">
-                    <div class="ui segment" style="display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e2e2;border-radius:10px;padding:12px 16px">
-                        <strong>{{ app()->getLocale() === 'en' ? 'Plan price' : 'Prix du forfait' }}</strong><strong id="forfait_price_display">—</strong>
+                {{-- Option SITE WEB — tout de suite après les provinces, comme dans le 2350
+                     (Denis 02.07 : « WEBSITE après les provinces — et pourquoi plus tard ?? »). --}}
+                @php $wfTiers = \App\Support\WebsiteForfait::tiers(); @endphp
+                @if(!empty($wfTiers))
+                    <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ app()->getLocale() === 'en' ? 'Supplier website option' : 'Option site web du fournisseur' }}</div>
+                    <div class="form__column">
+                        <div style="margin-bottom:6px">
+                            <sl-checkbox name="url" id="url_option_checkbox" value="1" @if(old('url')) checked @endif>
+                                {{ app()->getLocale() === 'en' ? 'Display my website address on my sheet (choose ONE option)' : 'Afficher l\'adresse de mon site web sur ma fiche (choisissez UNE seule option)' }}
+                            </sl-checkbox>
+                        </div>
+                        <div id="url_option_body" style="display:{{ old('url') ? 'block' : 'none' }};padding-left:4px">
+                            <select name="url_forfait" id="url_forfait" style="height:38px;padding:2px 12px;margin-bottom:8px">
+                                <option value="">{{ __('main.choose') }}</option>
+                                @foreach($wfTiers as $tier => $durations)
+                                    @foreach($durations as $months => $price)
+                                        <option value="{{ $tier }}-{{ $months }}" @selected(old('url_forfait') === $tier.'-'.$months)>
+                                            {{ $months }} {{ app()->getLocale() === 'en' ? ($months > 1 ? 'MONTHS' : 'MONTH') : 'MOIS' }} — {{ number_format($price, 0) }} $
+                                        </option>
+                                    @endforeach
+                                @endforeach
+                            </select>
+                            <input type="text" name="website_url" value="{{ old('website_url') }}" autocomplete="off"
+                                   placeholder="{{ app()->getLocale() === 'en' ? 'Your website address (https://…)' : 'L\'adresse de votre site web (https://…)' }}"
+                                   style="height:38px;padding:2px 12px;width:100%;max-width:420px">
+                        </div>
+                        <div class="form__row--error">
+                            @foreach($errors->get('url_forfait', '<small style="color: red">:message</small>') as $error){!! $error !!}@endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
 
-                {{-- Options payantes — dans la fiche (ligne 455+ du 2350 de Denis). --}}
+                {{-- Options payantes — dans la fiche (ligne 455+ du 2350 de Denis).
+                     MAJUSCULES (Denis 02.07) + lien « ▸ OUVRIR » par option vers la page
+                     publique des options (Denis : « clic ch option et pas de lien ???? »). --}}
                 <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ app()->getLocale() === 'en' ? 'Options' : 'Options' }}</div>
                 <div class="form__column">
                     @foreach($profileOptions as $option)
                         @if($option === 'url') @continue @endif
-                        <div style="padding:3px 0"><sl-checkbox name="{{ $option }}" value="1" @if(old($option)) checked @endif>{{ setting("{$option}_title", $option) }}</sl-checkbox></div>
+                        <div style="padding:3px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <sl-checkbox name="{{ $option }}" value="1" @if(old($option)) checked @endif>
+                                <span style="text-transform:uppercase">{{ setting("{$option}_title", $option) }}</span>
+                            </sl-checkbox>
+                            <a href="{{ urlRouteName('options-list') }}" target="_blank" style="white-space:nowrap;font-weight:600">▸ {{ app()->getLocale() === 'en' ? 'OPEN' : 'OUVRIR' }}</a>
+                        </div>
                     @endforeach
-                    <div style="font-size:.85rem;color:#777;margin-top:6px">{{ app()->getLocale() === 'en' ? 'Details (and the website option) can be added from your profile after signup.' : 'Les détails (et l\'option site web) s\'ajoutent depuis votre profil après l\'inscription.' }}</div>
+                    <div style="font-size:.85rem;color:#777;margin-top:6px">{{ app()->getLocale() === 'en' ? 'The details of each option are completed from your profile after signup.' : 'Les détails de chaque option se complètent depuis votre profil après l\'inscription.' }}</div>
                 </div>
 
                 {{-- Lien OBLIGATOIRE vers la page CONCLUSION au bas du 2350, AVANT la liste
@@ -264,8 +335,8 @@
 
                 {{-- ───────────── 4) MOT DE PASSE & CONDITIONS ───────────── --}}
                 <div class="registration-title">4. {{ app()->getLocale() === 'en' ? 'Password & terms' : 'Mot de passe & conditions' }}</div>
-                <div class="form__column"><input type="password" name="password" placeholder="{{ __('auth.register.password') }}"></div>
-                <div class="form__column"><input type="password" name="password_confirmation" placeholder="{{ __('auth.register.password_confirmation') }}"></div>
+                <div class="form__column"><input type="password" name="password" placeholder="{{ __('auth.register.password') }}" autocomplete="new-password"></div>
+                <div class="form__column"><input type="password" name="password_confirmation" placeholder="{{ __('auth.register.password_confirmation') }}" autocomplete="new-password"></div>
                 <div class="form__column">
                     <sl-checkbox name="accept_condition" value="1"><a href="{!! urlRouteName('term-of-use') !!}" target="_blank">{{ __('auth.register.terms') }}</a></sl-checkbox>
                 </div>
@@ -282,38 +353,76 @@
 
 @include('partials.password-eye')
 
-{{-- Prix du forfait calculé côté client : priceMap[catégorie][abonnement][zone]. --}}
+{{-- Prix du forfait calculé côté client : priceMap[catégorie][abonnement][zone].
+     Code postal : prix PAR code postal × nombre de codes saisis (Denis 02.07). --}}
 <script>
 (function () {
     var priceMap = {!! json_encode($priceMap, JSON_UNESCAPED_UNICODE) !!};
     var cat  = document.getElementById('service_category_id');
     var sub  = document.getElementById('subscription_id');
     var prov = document.getElementById('subscription_state_id');
-    var postalBlock = document.getElementById('postal_block');
-    var provBlock   = document.getElementById('province_block');
-    var priceEl = document.getElementById('forfait_price_display');
-    var maxEl   = document.getElementById('max_postal_codes');
-    var postalInputs = document.querySelectorAll('.postal-code-input');
-    var fmt = new Intl.NumberFormat('fr-CA', { style:'currency', currency:'CAD' });
+    var postalSection = document.getElementById('postal_section');
+    var provSection   = document.getElementById('province_section');
+    var postalPriceEl = document.getElementById('postal_price_display');
+    var provPriceEl   = document.getElementById('province_price_display');
+    var postalInputs  = document.querySelectorAll('.postal-code-input');
+    var en = document.documentElement.lang === 'en';
+    var fmt = new Intl.NumberFormat(en ? 'en-CA' : 'fr-CA', { style:'currency', currency:'CAD' });
     function val(el){ return el ? (el.value || '') : ''; }
     function zone(){ var r = document.querySelector('input[name="zone_type"]:checked'); return r ? r.value : 'postal'; }
+    function subTitle(){
+        var opt = sub ? sub.querySelector('sl-option[value="'+val(sub)+'"]') : null;
+        return opt ? opt.textContent.trim() : '';
+    }
+    function filledCodes(){
+        var n = 0;
+        postalInputs.forEach(function(i){ if (i.value.trim() !== '') n++; });
+        return n;
+    }
     function update(){
         var z = zone();
-        document.querySelectorAll('.zone-toggle .zone-opt').forEach(function(l){ var i=l.querySelector('input'); l.classList.toggle('is-active', !!(i&&i.checked)); });
-        if (postalBlock) postalBlock.style.display = (z==='province') ? 'none' : '';
-        if (provBlock)   provBlock.style.display   = (z==='province') ? '' : 'none';
-        var opt = sub ? sub.querySelector('sl-option[value="'+val(sub)+'"]') : null;
-        var maxPC = opt ? parseInt(opt.getAttribute('data-max-postal-codes')||'0',10) : 0;
-        if (maxEl) maxEl.textContent = maxPC || '—';
-        postalInputs.forEach(function(input){ input.style.display = (parseInt(input.dataset.i,10) >= maxPC) ? 'none' : ''; });
+        if (postalSection) postalSection.classList.toggle('is-active', z === 'postal');
+        if (provSection)   provSection.classList.toggle('is-active', z === 'province');
         var map = ((priceMap[val(cat)]||{})[val(sub)]) || {};
-        var cost = (z==='province') ? map[val(prov)] : map['postal'];
-        priceEl.textContent = (cost || cost===0) ? fmt.format(cost) : '—';
+        var dur = subTitle();
+        // Code postal : prix unitaire × nombre de codes
+        var unit = map['postal'];
+        if (postalPriceEl) {
+            if (unit || unit === 0) {
+                var n = Math.max(1, filledCodes());
+                postalPriceEl.textContent = fmt.format(unit)
+                    + (en ? ' per postal code' : ' par code postal')
+                    + ' × ' + n + (en ? ' code(s) = ' : ' code(s) = ') + fmt.format(unit * n)
+                    + (dur ? ' (' + dur + ')' : '');
+            } else {
+                postalPriceEl.textContent = '—';
+            }
+        }
+        // Province : prix du couple province × durée
+        if (provPriceEl) {
+            var pcost = map[val(prov)];
+            provPriceEl.textContent = (pcost || pcost === 0)
+                ? fmt.format(pcost) + (dur ? ' (' + dur + ')' : '')
+                : '—';
+        }
     }
     document.querySelectorAll('input[name="zone_type"]').forEach(function(r){ r.addEventListener('change', update); });
+    postalInputs.forEach(function(i){ i.addEventListener('input', update); });
     [cat, sub, prov].forEach(function(el){ if (el) el.addEventListener('sl-change', update); });
     if (window.customElements && customElements.whenDefined) { customElements.whenDefined('sl-select').then(function(){ setTimeout(update,0); }); }
     setTimeout(update, 0);
+})();
+</script>
+
+{{-- Option site web : le choix forfait + adresse n'apparaissent que si l'option est cochée. --}}
+<script>
+(function () {
+    var box = document.getElementById('url_option_checkbox');
+    var body = document.getElementById('url_option_body');
+    if (!box || !body) return;
+    function sync(){ body.style.display = box.checked ? 'block' : 'none'; }
+    box.addEventListener('sl-change', sync);
+    if (window.customElements) { customElements.whenDefined('sl-checkbox').then(sync); }
 })();
 </script>
 

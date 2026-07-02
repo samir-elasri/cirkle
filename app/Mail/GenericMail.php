@@ -22,10 +22,12 @@ class GenericMail extends Mailable
 	/**
 	 * Pièces jointes en mémoire : [['data' => ..., 'name' => ..., 'mime' => ...], …]
 	 * (ex. la facture PDF du courriel de confirmation d'achat).
+	 * NB : ne PAS nommer « rawAttachments » — propriété PUBLIQUE héritée de Mailable;
+	 * la redéclarer en privé fatale à chaque envoi de courriel.
 	 *
 	 * @var array
 	 */
-	private $rawAttachments = [];
+	private $ckAttachments = [];
 
 	/**
 	 * Create a new message instance.
@@ -39,7 +41,7 @@ class GenericMail extends Mailable
         $this->subscriber = $subscriber;
         $this->text = $text;
         $this->subject = $subject;
-        $this->rawAttachments = $attachments;
+        $this->ckAttachments = $attachments;
 
         if ($replyTo) {
             $this->replyTo = $replyTo;
@@ -64,7 +66,7 @@ class GenericMail extends Mailable
 			->with('text', $this->text)
 			->with('footer', $footer);
 
-		foreach ($this->rawAttachments as $attachment) {
+		foreach ($this->ckAttachments as $attachment) {
 			$mail->attachData(
 				$attachment['data'],
 				$attachment['name'],

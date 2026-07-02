@@ -278,6 +278,12 @@ class SubscriberController extends Controller
 					$v->errors()->add('postal_codes', 'Veuillez saisir au moins un code postal.');
 				}
 			}
+			// Option site web : le forfait (palier × durée) est obligatoire si cochée.
+			if ($request->input('url') && !\App\Support\WebsiteForfait::isValid($request->input('url_forfait'))) {
+				$v->errors()->add('url_forfait', app()->getLocale() === 'en'
+					? 'Please choose ONE website option (duration/price).'
+					: 'Veuillez choisir UNE option site web (durée/prix).');
+			}
 		});
 
 		if ($validator->fails()) {
@@ -362,12 +368,14 @@ class SubscriberController extends Controller
 		$postalCodes = collect();
 		if ($zoneType === 'postal') {
 			foreach (($form['postal_codes'] ?? []) as $pc) {
-				if (trim((string) $pc) !== '') { $postalCodes->push(new PostalCode(['postal_code' => $pc])); }
+				// Normalisation : MAJUSCULES sans espaces (Denis : « 6 caractères, ex. H9P2T2 »)
+				$pc = strtoupper(preg_replace('/\s+/', '', (string) $pc));
+				if ($pc !== '') { $postalCodes->push(new PostalCode(['postal_code' => $pc])); }
 			}
 		}
 		$subscriber->fill(['subscription_id' => $form['subscription_id']]);
 
-		// ── Options activées (logique étape 5) — l'url/site web s'ajoute depuis le profil ──
+		// ── Options activées (logique étape 5) ──
 		$optionFlags = [
 			'license' => 'profile_license', 'diploma' => 'profile_diploma', 'promotion' => 'profile_promotion',
 			'image' => 'profile_image', 'estimation' => 'profile_estimation', 'job_offer' => 'profile_job_offer',
@@ -376,6 +384,20 @@ class SubscriberController extends Controller
 			if ($request->input($opt)) {
 				$subscriber->{$prefix . '_active'} = true;
 				$subscriber->{$prefix . '_activation_datetime'} = now();
+			}
+		}
+
+		// Option SITE WEB, dans la fiche après les provinces (Denis 02.07). storeStep6
+		// ajoute l'achat (WebsiteForfait::price) quand profile_url_activation_datetime est
+		// posé; buyCart calcule url_forfait_end au paiement.
+		if ($request->input('url')) {
+			$subscriber->profile_url_activation_datetime = now();
+			$subscriber->url_forfait = $request->input('url_forfait');
+			$websiteUrl = trim((string) $request->input('website_url'));
+			if ($websiteUrl !== '') {
+				foreach (['fr', 'en'] as $loc) {
+					$subscriber->translateOrNew($loc)->url = $websiteUrl;
+				}
 			}
 		}
 
@@ -1724,7 +1746,11 @@ class SubscriberController extends Controller
 						->where('state_id', '=', $zoneStateId)
 						->value('cost');
 					if ($resolvedCost !== null) {
-						$subscriptionItem->cost = (float) $resolvedCost; // honoré par Subscription::getCostAttribute
+						// Forfait CODE POSTAL : facturé PAR code postal, 1 à 10 (Denis 02.07 :
+						// « Plan price = 75 $ per POSTAL CODE » + son 2350 « BILLING ACCORDINGLY »).
+						// Par province : prix unique de la province.
+						$nbCodes = $zoneStateId === null ? max(1, $postalCodes->count()) : 1;
+						$subscriptionItem->cost = (float) $resolvedCost * $nbCodes; // honoré par Subscription::getCostAttribute
 					}
 					$subscriptionItem->state_id = $zoneStateId; // zone enregistrée sur l'achat (BasicCart::buyCart)
 					Cart::add($subscriptionItem);
