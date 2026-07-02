@@ -14,6 +14,14 @@
 
         @include('partials.help-note', ['text' => __('main.help.profession')])
 
+        {{-- Liste VERTICALE des fournisseurs (Denis 01.07 : « liste verticale des fourn
+             exactement comme Mbiance l'a suggéré dans sa vidéo no 6 ») : un bloc pleine
+             largeur par fournisseur, empilés — au lieu des cartes de 300 px côte à côte.
+             Styles inline : rebuild SCSS gelée. --}}
+        <style>
+            .provider-search__results { flex-direction: column; }
+            .provider-search__results .provider-single { width: 100%; }
+        </style>
         <div class="provider-search">
             <div class="provider-search__results">
                 @forelse ($subscribers as $provider)
