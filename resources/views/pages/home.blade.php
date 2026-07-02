@@ -92,7 +92,8 @@
         {{-- Catalogue complet (noir) : résume toutes les professions de Cirkle (spec Denis) --}}
         <div class="ck-home__catalogue">
             <p class="ck-home__catalogue-note">{{ $t('Recrutement continu en cours — liste complète des professions actuellement disponibles sur Cirkle :', 'Ongoing recruitment — complete list of professions currently available on Cirkle:') }}</p>
-            <p class="ck-home__catalogue-contact">{{ $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à servclient@cirkleservices.com', 'Suppliers: if your profession is not listed, email us at servclient@cirkleservices.com') }}</p>
+            {{-- Denis 24.06 : « la ligne FOURNISSEURS … servclient@ : le font + gros ». --}}
+            <p class="ck-home__catalogue-contact" style="font-size:1.15em;font-weight:700">{{ $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à servclient@cirkleservices.com', 'Suppliers: if your profession is not listed, email us at servclient@cirkleservices.com') }}</p>
 
             @foreach ($categories as $category)
                 @php $profs = ($profsByCat[$category->id] ?? collect())->filter(fn ($p) => !empty($p->title) && (($p->provider_type ?: 'residential') === $platformType)); @endphp
