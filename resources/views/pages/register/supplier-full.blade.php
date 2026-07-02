@@ -2,9 +2,10 @@
 
 {{-- INSCRIPTION FOURNISSEUR — UNE SEULE PAGE (Denis 28.06 : « pas plusieurs fenêtres,
      tous les form en un seul endroit, avec un bouton retour, minimiser les espaces »).
-     Round 1 : mise en page à valider. L'assistant 6 étapes reste la voie active; le
-     bouton « S'enregistrer » affiche un message tant que le handler combiné (round 2)
-     n'est pas câblé. --}}
+     Structure Denis 01.07 : 1. Coordonnées → 2. Votre 2350 (plateforme + profession +
+     frais) → 3. FICHE DES COMPÉTENCES (la fiche intégrale, de la 1re ligne aux mots-clés
+     SEO, avec forfait/zone, options et page Conclusion à l'intérieur) → 4. Mot de passe.
+     Soumission : storeSupplierFull (handler combiné, délègue à storeStep6). --}}
 <section class="ck-auth ck-auth--wide">
     <div class="optimal-content-width">
         <div class="content-card">
@@ -147,10 +148,26 @@
                         @foreach($errors->get('accept_fee', '<small style="color: red">:message</small>') as $error){!! $error !!}@endforeach
                     </div>
                 </div>
+                {{-- ───────────── 3) FICHE DES COMPÉTENCES (Denis 01.07 : remplace les
+                     anciennes sections « Zone & forfait » et « Options » — tout fait partie
+                     de la fiche, présentée intégralement de la 1re ligne aux mots-clés SEO) ───────────── --}}
+                <div class="registration-title">3. {{ app()->getLocale() === 'en' ? 'Competence sheet' : 'Fiche des compétences' }}</div>
+
+                <div class="form__column" id="fiche_placeholder_note">
+                    <div class="ui info message" style="background:#f2f8f2;border:1px solid #bcd9bc;border-radius:10px;padding:10px 14px;font-size:.92rem">
+                        {{ app()->getLocale() === 'en'
+                            ? 'Choose your platform and profession above — your full competence sheet (2350) will appear here, to be filled from the first line to the SEO keywords.'
+                            : 'Choisissez votre plateforme et votre profession ci-dessus — votre fiche de compétences (2350) intégrale s\'affichera ici, à remplir de la première ligne jusqu\'aux mots-clés SEO.' }}
+                    </div>
+                </div>
+
                 <div id="service-container"></div>
 
-                {{-- ───────────── 3) ZONE & FORFAIT ───────────── --}}
-                <div class="registration-title">3. {{ app()->getLocale() === 'en' ? 'Area & plan' : 'Zone & forfait' }}</div>
+                {{-- Le reste de la fiche (forfait/zone, options, conclusion, SEO) n'apparaît
+                     qu'avec la fiche — comme dans le fichier Excel de Denis. --}}
+                <div id="fiche_extras" style="display:none">
+
+                <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ app()->getLocale() === 'en' ? 'Plan & service area' : 'Forfait & zone desservie' }}</div>
 
                 <div class="form__column">
                     <label for="subscription_id">{{ __('auth.register.subscription_id') }}</label>
@@ -203,8 +220,8 @@
                     </div>
                 </div>
 
-                {{-- ───────────── 4) OPTIONS ───────────── --}}
-                <div class="registration-title">4. {{ app()->getLocale() === 'en' ? 'Options' : 'Options' }}</div>
+                {{-- Options payantes — dans la fiche (ligne 455+ du 2350 de Denis). --}}
+                <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ app()->getLocale() === 'en' ? 'Options' : 'Options' }}</div>
                 <div class="form__column">
                     @foreach($profileOptions as $option)
                         @if($option === 'url') @continue @endif
@@ -213,8 +230,40 @@
                     <div style="font-size:.85rem;color:#777;margin-top:6px">{{ app()->getLocale() === 'en' ? 'Details (and the website option) can be added from your profile after signup.' : 'Les détails (et l\'option site web) s\'ajoutent depuis votre profil après l\'inscription.' }}</div>
                 </div>
 
-                {{-- ───────────── 5) MOT DE PASSE & CONDITIONS ───────────── --}}
-                <div class="registration-title">5. {{ app()->getLocale() === 'en' ? 'Password & terms' : 'Mot de passe & conditions' }}</div>
+                {{-- Lien OBLIGATOIRE vers la page CONCLUSION au bas du 2350, AVANT la liste
+                     des SEO (Denis 24.06). Porté de l'assistant 6 étapes (step-2). --}}
+                @php $ccLoc = app()->getLocale(); @endphp
+                <div class="form__column" id="conclusion_block" style="margin-top:1.5em;padding:14px 16px;border:2px solid #ffd200;border-radius:10px;background:#fffbe9">
+                    <p style="margin:0 0 10px;font-weight:700">
+                        {{ $ccLoc === 'en' ? 'Before continuing, please open and read the Conclusion page.' : 'Avant de continuer, veuillez ouvrir et lire la page Conclusion.' }}
+                    </p>
+                    <a href="{{ urlRouteName('conclusion') }}" target="_blank" class="call-to-action">
+                        {{ $ccLoc === 'en' ? 'Open the CONCLUSION page' : 'Ouvrir la page CONCLUSION' }}
+                    </a>
+                    <div style="margin-top:12px">
+                        <sl-checkbox name="conclusion_read" value="1" @if(old('conclusion_read')) checked @endif>
+                            {{ $ccLoc === 'en' ? 'I have read the Conclusion page.' : "J'ai lu la page Conclusion." }}
+                        </sl-checkbox>
+                    </div>
+                    <div id="conclusion_error" style="display:none;color:#b00020;font-weight:700;margin-top:10px">
+                        {{ $ccLoc === 'en' ? 'Please open the Conclusion page and tick the box before continuing.' : 'Veuillez ouvrir la page Conclusion et cocher la case avant de continuer.' }}
+                    </div>
+                </div>
+
+                {{-- Mots-clés SEO — dernières lignes de la fiche (lecture seule : programmés
+                     automatiquement avec la fiche, rien à remplir par le fournisseur). --}}
+                <div class="form__column" id="seo_block" style="display:none">
+                    <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ $ccLoc === 'en' ? 'Keywords (SEO)' : 'Mots-clés (SEO)' }}</div>
+                    <div style="font-size:.85rem;color:#777;margin-bottom:6px">
+                        {{ $ccLoc === 'en' ? 'Programmed automatically with your sheet — nothing to fill in.' : 'Programmés automatiquement avec votre fiche — rien à remplir.' }}
+                    </div>
+                    <div id="seo_list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+                </div>
+
+                </div>{{-- /#fiche_extras --}}
+
+                {{-- ───────────── 4) MOT DE PASSE & CONDITIONS ───────────── --}}
+                <div class="registration-title">4. {{ app()->getLocale() === 'en' ? 'Password & terms' : 'Mot de passe & conditions' }}</div>
                 <div class="form__column"><input type="password" name="password" placeholder="{{ __('auth.register.password') }}"></div>
                 <div class="form__column"><input type="password" name="password_confirmation" placeholder="{{ __('auth.register.password_confirmation') }}"></div>
                 <div class="form__column">
@@ -279,14 +328,38 @@
     var url = sel.getAttribute('data-url');
     var loadingTxt = (document.documentElement.lang === 'en') ? 'Loading the 2350 form…' : 'Chargement du formulaire 2350…';
     var errTxt = (document.documentElement.lang === 'en') ? 'Loading error — please pick the profession again.' : 'Erreur de chargement — choisissez à nouveau la profession.';
+    var extras = document.getElementById('fiche_extras');
+    var placeholderNote = document.getElementById('fiche_placeholder_note');
+    var seoBlock = document.getElementById('seo_block');
+    var seoList = document.getElementById('seo_list');
+    // La suite de la fiche (forfait/zone, options, conclusion, SEO) n'apparaît qu'avec la fiche.
+    function ficheShown(shown) {
+        if (extras) extras.style.display = shown ? '' : 'none';
+        if (placeholderNote) placeholderNote.style.display = shown ? 'none' : '';
+    }
+    // Mots-clés SEO transmis avec la fiche (bloc JSON en fin de réponse).
+    function fillSeo() {
+        if (!seoBlock || !seoList) return;
+        var data = container.querySelector('#fiche-keywords-json');
+        var words = [];
+        if (data) { try { words = JSON.parse(data.textContent) || []; } catch (e) { words = []; } }
+        seoList.innerHTML = '';
+        words.forEach(function (w) {
+            var chip = document.createElement('span');
+            chip.style.cssText = 'background:#eef3ee;border:1px solid #cfdccf;border-radius:14px;padding:2px 10px;font-size:.85rem;color:#444';
+            chip.textContent = w;
+            seoList.appendChild(chip);
+        });
+        seoBlock.style.display = words.length ? '' : 'none';
+    }
     function load() {
         var id = sel.value;
-        if (!id) { container.innerHTML = ''; return; }
+        if (!id) { container.innerHTML = ''; ficheShown(false); return; }
         container.innerHTML = '<p style="padding:14px;color:#666">' + loadingTxt + '</p>';
         fetch(url + '?service_category_id=' + encodeURIComponent(id), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(function (r) { return r.text(); })
-            .then(function (html) { container.innerHTML = html; })
-            .catch(function () { container.innerHTML = '<p style="padding:14px;color:#b00020">' + errTxt + '</p>'; });
+            .then(function (html) { container.innerHTML = html; ficheShown(true); fillSeo(); })
+            .catch(function () { container.innerHTML = '<p style="padding:14px;color:#b00020">' + errTxt + '</p>'; ficheShown(false); });
     }
     sel.addEventListener('sl-change', load);
     // Si une profession est déjà choisie (retour avec erreurs), on charge tout de suite.
@@ -324,6 +397,10 @@
             if (chosen && chosen.style.display === 'none') {
                 sel.value = '';
                 if (container) container.innerHTML = '';
+                var ex = document.getElementById('fiche_extras');
+                var ph = document.getElementById('fiche_placeholder_note');
+                if (ex) ex.style.display = 'none';
+                if (ph) ph.style.display = '';
             }
         }
         if (note) note.style.display = (visible === 0) ? 'block' : 'none';
@@ -335,5 +412,29 @@
         customElements.whenDefined('sl-select').then(apply);
     }
     apply();
+})();
+</script>
+
+{{-- Conclusion OBLIGATOIRE : bloque « S'enregistrer » avec un message clair si pas cochée
+     (même mécanique que l'assistant 6 étapes). --}}
+<script>
+(function () {
+    var cc = document.querySelector('sl-checkbox[name="conclusion_read"]');
+    if (!cc) return;
+    var form = cc.closest('form');
+    if (!form) return;
+    var err = document.getElementById('conclusion_error');
+    form.addEventListener('submit', function (e) {
+        if (!cc.checked) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (err) { err.style.display = 'block'; }
+            var block = document.getElementById('conclusion_block');
+            (block || cc).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, true);
+    cc.addEventListener('sl-change', function () {
+        if (cc.checked && err) { err.style.display = 'none'; }
+    });
 })();
 </script>

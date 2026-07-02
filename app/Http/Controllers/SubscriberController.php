@@ -234,6 +234,7 @@ class SubscriberController extends Controller
 			'services'            => 'required|array',
 			'capabilities'        => 'nullable|array', // certaines fiches (anglaises) n'en ont pas
 			'accept_fee'          => 'accepted',       // acceptation des frais de fiche (Denis)
+			'conclusion_read'     => 'accepted',       // page CONCLUSION obligatoire au bas du 2350 (Denis 24.06)
 			'subscription_id'     => 'required',
 			'password'            => 'required|regex:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/',
 			'password_confirmation' => 'required_with:password|same:password',
@@ -252,6 +253,7 @@ class SubscriberController extends Controller
 			'service_category_id' => __('auth.register.service_category_id'),
 			'services' => __('auth.register.services'),
 			'accept_fee' => app()->getLocale() === 'en' ? 'Competence-sheet fees' : 'Frais de fiche',
+			'conclusion_read' => app()->getLocale() === 'en' ? 'Conclusion page' : 'Page Conclusion',
 			'subscription_id' => __('auth.register.subscription_id'),
 			'postal_codes' => __('auth.register.postal_codes'),
 			'subscription_state_id' => 'Province',
@@ -394,7 +396,16 @@ class SubscriberController extends Controller
 	 */
 	public function step2ServiceFormInline(Request $request) {
 		$serviceCategory = ServiceCategory::findOrFail($request->input('service_category_id'));
-		return View::make('partials.service-form', compact('serviceCategory'));
+		$html = View::make('partials.service-form', compact('serviceCategory'))->render();
+
+		// Mots-clés SEO de la fiche — dernières lignes du 2350 (Denis 01.07 : la fiche est
+		// présentée intégralement, « de la 1re ligne à la dernière ligne des SEO »). Bloc
+		// JSON inerte lu par la page unique pour remplir la section « Mots-clés (SEO) ».
+		$keywords = json_decode($serviceCategory->keywords_json ?: '[]', true) ?: [];
+		$html .= '<script type="application/json" id="fiche-keywords-json">'
+			. json_encode($keywords, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . '</script>';
+
+		return response($html);
 	}
 
 	public function step2ServiceForm(Request $request) {
