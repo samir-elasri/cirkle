@@ -105,14 +105,18 @@
                 @endphp
                 <div class="form__column">
                     <label style="font-weight:700;display:block;margin-bottom:6px">{{ $t("Heures d'affaires", 'Business hours') }}</label>
+                    {{-- 1er choix = FERMÉ/CLOSED (Denis 03.07) : un jour sans heures = fermé
+                         (le serveur ignore les jours dont début OU fin est vide). --}}
                     @foreach(['Lundi'=>'Monday','Mardi'=>'Tuesday','Mercredi'=>'Wednesday','Jeudi'=>'Thursday','Vendredi'=>'Friday','Samedi'=>'Saturday','Dimanche'=>'Sunday'] as $fr => $en)
                         <div class="ck-coord ck-hours" style="margin-bottom:6px">
                             <label>{{ $t($fr, $en) }} :</label>
                             <select name="business_hours[{{ $fr }}][start]">
+                                <option value="" @selected(!old('business_hours.'.$fr.'.start'))>{{ $t('FERMÉ', 'CLOSED') }}</option>
                                 @foreach($times as $tm)<option value="{{ $tm }}" @selected(old('business_hours.'.$fr.'.start') === $tm)>{{ $tm }}</option>@endforeach
                             </select>
                             <span>{{ $t('à', 'to') }}</span>
                             <select name="business_hours[{{ $fr }}][end]">
+                                <option value="" @selected(!old('business_hours.'.$fr.'.end'))>{{ $t('FERMÉ', 'CLOSED') }}</option>
                                 @foreach($times as $tm)<option value="{{ $tm }}" @selected(old('business_hours.'.$fr.'.end') === $tm)>{{ $tm }}</option>@endforeach
                             </select>
                         </div>
@@ -203,9 +207,10 @@
                      1 section pour province ») — comme dans son 2350. Le radio de chaque
                      section choisit la zone; la section non retenue reste visible, estompée. --}}
                 <style>
-                    .zone-section { border:2px solid #d9d9d9; border-radius:10px; padding:12px 16px; margin-bottom:10px; }
-                    .zone-section.is-active { border-color:#ffd200; background:#fffdf2; }
-                    .zone-section:not(.is-active) .zone-body { opacity:.45; }
+                    .zone-section { border:2px solid #d9d9d9; border-radius:10px; padding:12px 16px; margin-bottom:10px; cursor:pointer; }
+                    .zone-section.is-active { border-color:#ffd200; background:#fffdf2; cursor:auto; }
+                    /* .65 (pas .45) : la section inactive restait lisible mais « blurry » (Denis 03.07) */
+                    .zone-section:not(.is-active) .zone-body { opacity:.65; }
                     .zone-section .zone-head { display:flex; align-items:center; gap:10px; font-weight:700; cursor:pointer; margin:0 0 8px; }
                     .postal-code-input { text-transform:uppercase; }
                 </style>
@@ -214,18 +219,19 @@
                     <label class="zone-head"><input type="radio" name="zone_type" value="postal" checked>
                         📍 {{ app()->getLocale() === 'en' ? 'BY POSTAL CODE' : 'PAR CODE POSTAL' }}</label>
                     <div class="zone-body">
-                        {{-- Denis 02.07 : « ENTER 6 DIGITS », 10 boîtes vides, la 1re boîte
-                             par elle-même puis un espace, les 9 autres ensuite. --}}
+                        {{-- Denis 02-03.07 : « ENTER 6 DIGITS », l'ESPACE au milieu du code
+                             (H9P 2T2), 10 boîtes vides, la 1re boîte seule puis un espace
+                             franc, les 9 autres ensuite. --}}
                         <div style="margin-bottom:6px">{{ app()->getLocale() === 'en'
-                            ? 'ENTER 6 CHARACTERS per postal code (ex.: H9P2T2) — 1 to 10 postal codes, billed per code.'
-                            : 'ENTREZ 6 CARACTÈRES par code postal (ex. : H9P2T2) — 1 à 10 codes postaux, facturés par code.' }}</div>
-                        <div style="margin-bottom:10px">
-                            <input style="width:9ch" class="postal-code-input" data-i="0" type="text" maxlength="7"
-                                   name="postal_codes[0]" value="{{ old('postal_codes.0') }}" placeholder="H9P2T2" autocomplete="off">
+                            ? 'ENTER 6 CHARACTERS per postal code (ex.: H9P 2T2) — 1 to 10 postal codes, billed per code.'
+                            : 'ENTREZ 6 CARACTÈRES par code postal (ex. : H9P 2T2) — 1 à 10 codes postaux, facturés par code.' }}</div>
+                        <div style="margin-bottom:18px">
+                            <input style="width:10ch" class="postal-code-input" data-i="0" type="text" maxlength="7"
+                                   name="postal_codes[0]" value="{{ old('postal_codes.0') }}" placeholder="H9P 2T2" autocomplete="off">
                         </div>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
                             @for ($i = 1; $i < 10; $i++)
-                                <input style="width:9ch" class="postal-code-input" data-i="{{$i}}" type="text" maxlength="7"
+                                <input style="width:10ch" class="postal-code-input" data-i="{{$i}}" type="text" maxlength="7"
                                        name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) }}" autocomplete="off">
                             @endfor
                         </div>
@@ -272,10 +278,11 @@
                                 {{ app()->getLocale() === 'en' ? 'Website plan — duration and price (ONE choice)' : 'Forfait site web — durée et prix (UN seul choix)' }}
                             </label>
                             <select name="url_forfait" id="url_forfait"
-                                    style="display:block;width:100%;max-width:420px;height:44px;padding:8px 12px;font-size:.95rem;line-height:1.3;border:1px solid #d9d9d9;border-radius:8px;background:#fff;margin-bottom:10px;box-sizing:border-box">
-                                <option value="">{{ __('main.choose') }}</option>
+                                    style="display:block;width:100%;max-width:420px;height:44px;padding:8px 12px;font-size:1rem;font-weight:600;color:#222;line-height:1.3;border:1px solid #b9b9b9;border-radius:8px;background:#fff;margin-bottom:10px;box-sizing:border-box">
+                                <option value="">— {{ mb_strtoupper(__('main.choose')) }} —</option>
                                 @foreach($wfTiers as $tier => $durations)
-                                    <optgroup label="{{ app()->getLocale() === 'en' ? 'WEBSITE PLAN' : 'FORFAIT SITE WEB' }} {{ $tier }} $">
+                                    {{-- data-tier : la fiche choisie détermine le palier (filtré en JS) --}}
+                                    <optgroup data-tier="{{ $tier }}" label="{{ app()->getLocale() === 'en' ? 'WEBSITE PLAN' : 'FORFAIT SITE WEB' }} {{ $tier }} $">
                                         @foreach($durations as $months => $price)
                                             <option value="{{ $tier }}-{{ $months }}" @selected(old('url_forfait') === $tier.'-'.$months)>
                                                 {{ $months }} {{ app()->getLocale() === 'en' ? ($months > 1 ? 'MONTHS' : 'MONTH') : 'MOIS' }} — {{ number_format($price, 0) }} $
@@ -299,17 +306,39 @@
                      publique des options (Denis : « clic ch option et pas de lien ???? »). --}}
                 <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ app()->getLocale() === 'en' ? 'Options' : 'Options' }}</div>
                 <div class="form__column">
+                    {{-- « ▸ OUVRIR » déplie la DESCRIPTION de l'option ICI MÊME (Denis 03.07 :
+                         « ouvrir ne donne rien » — l'ancienne cible /options était vide). --}}
                     @foreach($profileOptions as $option)
                         @if($option === 'url') @continue @endif
-                        <div style="padding:3px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                            <sl-checkbox name="{{ $option }}" value="1" @if(old($option)) checked @endif>
-                                <span style="text-transform:uppercase">{{ setting("{$option}_title", $option) }}</span>
-                            </sl-checkbox>
-                            <a href="{{ urlRouteName('options-list') }}" target="_blank" style="white-space:nowrap;font-weight:600">▸ {{ app()->getLocale() === 'en' ? 'OPEN' : 'OUVRIR' }}</a>
+                        <div style="padding:3px 0">
+                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                                <sl-checkbox name="{{ $option }}" value="1" @if(old($option)) checked @endif>
+                                    <span style="text-transform:uppercase">{{ setting("{$option}_title", $option) }}</span>
+                                </sl-checkbox>
+                                <a href="#" class="ck-option-open" data-target="opt_desc_{{ $option }}" style="white-space:nowrap;font-weight:600">▸ {{ app()->getLocale() === 'en' ? 'OPEN' : 'OUVRIR' }}</a>
+                            </div>
+                            <div id="opt_desc_{{ $option }}" style="display:none;background:#f7f7f0;border:1px solid #e0e0d2;border-left:4px solid #ffd200;border-radius:8px;padding:10px 14px;margin:6px 0 4px;max-width:680px">
+                                {!! setting("{$option}_description") ?: e(setting("{$option}_title", $option)) !!}
+                            </div>
                         </div>
                     @endforeach
                     <div style="font-size:.85rem;color:#777;margin-top:6px">{{ app()->getLocale() === 'en' ? 'The details of each option are completed from your profile after signup.' : 'Les détails de chaque option se complètent depuis votre profil après l\'inscription.' }}</div>
                 </div>
+
+                <script>
+                    // « ▸ OUVRIR / ▾ FERMER » : déplie la description de l'option sur place.
+                    document.addEventListener('click', function (e) {
+                        var link = e.target.closest('.ck-option-open');
+                        if (!link) return;
+                        e.preventDefault();
+                        var box = document.getElementById(link.getAttribute('data-target'));
+                        if (!box) return;
+                        var open = box.style.display !== 'none';
+                        box.style.display = open ? 'none' : 'block';
+                        var en = document.documentElement.lang === 'en';
+                        link.textContent = open ? ('▸ ' + (en ? 'OPEN' : 'OUVRIR')) : ('▾ ' + (en ? 'CLOSE' : 'FERMER'));
+                    });
+                </script>
 
                 {{-- Lien OBLIGATOIRE vers la page CONCLUSION au bas du 2350, AVANT la liste
                      des SEO (Denis 24.06). Porté de l'assistant 6 étapes (step-2). --}}
@@ -421,6 +450,17 @@
     [cat, sub, prov].forEach(function(el){ if (el) el.addEventListener('sl-change', update); });
     if (window.customElements && customElements.whenDefined) { customElements.whenDefined('sl-select').then(function(){ setTimeout(update,0); }); }
     setTimeout(update, 0);
+
+    // Cliquer N'IMPORTE OÙ dans une section de zone l'ACTIVE (Denis 03.07 : la
+    // section province semblait « blurry » — il cliquait dedans sans que le radio
+    // ne s'active, donc elle restait estompée).
+    [postalSection, provSection].forEach(function (sec) {
+        if (!sec) return;
+        sec.addEventListener('click', function () {
+            var r = sec.querySelector('input[name="zone_type"]');
+            if (r && !r.checked) { r.checked = true; update(); }
+        });
+    });
 })();
 </script>
 
@@ -456,12 +496,17 @@
         if (extras) extras.style.display = shown ? '' : 'none';
         if (placeholderNote) placeholderNote.style.display = shown ? 'none' : '';
     }
-    // Mots-clés SEO transmis avec la fiche (bloc JSON en fin de réponse).
-    function fillSeo() {
+    // Métadonnées transmises avec la fiche (bloc JSON en fin de réponse) :
+    // mots-clés SEO + palier site web propre à la fiche.
+    function ficheMeta() {
+        var data = container.querySelector('#fiche-meta-json');
+        if (!data) return { keywords: [], website_tier: null };
+        try { return JSON.parse(data.textContent) || { keywords: [], website_tier: null }; }
+        catch (e) { return { keywords: [], website_tier: null }; }
+    }
+    function fillSeo(meta) {
         if (!seoBlock || !seoList) return;
-        var data = container.querySelector('#fiche-keywords-json');
-        var words = [];
-        if (data) { try { words = JSON.parse(data.textContent) || []; } catch (e) { words = []; } }
+        var words = meta.keywords || [];
         seoList.innerHTML = '';
         words.forEach(function (w) {
             var chip = document.createElement('span');
@@ -471,13 +516,46 @@
         });
         seoBlock.style.display = words.length ? '' : 'none';
     }
+    // Palier site web : la FICHE détermine 100 $ ou 150 $ (Denis 03.07) — on ne
+    // propose que les durées de ce palier. Palier inconnu → tout est offert.
+    function filterWebsiteTier(meta) {
+        var wsel = document.getElementById('url_forfait');
+        if (!wsel) return;
+        var tier = meta.website_tier ? String(meta.website_tier) : null;
+        wsel.querySelectorAll('optgroup').forEach(function (g) {
+            var show = !tier || g.getAttribute('data-tier') === tier;
+            g.style.display = show ? '' : 'none';
+            g.querySelectorAll('option').forEach(function (o) { o.disabled = !show; o.hidden = !show; });
+        });
+        var cur = wsel.options[wsel.selectedIndex];
+        if (cur && cur.disabled) { wsel.value = ''; }
+    }
+    // Les <script> injectés via innerHTML ne s'exécutent JAMAIS : le verrouillage
+    // des « Précisez » (débloqués quand le O est coché) restait mort — Denis 03.07.
+    // On ré-exécute les scripts de la fiche (les blocs JSON restent inertes).
+    function runFicheScripts() {
+        container.querySelectorAll('script').forEach(function (old) {
+            var type = old.getAttribute('type');
+            if (type && type.indexOf('javascript') === -1) return; // données JSON : ne pas exécuter
+            var s = document.createElement('script');
+            s.textContent = old.textContent;
+            old.parentNode.replaceChild(s, old);
+        });
+    }
     function load() {
         var id = sel.value;
         if (!id) { container.innerHTML = ''; ficheShown(false); return; }
         container.innerHTML = '<p style="padding:14px;color:#666">' + loadingTxt + '</p>';
         fetch(url + '?service_category_id=' + encodeURIComponent(id), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(function (r) { return r.text(); })
-            .then(function (html) { container.innerHTML = html; ficheShown(true); fillSeo(); })
+            .then(function (html) {
+                container.innerHTML = html;
+                runFicheScripts();
+                ficheShown(true);
+                var meta = ficheMeta();
+                fillSeo(meta);
+                filterWebsiteTier(meta);
+            })
             .catch(function () { container.innerHTML = '<p style="padding:14px;color:#b00020">' + errTxt + '</p>'; ficheShown(false); });
     }
     sel.addEventListener('sl-change', load);

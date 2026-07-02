@@ -84,6 +84,7 @@ class ServiceCategory extends Model implements TranslatableContract
 		'provider_type',
 		'fiche_fee',
 		'fiche_fee_text',
+		'website_tier',
 		'title',
 		'image',
 		'legend',

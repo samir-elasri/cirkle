@@ -356,6 +356,9 @@ class ExcelImport
         $categoryModel->fiche_fee = $this->ficheFee($titreInterne)
             ?? ($categoryModel->provider_type === 'business' ? 100 : 75);
         $categoryModel->fiche_fee_text = $feeText ? implode('<br>', $feeText) : null;
+        // Palier site web PROPRE À LA FICHE (Denis 03.07 : « mes fiches déterminent le
+        // 100 $ ou le 150 $ ») : premier palier de la section SITE WEB du fichier.
+        $categoryModel->website_tier = $websiteForfaits[0]['tier'] ?? null;
         $categoryModel->customers_text = implode('<br>', $customersText);
         $categoryModel->capabilities_text = implode('<br>', $capabilitiesText);
         $categoryModel->keywords_json = json_encode($keywords, JSON_UNESCAPED_UNICODE);
@@ -577,6 +580,7 @@ class ExcelImport
         //   la liste des mots-clés SEO jusqu'à la fin du fichier.
         $forfaitPrices = [];
         $keywords = [];
+        $websiteTier = null;       // palier site web de LA fiche (prix « 1 MONTH » de la section WEB SITE)
         if ($priceZoneStart !== null) {
             $zone = null;          // 'postal' | 'province' | 'website' | 'keywords'
             $priceState = null;    // NULL = code postal, sinon id State (province)
@@ -624,13 +628,21 @@ class ExcelImport
                     continue;
                 }
 
-                if ($zone === null || $zone === 'website') {
-                    continue;
-                }
                 // Lignes « GAIN of … » : économies affichées, pas des prix. À exclure AVANT
                 // le motif durée (elles commencent aussi par « 3 MONTHS … ») — dans les
                 // fichiers WW0002 le « O » est décalé d'une ligne et tombe sur la ligne GAIN.
                 if (str_contains($bFlat, 'GAIN')) {
+                    continue;
+                }
+                // Section SITE WEB : on ne persiste pas ses prix (config), mais le prix
+                // « 1 MONTH » EST le palier de la fiche (100 $ ou 150 $ — Denis 03.07).
+                if ($zone === 'website') {
+                    if ($websiteTier === null && preg_match('/^1\s*(MONTH|MOIS)\b/i', $bt)) {
+                        $websiteTier = $this->lastAmount($bt, 1);
+                    }
+                    continue;
+                }
+                if ($zone === null) {
                     continue;
                 }
 
@@ -675,6 +687,7 @@ class ExcelImport
         $categoryModel->provider_type = $providerType;
         $categoryModel->fiche_fee = \App\Support\FicheFee::for($providerType);
         $categoryModel->fiche_fee_text = null;
+        $categoryModel->website_tier = $websiteTier; // palier site web de la fiche (Denis 03.07)
         $categoryModel->customers_text = '';
         $categoryModel->capabilities_text = '';
         $categoryModel->keywords_json = json_encode($keywords, JSON_UNESCAPED_UNICODE);

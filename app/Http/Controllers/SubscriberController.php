@@ -232,7 +232,9 @@ class SubscriberController extends Controller
 			'provider_type'       => 'required',
 			'service_category_id' => 'required',
 			'services'            => 'required|array',
+			'services.*'          => 'integer|exists:services,id', // fiche ré-importée entre l'affichage et l'envoi → ids périmés
 			'capabilities'        => 'nullable|array', // certaines fiches (anglaises) n'en ont pas
+			'capabilities.*'      => 'integer|exists:services,id',
 			'accept_fee'          => 'accepted',       // acceptation des frais de fiche (Denis)
 			'conclusion_read'     => 'accepted',       // page CONCLUSION obligatoire au bas du 2350 (Denis 24.06)
 			'subscription_id'     => 'required',
@@ -420,12 +422,16 @@ class SubscriberController extends Controller
 		$serviceCategory = ServiceCategory::findOrFail($request->input('service_category_id'));
 		$html = View::make('partials.service-form', compact('serviceCategory'))->render();
 
-		// Mots-clés SEO de la fiche — dernières lignes du 2350 (Denis 01.07 : la fiche est
-		// présentée intégralement, « de la 1re ligne à la dernière ligne des SEO »). Bloc
-		// JSON inerte lu par la page unique pour remplir la section « Mots-clés (SEO) ».
+		// Métadonnées de la fiche pour la page unique (bloc JSON inerte) :
+		// - mots-clés SEO (Denis 01.07 : fiche intégrale « jusqu'à la dernière ligne des SEO »);
+		// - palier site web de LA fiche (Denis 03.07 : la fiche détermine 100 $ ou 150 $).
 		$keywords = json_decode($serviceCategory->keywords_json ?: '[]', true) ?: [];
-		$html .= '<script type="application/json" id="fiche-keywords-json">'
-			. json_encode($keywords, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . '</script>';
+		$meta = [
+			'keywords' => $keywords,
+			'website_tier' => $serviceCategory->website_tier ? (int) $serviceCategory->website_tier : null,
+		];
+		$html .= '<script type="application/json" id="fiche-meta-json">'
+			. json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . '</script>';
 
 		return response($html);
 	}
