@@ -20,17 +20,26 @@ class GenericMail extends Mailable
 	private $subscriber;
 
 	/**
+	 * Pièces jointes en mémoire : [['data' => ..., 'name' => ..., 'mime' => ...], …]
+	 * (ex. la facture PDF du courriel de confirmation d'achat).
+	 *
+	 * @var array
+	 */
+	private $rawAttachments = [];
+
+	/**
 	 * Create a new message instance.
 	 *
 	 * @param  Subscriber  $subscriber
 	 * @param $text
 	 * @param $subject
 	 */
-    public function __construct(Subscriber $subscriber, $text, $subject, $replyTo = null)
+    public function __construct(Subscriber $subscriber, $text, $subject, $replyTo = null, array $attachments = [])
     {
         $this->subscriber = $subscriber;
         $this->text = $text;
         $this->subject = $subject;
+        $this->rawAttachments = $attachments;
 
         if ($replyTo) {
             $this->replyTo = $replyTo;
@@ -49,10 +58,20 @@ class GenericMail extends Mailable
 		$fromName = $setting->sender_email_name ?? 'mbiance';
 		$footer = $setting->email_footer_text ?? '';
 
-        return $this->markdown('emails.genericMail')
+        $mail = $this->markdown('emails.genericMail')
 			->from($from, $fromName)
 			->with('subscriber', $this->subscriber)
 			->with('text', $this->text)
 			->with('footer', $footer);
+
+		foreach ($this->rawAttachments as $attachment) {
+			$mail->attachData(
+				$attachment['data'],
+				$attachment['name'],
+				['mime' => $attachment['mime'] ?? 'application/pdf']
+			);
+		}
+
+		return $mail;
     }
 }

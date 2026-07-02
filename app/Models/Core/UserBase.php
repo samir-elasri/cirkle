@@ -61,7 +61,7 @@ class UserBase extends Model implements
 	 * @param  array   $data
 	 * @return bool
 	 */
-	public function sendMail($type, $data, $replyTo = null): bool
+	public function sendMail($type, $data, $replyTo = null, array $attachments = []): bool
 	{
 		$preferredLang = in_array(
 			$this->preference_language,
@@ -178,7 +178,7 @@ class UserBase extends Model implements
 				$message->bcc($bcc);
 			}
 
-			$message->send(new GenericMail($this, $data['text'], $subject, $replyTo));
+			$message->send(new GenericMail($this, $data['text'], $subject, $replyTo, $attachments));
 
 			return true;
 		} catch (Exception|Error $e) {

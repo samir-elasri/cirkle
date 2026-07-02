@@ -13,6 +13,7 @@ use App\Models\Core\Subscriber;
 use App\Models\Core\Subscription;
 use Arr;
 use Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Cart;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -145,10 +146,28 @@ class BasicCartController extends Controller
                     $order->created_at = now();
 					$order->save();
 
+					// Facture PDF jointe au courriel de confirmation (cahier de charges :
+					// courriel avec la facture PDF en pièce jointe, en plus du lien).
+					$attachments = [];
+					try {
+						$pdf = Pdf::loadView('pages.invoice', [
+							'order'      => $order,
+							'subscriber' => $subscriber,
+							'purchases'  => $order->purchases,
+						]);
+						$attachments[] = [
+							'data' => $pdf->output(),
+							'name' => 'facture-cirkle-' . $order->id . '.pdf',
+							'mime' => 'application/pdf',
+						];
+					} catch (\Throwable $e) {
+						Log::error('Facture PDF non jointe au courriel de confirmation : ' . $e->getMessage());
+					}
+
 					$subscriber->sendMail('confirm-purchase', [
 						'total' => $order->total_price,
 						'url'   => $order->url
-					]);
+					], null, $attachments);
 
                     if ($cartType === 'option') {
                         return Redirect::to(urlRouteName('profile') . '?tab=supplier&subTab=profile-options')
