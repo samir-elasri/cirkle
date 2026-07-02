@@ -253,11 +253,14 @@
                                     <a class="call-to-action cta-alt" href="{{urlRouteName('edit-step-5')}}">@lang('profile.options.edit')</a>
                                 </div>
                             @endif
-                            @if($subscriber->is_public)
-                                <div>
-                                    <a class="call-to-action cta-alt" href="{{urlRouteName('provider', ['id' => $subscriber->id])}}">@lang('profile.public.view')</a>
-                                </div>
-                            @endif
+                            {{-- « Réviser ma fiche » (cahier de charges) : prévisualiser sa fiche
+                                 telle que les clients la verront — accessible EN TOUT TEMPS,
+                                 même avant publication (le contrôleur autorise le propriétaire). --}}
+                            <div>
+                                <a class="call-to-action cta-alt" href="{{urlRouteName('provider', ['id' => $subscriber->id])}}">
+                                    👁 {{ app()->getLocale() === 'en' ? 'Review my sheet' : 'Réviser ma fiche' }}
+                                </a>
+                            </div>
                         </div>
                     @endif
                 </div>

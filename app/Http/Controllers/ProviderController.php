@@ -22,13 +22,19 @@ class ProviderController extends Controller
 {
     public function show($params, Request $request, $id)
     {
-        $provider = Subscriber::where('active', '=', true)
-            ->where('id', '=', $id)
-            ->firstOrFail();
+        // « Réviser ma fiche » (cahier de charges) : le fournisseur peut PRÉVISUALISER sa
+        // propre fiche en tout temps, même avant qu'elle soit active (paiement/publication).
+        // Pour tout autre visiteur, seule une fiche active est visible.
+        $provider = Subscriber::where('id', '=', $id)->firstOrFail();
+        $viewer = auth('subscribers')->user();
+        $isOwnerPreview = $viewer && (int) $viewer->id === (int) $provider->id;
+
+        if (!$provider->active && !$isOwnerPreview) {
+            abort(404);
+        }
 
         // Historique des consultations (feature #11) : un client connecté consulte une fiche.
         // On évite les doublons consécutifs (rafraîchissements).
-        $viewer = auth('subscribers')->user();
         if ($viewer && (int) $viewer->id !== (int) $provider->id) {
             $last = \App\Models\ConsultationHistory::where('subscriber_id', $viewer->id)
                 ->latest()->first();
@@ -138,6 +144,7 @@ class ProviderController extends Controller
             'images',
             'jobOffers',
             'evaluations',
+            'isOwnerPreview',
         ));
     }
 

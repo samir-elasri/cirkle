@@ -6,6 +6,16 @@
             <div data-component="backBtn" data-text="{{ __('main.back') }}"></div>
         </p>
 
+        {{-- « Réviser ma fiche » : bandeau montré au fournisseur qui prévisualise sa
+             propre fiche avant qu'elle soit active/publiée. --}}
+        @if (!empty($isOwnerPreview) && !$provider->active)
+            <div style="background:#fff8e1;border:2px solid #ffd200;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-weight:600">
+                {{ app()->getLocale() === 'en'
+                    ? '👁 Preview — this is how your sheet will appear to clients once it is published. Only you can see it right now.'
+                    : '👁 Révision — voici comment votre fiche apparaîtra aux clients une fois publiée. Vous seul pouvez la voir pour le moment.' }}
+            </div>
+        @endif
+
         <div class="content-card">
 
             {{-- Onglets de la fiche (feature #8) + rendu littéral MASTER 2350.
@@ -39,7 +49,16 @@
                 @endif
             </div>
 
-            <h2>{{ $provider->company_name }}@if ($provider->profile_promotion_active) <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>@endif@if ($provider->profile_job_offer_active) <img class="ck-e-badge" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="Cirkle" title="{{ setting('job_offer_title') }}">@endif</h2>
+            {{-- « @endif@if » collés ne compilent pas (le \B@ de Blade rate le 2e @if) :
+                 la page fiche entière tombait en erreur 500 — badges sur des lignes séparées. --}}
+            <h2>{{ $provider->company_name }}
+                @if ($provider->profile_promotion_active)
+                    <span class="ck-promo-badge" title="{{ setting('promotion_title') }}">PROMO</span>
+                @endif
+                @if ($provider->profile_job_offer_active)
+                    <img class="ck-e-badge" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="Cirkle" title="{{ setting('job_offer_title') }}">
+                @endif
+            </h2>
 
             {{-- ===================== Navigation des onglets ===================== --}}
             <div class="fiche-tabs__nav" data-fiche-tabs>
