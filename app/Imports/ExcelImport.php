@@ -477,10 +477,11 @@ class ExcelImport
     {
         $highestRow = $worksheet->getHighestDataRow();
 
-        // ── Ligne du code interne (col B commence par « W#### ») ──
+        // ── Ligne du code interne (col B commence par « W#### », « WW#### » ou
+        //    « WS#### » — Denis a changé de préfixe le 03.07) ──
         $titleRow = null;
         for ($r = 1; $r <= min(40, $highestRow); $r++) {
-            if (preg_match('/^W{1,2}\d{3,4}/i', trim($this->plainText($worksheet->getCell("B{$r}"))))) {
+            if (preg_match('/^W[WS]?\d{3,4}/i', trim($this->plainText($worksheet->getCell("B{$r}"))))) {
                 $titleRow = $r;
                 break;
             }
