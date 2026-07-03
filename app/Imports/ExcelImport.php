@@ -546,12 +546,14 @@ class ExcelImport
                 continue; // ligne de prix (forfait)
             }
 
-            $hasInput = (bool) preg_match('/SPECIFY\s*:/i', $bt); // équivalent anglais de « PRÉCISEZ »
+            // « SPECIFY: » — et Denis glisse parfois le français « PRÉCISEZ » dans ses
+            // fiches anglaises (WS0001RE 03.07) : les deux ouvrent le champ de saisie.
+            $hasInput = (bool) preg_match('/SPECIFY\s*:|PR[ÉE]CISEZ/iu', $bt);
             $title = $bt;
             $html = $this->formattedText($worksheet->getCell("B{$r}"));
             if ($hasInput) {
-                $title = trim(preg_replace('/\s*:?\s*SPECIFY\s*:?\s*$/i', '', $bt));
-                $html = trim(preg_replace('/SPECIFY\s*:?/i', '', $html));
+                $title = trim(preg_replace('/\s*:?\s*(SPECIFY|PR[ÉE]CISEZ)\s*:?\s*$/iu', '', $bt));
+                $html = trim(preg_replace('/(SPECIFY|PR[ÉE]CISEZ)\s*:?/iu', '', $html));
             }
             if ($title === '') {
                 continue;
