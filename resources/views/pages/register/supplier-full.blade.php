@@ -702,7 +702,22 @@
         }
     }
     document.querySelectorAll('input[name="zone_type"]').forEach(function(r){ r.addEventListener('change', update); });
-    postalInputs.forEach(function(i){ i.addEventListener('input', update); });
+    // Anti-remplissage automatique du navigateur (Denis 04.07 : « j'inscris 1 code
+    // postal, tous les blocs répètent le même ») : un code en double est vidé —
+    // chaque boîte doit contenir un code DIFFÉRENT (facturation par code).
+    function dedupePostals() {
+        var seen = {};
+        postalInputs.forEach(function (i) {
+            var v = i.value.replace(/\s+/g, '').toUpperCase();
+            if (v === '') return;
+            if (seen[v]) { i.value = ''; }
+            else { seen[v] = true; }
+        });
+    }
+    postalInputs.forEach(function(i){
+        i.addEventListener('input', function(){ dedupePostals(); update(); });
+        i.addEventListener('change', function(){ dedupePostals(); update(); });
+    });
     [cat, sub, prov].forEach(function(el){ if (el) el.addEventListener('sl-change', update); });
     if (window.customElements && customElements.whenDefined) { customElements.whenDefined('sl-select').then(function(){ setTimeout(update,0); }); }
     setTimeout(update, 0);

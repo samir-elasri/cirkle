@@ -91,6 +91,10 @@
     </div>
 @endif
 
+{{-- Section COMPÉTENCES seulement si la fiche en a (les fiches anglaises n'en ont
+     pas — tout est dans services) : sinon un titre vide + « Ajouter une compétence »
+     traînaient dans la fiche (Denis 04.07 : « enlever competenties & yellow line »). --}}
+@if ($serviceCategory->capabilities->isNotEmpty())
 <div class="form__column">
     <div class="registration-title">{{ __('auth.register.capabilities') }}</div>
     <div class="form__row--error">
@@ -136,6 +140,7 @@
         items="{{ json_encode(old('custom_capabilities') ?? $existingCustomCapabilities ?? (session('registerFormData.custom_capabilities') ?? [])) }}"
     >{{ __('main.add-capability') }}</add-item-button>
 </div>
+@endif
 
 </div>{{-- /.form-2350 --}}
 

@@ -393,10 +393,16 @@ class SubscriberController extends Controller
 		// ── Zone + abonnement (logique étape 4) ──
 		$postalCodes = collect();
 		if ($zoneType === 'postal') {
+			$seen = [];
 			foreach (($form['postal_codes'] ?? []) as $pc) {
-				// Normalisation : MAJUSCULES sans espaces (Denis : « 6 caractères, ex. H9P2T2 »)
+				// Normalisation : MAJUSCULES sans espaces (Denis : « 6 caractères, ex. H9P2T2 »).
+				// DOUBLONS ignorés — la facturation est PAR code postal, un même code rempli
+				// deux fois (autofill du navigateur) ne doit pas être facturé deux fois.
 				$pc = strtoupper(preg_replace('/\s+/', '', (string) $pc));
-				if ($pc !== '') { $postalCodes->push(new PostalCode(['postal_code' => $pc])); }
+				if ($pc !== '' && !isset($seen[$pc])) {
+					$seen[$pc] = true;
+					$postalCodes->push(new PostalCode(['postal_code' => $pc]));
+				}
 			}
 		}
 		$subscriber->fill(['subscription_id' => $form['subscription_id']]);
