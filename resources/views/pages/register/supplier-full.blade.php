@@ -305,24 +305,105 @@
                      MAJUSCULES (Denis 02.07) + lien « ▸ OUVRIR » par option vers la page
                      publique des options (Denis : « clic ch option et pas de lien ???? »). --}}
                 <div class="registration-title" style="font-size:1rem !important;border:none !important;margin:12px 0 6px">{{ app()->getLocale() === 'en' ? 'Options' : 'Options' }}</div>
+                {{-- Cocher une option OUVRE son panneau : le fournisseur AJOUTE / MODIFIE /
+                     SUPPRIME ses permis, diplômes, promotions, photos (≤12), offres d'emploi
+                     PENDANT l'inscription (cahier de charges — comme l'étape 5 de l'ancien
+                     assistant, mais en AJAX : aucun rechargement qui perdrait le formulaire).
+                     Les items vivent en session (profile_*) et storeStep6 les enregistre au
+                     compte à la soumission. « ▸ OUVRIR » déplie la description de l'option. --}}
+                @php
+                    $en2 = app()->getLocale() === 'en';
+                    // option → type d'endpoint (slug des routes profile-option.add / option-delete)
+                    $optTypeMap = ['license' => 'license', 'diploma' => 'diploma', 'promotion' => 'promotions', 'image' => 'subscriber_images', 'job_offer' => 'job_offers'];
+                @endphp
+                <style>
+                    .ck-opt-panel { display:none; background:#fbfbf6; border:1px solid #e0e0d2; border-radius:10px; padding:12px 14px; margin:6px 0 10px; max-width:680px; }
+                    .ck-opt-panel label { display:block; font-weight:600; margin:6px 0 2px; font-size:.9rem; }
+                    .ck-opt-panel input[type=text], .ck-opt-panel input[type=number], .ck-opt-panel textarea {
+                        width:100%; box-sizing:border-box; height:36px; padding:6px 10px; border:1px solid #ccc; border-radius:6px; font:inherit; }
+                    .ck-opt-panel textarea { height:60px; resize:vertical; }
+                    .ck-opt-items { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+                    .ck-opt-item { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e2e2e2; border-radius:8px; padding:8px 12px; }
+                    .ck-opt-item img { width:64px; height:48px; object-fit:cover; border-radius:6px; }
+                    .ck-opt-item .grow { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+                    .ck-opt-item button { background:#fff; border:1px solid #bbb; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:600; }
+                    .ck-opt-item button.del { border-color:#d33; color:#d33; }
+                    .ck-opt-actions { display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap; }
+                    .ck-opt-add { background:#ffd200; border:none; border-radius:8px; padding:9px 18px; font-weight:700; cursor:pointer; }
+                    .ck-opt-cancel { background:#fff; border:1px solid #bbb; border-radius:8px; padding:8px 14px; cursor:pointer; display:none; }
+                    .ck-opt-msg { color:#b00020; font-weight:600; }
+                </style>
                 <div class="form__column">
-                    {{-- « ▸ OUVRIR » déplie la DESCRIPTION de l'option ICI MÊME (Denis 03.07 :
-                         « ouvrir ne donne rien » — l'ancienne cible /options était vide). --}}
                     @foreach($profileOptions as $option)
                         @if($option === 'url') @continue @endif
+                        @php $optType = $optTypeMap[$option] ?? null; @endphp
                         <div style="padding:3px 0">
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                                <sl-checkbox name="{{ $option }}" value="1" @if(old($option)) checked @endif>
+                                <sl-checkbox name="{{ $option }}" value="1" class="ck-option-check" data-panel="opt_panel_{{ $option }}" @if(old($option)) checked @endif>
                                     <span style="text-transform:uppercase">{{ setting("{$option}_title", $option) }}</span>
                                 </sl-checkbox>
-                                <a href="#" class="ck-option-open" data-target="opt_desc_{{ $option }}" style="white-space:nowrap;font-weight:600">▸ {{ app()->getLocale() === 'en' ? 'OPEN' : 'OUVRIR' }}</a>
+                                <a href="#" class="ck-option-open" data-target="opt_desc_{{ $option }}" style="white-space:nowrap;font-weight:600">▸ {{ $en2 ? 'OPEN' : 'OUVRIR' }}</a>
                             </div>
                             <div id="opt_desc_{{ $option }}" style="display:none;background:#f7f7f0;border:1px solid #e0e0d2;border-left:4px solid #ffd200;border-radius:8px;padding:10px 14px;margin:6px 0 4px;max-width:680px">
                                 {!! setting("{$option}_description") ?: e(setting("{$option}_title", $option)) !!}
                             </div>
+
+                            {{-- Panneau de contenu de l'option (ouvert quand l'option est cochée) --}}
+                            <div class="ck-opt-panel" id="opt_panel_{{ $option }}" @if($optType) data-type="{{ $optType }}" @endif>
+                                @if ($option === 'estimation')
+                                    {{-- Champs directs (soumis avec le formulaire principal) --}}
+                                    <label>{{ $en2 ? 'Estimation cost ($ — leave empty if free)' : "Coût de l'estimation ($ — laisser vide si gratuite)" }}</label>
+                                    <input type="number" step="0.01" min="0" name="estimation_cost" value="{{ old('estimation_cost') }}">
+                                    <label style="margin-top:10px">{{ $en2 ? 'Accepted payment methods' : 'Modes de paiement acceptés' }}</label>
+                                    <div style="display:flex;gap:14px;flex-wrap:wrap">
+                                        <sl-checkbox name="accepts_cash" value="1" @if(old('accepts_cash')) checked @endif>{{ $en2 ? 'Cash' : 'Comptant' }}</sl-checkbox>
+                                        <sl-checkbox name="accepts_check" value="1" @if(old('accepts_check')) checked @endif>{{ $en2 ? 'Cheque' : 'Chèque' }}</sl-checkbox>
+                                        <sl-checkbox name="accepts_debit" value="1" @if(old('accepts_debit')) checked @endif>{{ $en2 ? 'Debit' : 'Débit' }}</sl-checkbox>
+                                        <sl-checkbox name="accepts_credit" value="1" @if(old('accepts_credit')) checked @endif>{{ $en2 ? 'Credit' : 'Crédit' }}</sl-checkbox>
+                                    </div>
+                                @else
+                                    <div class="ck-opt-items" data-type="{{ $optType }}"></div>
+
+                                    @if ($option === 'image')
+                                        <label>{{ $en2 ? 'Your photos (up to 12 in total)' : 'Vos photos (maximum 12 au total)' }}</label>
+                                        <input type="file" data-name="images[]" accept="image/*" multiple>
+                                        <label>{{ $en2 ? 'Caption (optional)' : 'Légende (facultatif)' }}</label>
+                                        <input type="text" data-name="legend">
+                                        <input type="hidden" data-name="is_photos" value="1">
+                                    @elseif ($option === 'diploma')
+                                        <label>{{ $en2 ? 'Diploma / training (FR)' : 'Diplôme / formation (FR)' }}</label>
+                                        <input type="text" data-name="fr[title]">
+                                        <label>{{ $en2 ? 'Diploma / training (EN)' : 'Diplôme / formation (EN)' }}</label>
+                                        <input type="text" data-name="en[title]">
+                                        <label>{{ $en2 ? 'School / institution' : 'École / institution' }}</label>
+                                        <input type="text" data-name="school">
+                                        <label>{{ $en2 ? 'Date obtained' : "Date d'obtention" }}</label>
+                                        <input type="text" data-name="graduated_at" placeholder="2020/06">
+                                    @else
+                                        <label>{{ $en2 ? 'Title (FR)' : 'Titre (FR)' }}</label>
+                                        <input type="text" data-name="fr[title]">
+                                        <label>{{ $en2 ? 'Description (FR)' : 'Description (FR)' }}</label>
+                                        <textarea data-name="fr[description]"></textarea>
+                                        <label>{{ $en2 ? 'Title (EN)' : 'Titre (EN)' }}</label>
+                                        <input type="text" data-name="en[title]">
+                                        <label>{{ $en2 ? 'Description (EN)' : 'Description (EN)' }}</label>
+                                        <textarea data-name="en[description]"></textarea>
+                                        @if ($option === 'promotion')
+                                            <label>{{ $en2 ? 'Image (optional)' : 'Image (facultatif)' }}</label>
+                                            <input type="file" data-name="image" accept="image/*">
+                                        @endif
+                                    @endif
+
+                                    <div class="ck-opt-actions">
+                                        <button type="button" class="ck-opt-add" data-type="{{ $optType }}">＋ {{ $en2 ? 'Add' : 'Ajouter' }}</button>
+                                        <button type="button" class="ck-opt-cancel">{{ $en2 ? 'Cancel edit' : 'Annuler la modification' }}</button>
+                                        <span class="ck-opt-msg"></span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     @endforeach
-                    <div style="font-size:.85rem;color:#777;margin-top:6px">{{ app()->getLocale() === 'en' ? 'The details of each option are completed from your profile after signup.' : 'Les détails de chaque option se complètent depuis votre profil après l\'inscription.' }}</div>
+                    <div style="font-size:.85rem;color:#777;margin-top:6px">{{ $en2 ? 'You can also complete or modify each option later from your profile.' : 'Vous pourrez aussi compléter ou modifier chaque option plus tard depuis votre profil.' }}</div>
                 </div>
 
                 <script>
@@ -338,6 +419,181 @@
                         var en = document.documentElement.lang === 'en';
                         link.textContent = open ? ('▸ ' + (en ? 'OPEN' : 'OUVRIR')) : ('▾ ' + (en ? 'CLOSE' : 'FERMER'));
                     });
+                </script>
+
+                {{-- Gestionnaire des CONTENUS d'options (ajout / modification / suppression
+                     en AJAX pendant l'inscription — items en session, enregistrés au compte
+                     par storeStep6 à la soumission). --}}
+                <script>
+                (function () {
+                    var state = {!! json_encode($optionItems, JSON_UNESCAPED_UNICODE) !!};
+                    var urls  = {!! json_encode($optionUrls, JSON_UNESCAPED_UNICODE) !!};
+                    var en = document.documentElement.lang === 'en';
+                    var T = {
+                        add: en ? '＋ Add' : '＋ Ajouter',
+                        save: en ? '✔ Save changes' : '✔ Enregistrer la modification',
+                        edit: en ? 'Edit' : 'Modifier',
+                        del: en ? 'Delete' : 'Supprimer',
+                        empty: en ? 'Nothing added yet.' : 'Rien d\'ajouté pour le moment.',
+                        err: en ? 'Error — please try again.' : 'Erreur — réessayez.'
+                    };
+                    var token = document.querySelector('input[name="_token"]').value;
+
+                    function panelOf(type) { return document.querySelector('.ck-opt-panel[data-type="' + type + '"]'); }
+                    function get(obj, path) {
+                        // 'fr[title]' → obj.fr.title
+                        var keys = path.replace(/\]/g, '').split('[');
+                        var v = obj;
+                        for (var i = 0; i < keys.length; i++) { if (v == null) return ''; v = v[keys[i]]; }
+                        return v == null ? '' : v;
+                    }
+                    function labelOf(type, item) {
+                        if (type === 'subscriber_images') { return get(item, 'legend'); }
+                        var t = get(item, 'fr[title]') || get(item, 'en[title]');
+                        if (type === 'diploma') {
+                            var extra = [get(item, 'school'), get(item, 'graduated_at')].filter(Boolean).join(', ');
+                            return t + (extra ? ' — ' + extra : '');
+                        }
+                        return t;
+                    }
+                    function render(type) {
+                        var list = document.querySelector('.ck-opt-items[data-type="' + type + '"]');
+                        if (!list) return;
+                        list.innerHTML = '';
+                        var items = state[type] || [];
+                        if (!items.length) {
+                            var p = document.createElement('div');
+                            p.style.cssText = 'color:#888;font-size:.9rem';
+                            p.textContent = T.empty;
+                            list.appendChild(p);
+                            return;
+                        }
+                        items.forEach(function (item, i) {
+                            var row = document.createElement('div');
+                            row.className = 'ck-opt-item';
+                            if (type === 'subscriber_images' && item.image) {
+                                var img = document.createElement('img');
+                                img.src = item.image;
+                                img.alt = '';
+                                row.appendChild(img);
+                            }
+                            var span = document.createElement('span');
+                            span.className = 'grow';
+                            span.textContent = labelOf(type, item) || ((en ? 'Item ' : 'Élément ') + (i + 1));
+                            row.appendChild(span);
+                            if (type !== 'subscriber_images') {
+                                var eb = document.createElement('button');
+                                eb.type = 'button';
+                                eb.textContent = '✎ ' + T.edit;
+                                eb.addEventListener('click', function () { beginEdit(type, i); });
+                                row.appendChild(eb);
+                            }
+                            var db = document.createElement('button');
+                            db.type = 'button';
+                            db.className = 'del';
+                            db.textContent = '✕ ' + T.del;
+                            db.addEventListener('click', function () { remove(type, i); });
+                            row.appendChild(db);
+                            list.appendChild(row);
+                        });
+                    }
+                    function inputsOf(type) {
+                        var panel = panelOf(type);
+                        return panel ? Array.prototype.slice.call(panel.querySelectorAll('[data-name]')) : [];
+                    }
+                    function clearInputs(type) {
+                        inputsOf(type).forEach(function (el) {
+                            if (el.type === 'file') { el.value = ''; }
+                            else if (el.type !== 'hidden') { el.value = ''; }
+                        });
+                        var panel = panelOf(type);
+                        panel.removeAttribute('data-edit-index');
+                        panel.querySelector('.ck-opt-add').textContent = T.add;
+                        panel.querySelector('.ck-opt-cancel').style.display = 'none';
+                        panel.querySelector('.ck-opt-msg').textContent = '';
+                    }
+                    function beginEdit(type, i) {
+                        var item = (state[type] || [])[i];
+                        if (!item) return;
+                        var panel = panelOf(type);
+                        inputsOf(type).forEach(function (el) {
+                            if (el.type === 'file' || el.type === 'hidden') return;
+                            el.value = get(item, el.getAttribute('data-name'));
+                        });
+                        panel.setAttribute('data-edit-index', i + 1);
+                        panel.querySelector('.ck-opt-add').textContent = T.save;
+                        panel.querySelector('.ck-opt-cancel').style.display = '';
+                        panel.querySelector('.ck-opt-msg').textContent = '';
+                    }
+                    function submit(type) {
+                        var panel = panelOf(type);
+                        var msg = panel.querySelector('.ck-opt-msg');
+                        var fd = new FormData();
+                        fd.append('_token', token);
+                        var hasContent = false;
+                        inputsOf(type).forEach(function (el) {
+                            var name = el.getAttribute('data-name');
+                            if (el.type === 'file') {
+                                for (var j = 0; j < el.files.length; j++) {
+                                    fd.append(name.endsWith('[]') ? name : name, el.files[j]);
+                                    hasContent = true;
+                                }
+                            } else {
+                                fd.append(name, el.value);
+                                if (el.type !== 'hidden' && el.value.trim() !== '') { hasContent = true; }
+                            }
+                        });
+                        if (!hasContent) {
+                            msg.textContent = en ? 'Please fill in at least one field.' : 'Veuillez remplir au moins un champ.';
+                            return;
+                        }
+                        var editIdx = panel.getAttribute('data-edit-index');
+                        if (editIdx) { fd.append('session_index', editIdx); }
+                        msg.textContent = '…';
+                        fetch(urls[type].add, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+                            .then(function (res) {
+                                if (!res.ok || res.j.error) { msg.textContent = res.j.error || T.err; return; }
+                                if (res.j.items) { state[type] = res.j.items; }
+                                clearInputs(type);
+                                render(type);
+                            })
+                            .catch(function () { msg.textContent = T.err; });
+                    }
+                    function remove(type, i) {
+                        fetch(urls[type].del + '/' + (i + 1), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(function (r) { return r.ok ? r.json().catch(function(){ return {}; }) : null; })
+                            .then(function (j) {
+                                if (j === null) return;
+                                if (j.items) { state[type] = j.items; }
+                                else { (state[type] || []).splice(i, 1); }
+                                var panel = panelOf(type);
+                                if (panel.getAttribute('data-edit-index')) { clearInputs(type); }
+                                render(type);
+                            });
+                    }
+
+                    document.querySelectorAll('.ck-opt-add').forEach(function (b) {
+                        b.addEventListener('click', function () { submit(b.getAttribute('data-type')); });
+                    });
+                    document.querySelectorAll('.ck-opt-cancel').forEach(function (b) {
+                        b.addEventListener('click', function () {
+                            var type = b.closest('.ck-opt-panel').getAttribute('data-type');
+                            clearInputs(type);
+                        });
+                    });
+
+                    // Le panneau suit la case de l'option (ouvert quand cochée).
+                    document.querySelectorAll('sl-checkbox.ck-option-check').forEach(function (cb) {
+                        var panel = document.getElementById(cb.getAttribute('data-panel'));
+                        if (!panel) return;
+                        function sync() { panel.style.display = cb.checked ? 'block' : 'none'; }
+                        cb.addEventListener('sl-change', sync);
+                        if (window.customElements) { customElements.whenDefined('sl-checkbox').then(sync); }
+                    });
+
+                    Object.keys(urls).forEach(render);
+                })();
                 </script>
 
                 {{-- Lien OBLIGATOIRE vers la page CONCLUSION au bas du 2350, AVANT la liste

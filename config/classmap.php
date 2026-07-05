@@ -58,6 +58,7 @@ use App\Models\Core\Subscriber;
 use App\Models\Core\Subscription;
 use App\Models\Core\Target;
 use App\Models\Core\User;
+use App\Models\Diploma;
 use App\Models\Evaluation;
 use App\Models\JobOffer;
 use App\Models\License;
@@ -145,6 +146,7 @@ return [
 	'subscriber_images'      => SubscriberImage::class,
 	'promotions'             => Promotion::class,
 	'licenses'               => License::class,
+	'diplomas'               => Diploma::class,
 	'liked_subscribers'      => LikedSubscriber::class,
 	'postal_codes'           => PostalCode::class,
 	'subscriber_services'    => SubscriberService::class,

@@ -206,6 +206,29 @@ class SubscriberController extends Controller
 
 		$params['profileOptions'] = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
 
+		// Sous-formulaires d'options (ajout/modification/suppression PENDANT
+		// l'inscription) : l'endpoint profile-option.add exige un subscriber en
+		// session — on en amorce un vide (le vrai remplace celui-ci à la soumission).
+		if (!$request->session()->has('subscriber_model')) {
+			$request->session()->put('subscriber_model', new Subscriber());
+		}
+
+		// Items déjà ajoutés (survivent à un rechargement après erreur de validation)
+		// + URLs des endpoints AJAX, par type d'option.
+		$optionItems = [];
+		$optionUrls = [];
+		foreach (['license' => 'profile_licenses', 'diploma' => 'profile_diplomas',
+			'promotions' => 'profile_promotions', 'subscriber_images' => 'profile_subscriber_images',
+			'job_offers' => 'profile_job_offers'] as $type => $sessionKey) {
+			$optionItems[$type] = array_values((array) $request->session()->get($sessionKey, []));
+			$optionUrls[$type] = [
+				'add' => urlRouteName('profile-option.add', ['type' => $type]),
+				'del' => urlRouteName('option-delete', ['type' => $type]),
+			];
+		}
+		$params['optionItems'] = $optionItems;
+		$params['optionUrls'] = $optionUrls;
+
 		return $params;
 	}
 
@@ -237,6 +260,7 @@ class SubscriberController extends Controller
 			'capabilities.*'      => 'integer|exists:services,id',
 			'accept_fee'          => 'accepted',       // acceptation des frais de fiche (Denis)
 			'conclusion_read'     => 'accepted',       // page CONCLUSION obligatoire au bas du 2350 (Denis 24.06)
+			'estimation_cost'     => 'nullable|numeric|min:0',
 			'subscription_id'     => 'required',
 			'password'            => 'required|regex:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/',
 			'password_confirmation' => 'required_with:password|same:password',
@@ -387,6 +411,16 @@ class SubscriberController extends Controller
 				$subscriber->{$prefix . '_active'} = true;
 				$subscriber->{$prefix . '_activation_datetime'} = now();
 			}
+		}
+
+		// Option ESTIMATION : ses champs (coût, modes de paiement) sont saisis
+		// directement dans la page — on les pose sur le fournisseur.
+		if ($request->input('estimation')) {
+			$subscriber->estimation_cost = $request->input('estimation_cost') ?: null;
+			$subscriber->accepts_cash   = (bool) $request->input('accepts_cash');
+			$subscriber->accepts_check  = (bool) $request->input('accepts_check');
+			$subscriber->accepts_debit  = (bool) $request->input('accepts_debit');
+			$subscriber->accepts_credit = (bool) $request->input('accepts_credit');
 		}
 
 		// Option SITE WEB, dans la fiche après les provinces (Denis 02.07). storeStep6
@@ -2053,53 +2087,55 @@ class SubscriberController extends Controller
 	private function moveTemporaryFilesToFinalLocation(Subscriber $subscriber, Request $request): void
 	{
 		$sessionId = $request->session()->getId();
-		$tempDirectory = "temp/registration/{$sessionId}";
-		
+		// saveTempFile (ProfileOptionController) écrit sous public_html/<files_directory>/
+		// temp/registration/<session>/ et stocke le CHEMIN WEB « /medias/temp/… ». L'ancien
+		// code comparait au préfixe « temp/registration/… » et lisait Storage::disk('public')
+		// (storage/app/public) : rien ne correspondait JAMAIS — les fichiers restaient dans
+		// temp pour toujours et les fiches pointaient dessus.
+		$filesDirectory = rtrim(ltrim(config('media.files_directory', 'medias'), '/\\'), '/\\') . '/';
+		$tempWebPrefix = '/' . $filesDirectory . 'temp/registration/' . $sessionId . '/';
+
 		// Handle files stored in subscriber model during step 5
 		$subscriberData = $request->session()->get('subscriber_model');
 		if ($subscriberData) {
 			$fieldsToCheck = ['image']; // Add other fields that might contain file paths
-			
+
 			foreach ($fieldsToCheck as $field) {
 				if (!empty($subscriberData->$field) && is_string($subscriberData->$field)) {
 					$tempPath = $subscriberData->$field;
-					
-					if (str_starts_with($tempPath, $tempDirectory)) {
+
+					if (str_starts_with($tempPath, $tempWebPrefix)) {
 						// This is a temporary file, move it to final location
 						$finalPath = $this->moveFileToFinalLocation($tempPath, $subscriber, $field);
-						
+
 						// Update the subscriber with the final path
 						$subscriber->update([$field => $finalPath]);
 					}
 				}
 			}
 		}
-		
+
 		// Handle profile options stored in session
 		$profileOptionTypes = ['licenses', 'promotions', 'subscriber_images', 'job_offers'];
-		
+
 		foreach ($profileOptionTypes as $optionType) {
 			$sessionKey = "profile_{$optionType}";
 			$optionData = $request->session()->get($sessionKey, []);
-			
+
 			foreach ($optionData as &$item) {
-				if (isset($item['image']) && is_string($item['image']) && str_starts_with($item['image'], $tempDirectory)) {
-					// Move temporary file to final location
-					$item['image'] = $this->moveFileToFinalLocation($item['image'], $subscriber, 'image');
-				}
-				
-				// Handle any other file fields as needed
 				foreach ($item as $key => &$value) {
-					if (is_string($value) && str_starts_with($value, $tempDirectory)) {
-						$value = $this->moveFileToFinalLocation($value, $subscriber, $key);
+					if (is_string($value) && str_starts_with($value, $tempWebPrefix)) {
+						$value = $this->moveFileToFinalLocation($value, $subscriber, $key === 'image' ? 'image' : $key);
 					}
 				}
+				unset($value);
 			}
-			
+			unset($item);
+
 			// Update session with final paths (though this will be cleared soon anyway)
 			$request->session()->put($sessionKey, $optionData);
 		}
-		
+
 		// Clean up temporary directory
 		$this->cleanupTemporaryFiles($sessionId);
 	}
@@ -2112,46 +2148,39 @@ class SubscriberController extends Controller
 	 * @param string $tag
 	 * @return string Final file path
 	 */
-	private function moveFileToFinalLocation(string $tempPath, Subscriber $subscriber, string $tag): string
+	private function moveFileToFinalLocation(string $tempWebPath, Subscriber $subscriber, string $tag): string
 	{
-		$storage = Storage::disk('public');
-		
-		if (!$storage->exists($tempPath)) {
-			return $tempPath; // File doesn't exist, return original path
+		// Le chemin stocké est un chemin WEB (« /medias/temp/registration/… ») sous le
+		// public_path des médias — PAS le disque Storage 'public' (storage/app/public).
+		// On déplace le fichier NOUS-MÊMES vers la structure médias de la plateforme
+		// (medias/subscriber/<tag>/<id>/…) : saveMedia('image') sur Subscriber retourne
+		// une chaîne VIDE (le tag n'est pas une propriété du modèle) tout en écrivant un
+		// fichier orphelin — le chemin temp restait en base et le nettoyage l'effaçait.
+		$publicPath = rtrim(config('media.public_path', public_path()), '/\\');
+		$filesDirectory = rtrim(ltrim(config('media.files_directory', 'medias'), '/\\'), '/\\') . '/';
+		$absolute = $publicPath . str_replace('/', DIRECTORY_SEPARATOR, $tempWebPath);
+
+		if (!is_file($absolute)) {
+			return $tempWebPath; // File doesn't exist, return original path
 		}
-		
+
 		try {
-			// Get the file content
-			$fileContent = $storage->get($tempPath);
-			$filename = basename($tempPath);
-			
-			// Create a temporary UploadedFile-like object to use with saveMedia
-			$tempFile = tmpfile();
-			fwrite($tempFile, $fileContent);
-			$metadata = stream_get_meta_data($tempFile);
-			$tmpPath = $metadata['uri'];
-			
-			// Create an UploadedFile instance
-			$uploadedFile = new \Illuminate\Http\UploadedFile(
-				$tmpPath,
-				$filename,
-				mime_content_type($tmpPath),
-				null,
-				true
-			);
-			
-			// Use the existing saveMedia system
-			$finalPath = $subscriber->saveMedia($uploadedFile, $tag, 'single');
-			
-			// Clean up
-			fclose($tempFile);
-			
-			return $finalPath;
-			
+			$targetUri = 'subscriber/' . \Str::slug($tag ?: 'file') . '/' . $subscriber->id . '/';
+			$targetDir = $publicPath . DIRECTORY_SEPARATOR
+				. str_replace('/', DIRECTORY_SEPARATOR, $filesDirectory . $targetUri);
+			if (!\File::isDirectory($targetDir)) {
+				\File::makeDirectory($targetDir, 0755, true);
+			}
+
+			$filename = basename($absolute);
+			\File::move($absolute, $targetDir . $filename);
+
+			return '/' . $filesDirectory . $targetUri . $filename;
+
 		} catch (Exception $e) {
 			// If moving fails, log the error and return the temp path
-			Log::error("Failed to move temporary file {$tempPath}: " . $e->getMessage());
-			return $tempPath;
+			Log::error("Failed to move temporary file {$tempWebPath}: " . $e->getMessage());
+			return $tempWebPath;
 		}
 	}
 
@@ -2164,11 +2193,13 @@ class SubscriberController extends Controller
 	private function cleanupTemporaryFiles(string $sessionId): void
 	{
 		try {
-			$storage = Storage::disk('public');
-			$tempDirectory = "temp/registration/{$sessionId}";
-			
-			if ($storage->exists($tempDirectory)) {
-				$storage->deleteDirectory($tempDirectory);
+			// Même emplacement réel que saveTempFile : public_html/<files_directory>/temp/…
+			$publicPath = rtrim(config('media.public_path', public_path()), '/\\') . '/';
+			$filesDirectory = rtrim(ltrim(config('media.files_directory', 'medias'), '/\\'), '/\\') . '/';
+			$tempDirectory = $publicPath . $filesDirectory . 'temp/registration/' . $sessionId;
+
+			if (\File::isDirectory($tempDirectory)) {
+				\File::deleteDirectory($tempDirectory);
 			}
 		} catch (Exception $e) {
 			Log::error("Failed to cleanup temporary files for session {$sessionId}: " . $e->getMessage());

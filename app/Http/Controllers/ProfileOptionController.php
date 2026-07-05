@@ -134,26 +134,35 @@ class ProfileOptionController extends Controller
 			// sinon l'élément ajouté part dans une clé morte (jamais affiché ni sauvé).
 			$sessionKeyMap = ['license' => 'profile_licenses', 'diploma' => 'profile_diplomas'];
 			$sessionKey = $sessionKeyMap[$type] ?? ('profile_' . $type);
-			$existingData = request()->session()->get($sessionKey, []);
+			$existingData = array_values((array) request()->session()->get($sessionKey, []));
 
 			// Process file uploads and replace UploadedFile objects with web paths
 			$processedData = $this->processFileUploadsForSession($data, $request);
+			unset($processedData['session_index'], $processedData['_token']);
 
 			if (Arr::get($data, 'is_photos')) {
-				// Handle multiple images for photos
-				foreach (Arr::get($processedData, 'images', []) as $imagePath) {
+				// Photos : maximum 12 par fournisseur (cahier de charges).
+				$incoming = Arr::get($processedData, 'images', []);
+				if (count($existingData) + count($incoming) > 12) {
+					return response()->json(['error' => 'Maximum 12 photos.'], 422);
+				}
+				foreach ($incoming as $imagePath) {
 					$existingData[] = [
 						'image' => $imagePath,
 						'legend' => Arr::get($processedData, 'legend'),
 					];
 				}
+			} elseif (($idx = (int) $request->input('session_index')) >= 1 && isset($existingData[$idx - 1])) {
+				// MODIFICATION d'un item de session (inscription 1 page) : session_index
+				// = position+1 de l'item à remplacer.
+				$existingData[$idx - 1] = $processedData;
 			} else {
 				$existingData[] = $processedData;
 			}
 
 			request()->session()->put($sessionKey, $existingData);
 			if ($redirect) { return back(); }
-			return response()->json(['data' => $processedData]);
+			return response()->json(['data' => $processedData, 'items' => $existingData]);
 		}
 	}
 
@@ -391,13 +400,24 @@ class ProfileOptionController extends Controller
 				// Logged in subscriber - delete from database
 				$element = DB::table($type)->where('id', $id)->where('subscriber_id', $sub->id)->delete();
 			} else {
-				// Session subscriber - remove from collection and update session
-				$relationName = Str::camel(Str::plural($type, 2));
-				if (isset($sub->$relationName)) {
-					$sub->$relationName = $sub->$relationName->reject(function($item) use ($id) {
-						return $item->id == $id;
-					});
-					request()->session()->put('subscriber_model', $sub);
+				// Inscription en cours : les items vivent dans les clés de session
+				// « profile_* » (pas sur le modèle — l'ancien code rejetait sur une
+				// relation vide et ne supprimait jamais rien). L'id reçu est la
+				// POSITION+1 dans la liste (pseudo-id des items de session).
+				$sessionKeyMap = [
+					'license' => 'profile_licenses', 'licenses' => 'profile_licenses',
+					'diploma' => 'profile_diplomas', 'diplomas' => 'profile_diplomas',
+				];
+				$sessionKey = $sessionKeyMap[$type] ?? ('profile_' . $type);
+				$items = array_values((array) request()->session()->get($sessionKey, []));
+				$idx = (int) $id - 1;
+				if (isset($items[$idx])) {
+					array_splice($items, $idx, 1);
+					request()->session()->put($sessionKey, $items);
+				}
+				if (!$request->query('redirect')) {
+					// La page unique se resynchronise sur la liste restante.
+					return response()->json(['items' => $items], 200);
 				}
 			}
 			// Suppression sans JS (lien avec ?redirect=1, ex. photos dont le bouton JS gelé
@@ -657,14 +677,17 @@ class ProfileOptionController extends Controller
 				$webPath = $this->saveTempFile($value, $sessionId, $key);
 				$processedData[$key] = $webPath;
 			} elseif (is_array($value) && !empty($value)) {
-				// Handle array of files (like images[])
+				// Tableaux de fichiers (images[]) OU groupes de traductions (fr[title], …).
+				// IMPORTANT : préserver les CLÉS — l'ancien « $arr[] = $item » ré-indexait
+				// fr['title'] en fr[0], perdant titres/descriptions de tous les items de
+				// session (la vraie cause du « indexé numériquement » contourné dans add()).
 				$processedArray = [];
-				foreach ($value as $item) {
+				foreach ($value as $k => $item) {
 					if ($item instanceof \Illuminate\Http\UploadedFile) {
 						$webPath = $this->saveTempFile($item, $sessionId, $key);
-						$processedArray[] = $webPath;
+						$processedArray[$k] = $webPath;
 					} else {
-						$processedArray[] = $item;
+						$processedArray[$k] = $item;
 					}
 				}
 				$processedData[$key] = $processedArray;
