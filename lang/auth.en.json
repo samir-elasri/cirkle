@@ -4,7 +4,7 @@
   "throttle": "Too many login attempts. Please try again in :seconds seconds.",
   "login": "Login page",
   "sign-in": "Register as provider",
-  "sign-in-subscriber": "Register as requester",
+  "sign-in-subscriber": "Register as client",
   "lost-password": "Lost password",
   "valid_up_to": "Your subscription is valid up to :date inclusively",
   "no_valid": "You have no subscription right now",
@@ -111,7 +111,7 @@
       "success": "Your password has been reset."
     },
     "title": {
-      "basic": "Requester registration",
+      "basic": "Client registration",
       "step1": "Provider registration",
       "step1-subtitle": "Self-employed or company"
     }

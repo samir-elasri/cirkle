@@ -4,7 +4,7 @@
   "throttle"                    : "Too many login attempts. Please try again in :seconds seconds.",
   "login"                       : "Page de connexion",
   "sign-in"                     : "S'inscrire comme fournisseur",
-  "sign-in-subscriber" : "S'inscrire comme demandeur",
+  "sign-in-subscriber" : "S'inscrire comme client",
   "lost-password"               : "Mot de passe oublié",
   "valid_up_to"                 : "Votre souscription est valide jusqu'au :date inclusivement",
   "no_valid"                    : "Vous n'avez aucune souscription pour le moment",
@@ -111,7 +111,7 @@
       "success": "Votre mot de passe à été réinitialisé."
     },
     "title": {
-      "basic": "Enregistrement du demandeur",
+      "basic": "Enregistrement du client",
       "step1": "Enregistrement du fournisseur",
       "step2": "Enregistrement du fournisseur",
       "step3": "Enregistrement du fournisseur",
