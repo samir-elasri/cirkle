@@ -560,6 +560,58 @@ class SubscriberController extends Controller
 	/**
 	 * Show step 1 editing form
 	 */
+	/**
+	 * Modifier ses codes postaux APRÈS l'inscription (Denis 04.07 : « les codes postaux
+	 * ne doivent pas être permanents, le fournisseur peut changer à sa guise »).
+	 * Les changements sont immédiats sur la visibilité; le NOMBRE de codes facturé
+	 * s'ajuste à la prochaine facturation (renouvellement).
+	 */
+	public function editPostalCodes($params) {
+		$subscriber = auth('subscribers')->user();
+
+		$params['subscriber'] = $subscriber;
+		$params['currentCodes'] = $subscriber
+			? $subscriber->postalCodes()->pluck('postal_code')->values()->all()
+			: [];
+
+		return $params;
+	}
+
+	public function updatePostalCodes(Request $request) {
+		$subscriber = auth('subscribers')->user();
+		if (!$subscriber || !$subscriber->is_provider) {
+			return Redirect::to(urlRouteName('profile'))->with('error', __('auth.must-be-connected'));
+		}
+
+		// Normalisation + doublons ignorés (mêmes règles qu'à l'inscription).
+		$codes = [];
+		foreach ((array) $request->input('postal_codes', []) as $pc) {
+			$pc = strtoupper(preg_replace('/\s+/', '', (string) $pc));
+			if ($pc !== '' && !in_array($pc, $codes, true)) {
+				$codes[] = $pc;
+			}
+		}
+		if (count($codes) < 1) {
+			return redirect()->back()->withInput()
+				->with('error', app()->getLocale() === 'en'
+					? 'Please enter at least one postal code.'
+					: 'Veuillez saisir au moins un code postal.');
+		}
+		if (count($codes) > 10) {
+			$codes = array_slice($codes, 0, 10);
+		}
+
+		// Remplacement complet : la liste saisie EST la nouvelle liste.
+		$subscriber->postalCodes()->delete();
+		foreach ($codes as $pc) {
+			$subscriber->postalCodes()->create(['postal_code' => $pc]);
+		}
+
+		return redirect()->back()->with('success', app()->getLocale() === 'en'
+			? 'Your postal codes are updated. Billing for the number of codes adjusts on your next renewal invoice.'
+			: 'Vos codes postaux sont à jour. La facturation du nombre de codes s\'ajuste à votre prochaine facture de renouvellement.');
+	}
+
 	public function editStep1($params) {
 		$subscriber = auth('subscribers')->user();
 

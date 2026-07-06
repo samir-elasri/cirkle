@@ -248,6 +248,12 @@
                             <div>
                                 <a class="call-to-action" href="{{urlRouteName('add-options')}}">➕ @lang('profile.add-options.title')</a>
                             </div>
+                            {{-- Codes postaux modifiables à sa guise (Denis 04.07) --}}
+                            <div>
+                                <a class="call-to-action cta-alt" href="{{urlRouteName('edit-postal-codes')}}">
+                                    📍 {{ app()->getLocale() === 'en' ? 'My postal codes' : 'Mes codes postaux' }}
+                                </a>
+                            </div>
                             @if($hasActiveOptions)
                                 <div>
                                     <a class="call-to-action cta-alt" href="{{urlRouteName('edit-step-5')}}">@lang('profile.options.edit')</a>

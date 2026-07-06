@@ -225,14 +225,19 @@
                         <div style="margin-bottom:6px">{{ app()->getLocale() === 'en'
                             ? 'ENTER 6 CHARACTERS per postal code (ex.: H9P 2T2) — 1 to 10 postal codes, billed per code.'
                             : 'ENTREZ 6 CARACTÈRES par code postal (ex. : H9P 2T2) — 1 à 10 codes postaux, facturés par code.' }}</div>
+                        {{-- Boîtes 100 % VIDES, rien d'offert (Denis 04.07) : pas de placeholder,
+                             et « readonly » retiré au focus — le remplissage automatique du
+                             navigateur ignore les champs readonly au chargement. --}}
                         <div style="margin-bottom:18px">
                             <input style="width:10ch" class="postal-code-input" data-i="0" type="text" maxlength="7"
-                                   name="postal_codes[0]" value="{{ old('postal_codes.0') }}" placeholder="H9P 2T2" autocomplete="off">
+                                   name="postal_codes[0]" value="{{ old('postal_codes.0') }}" autocomplete="off"
+                                   readonly onfocus="this.removeAttribute('readonly')">
                         </div>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
                             @for ($i = 1; $i < 10; $i++)
                                 <input style="width:10ch" class="postal-code-input" data-i="{{$i}}" type="text" maxlength="7"
-                                       name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) }}" autocomplete="off">
+                                       name="postal_codes[{{ $i }}]" value="{{ old('postal_codes.'.$i) }}" autocomplete="off"
+                                       readonly onfocus="this.removeAttribute('readonly')">
                             @endfor
                         </div>
                         <div class="ui segment" style="display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;margin-top:10px;background:#fff">
@@ -318,6 +323,14 @@
                 @endphp
                 <style>
                     .ck-opt-panel { display:none; background:#fbfbf6; border:1px solid #e0e0d2; border-radius:10px; padding:12px 14px; margin:6px 0 10px; max-width:680px; }
+                    /* Le FORMULAIRE de Denis (08F à 13F) affiché en tête de chaque panneau */
+                    .ck-optform { background:#fff; border:1px solid #e2e2d8; border-left:4px solid #157a47; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:.9rem; }
+                    .ck-optform h4 { margin:0 0 8px; color:#157a47; font-size:.95rem; }
+                    .ck-optform p { margin:0 0 8px; }
+                    .ck-optform ul { margin:0 0 8px; padding-left:1.3em; columns:2; column-gap:24px; }
+                    .ck-optform li { margin-bottom:2px; }
+                    .ck-optform .ck-optform-avis { background:#fdf6e3; border-radius:6px; padding:8px 10px; font-size:.85rem; }
+                    @media (max-width:560px){ .ck-optform ul { columns:1; } }
                     .ck-opt-panel label { display:block; font-weight:600; margin:6px 0 2px; font-size:.9rem; }
                     .ck-opt-panel input[type=text], .ck-opt-panel input[type=number], .ck-opt-panel textarea {
                         width:100%; box-sizing:border-box; height:36px; padding:6px 10px; border:1px solid #ccc; border-radius:6px; font:inherit; }
@@ -342,14 +355,15 @@
                                 <sl-checkbox name="{{ $option }}" value="1" class="ck-option-check" data-panel="opt_panel_{{ $option }}" @if(old($option)) checked @endif>
                                     <span style="text-transform:uppercase">{{ setting("{$option}_title", $option) }}</span>
                                 </sl-checkbox>
-                                <a href="#" class="ck-option-open" data-target="opt_desc_{{ $option }}" style="white-space:nowrap;font-weight:600">▸ {{ $en2 ? 'OPEN' : 'OUVRIR' }}</a>
-                            </div>
-                            <div id="opt_desc_{{ $option }}" style="display:none;background:#f7f7f0;border:1px solid #e0e0d2;border-left:4px solid #ffd200;border-radius:8px;padding:10px 14px;margin:6px 0 4px;max-width:680px">
-                                {!! setting("{$option}_description") ?: e(setting("{$option}_title", $option)) !!}
+                                {{-- ▸ OUVRIR ouvre LE FORMULAIRE de Denis (08F-13F) avec les
+                                     espaces à remplir (Denis 04.07). --}}
+                                <a href="#" class="ck-option-open" data-target="opt_panel_{{ $option }}" style="white-space:nowrap;font-weight:600">▸ {{ $en2 ? 'OPEN' : 'OUVRIR' }}</a>
                             </div>
 
-                            {{-- Panneau de contenu de l'option (ouvert quand l'option est cochée) --}}
+                            {{-- Panneau de l'option : LE FORMULAIRE de Denis + les espaces à remplir
+                                 (ouvert par OUVRIR, ou automatiquement quand l'option est cochée) --}}
                             <div class="ck-opt-panel" id="opt_panel_{{ $option }}" @if($optType) data-type="{{ $optType }}" @endif>
+                                @include('partials.option-forms.' . $option)
                                 @if ($option === 'estimation')
                                     {{-- Champs directs (soumis avec le formulaire principal) --}}
                                     <label>{{ $en2 ? 'Estimation cost ($ — leave empty if free)' : "Coût de l'estimation ($ — laisser vide si gratuite)" }}</label>

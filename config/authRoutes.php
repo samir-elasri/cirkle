@@ -92,6 +92,27 @@ return [
 				'restricted' => true
 			]
 		],
+		// Modifier ses codes postaux après l'inscription (Denis 04.07)
+		'edit-postal-codes'  => [
+			'methods' => 'get',
+			'uri'     => [
+				'fr' => '/fournisseur/codes-postaux',
+				'en' => '/supplier/postal-codes',
+			],
+			'view'    => 'pages.edit-postal-codes',
+			'uses'    => 'App\\Http\\Controllers\\SubscriberController@editPostalCodes',
+			'admin'   => [
+				'title'        => true,
+				'metas'        => true,
+				'customs'      => true,
+				'right_column' => false,
+				'blocs'        => true,
+				'sharing'      => true,
+			],
+			'page' => [
+				'restricted' => true
+			]
+		],
 		'edit-step-5'        => [
 			'methods' => 'get',
 			'uri'     => [

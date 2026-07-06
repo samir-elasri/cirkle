@@ -283,6 +283,13 @@ function createRoutes($locale)
 			'as'   => 'subscriber.register.accept-fee',
 			'uses' => 'SubscriberController@acceptFee'
 		]);
+
+		// Mise à jour des codes postaux du fournisseur (Denis 04.07 : modifiables à sa
+		// guise; la facturation du nombre de codes s'ajuste au prochain renouvellement).
+		Route::post('update-postal-codes', [
+			'as'   => 'subscriber.profile.updatePostalCodes',
+			'uses' => 'SubscriberController@updatePostalCodes'
+		])->middleware('recaptcha');
 	}
 
 	if (config('cart.cart_type', null) === 'basic') {
