@@ -385,14 +385,33 @@
                                         <input type="text" data-name="legend">
                                         <input type="hidden" data-name="is_photos" value="1">
                                     @elseif ($option === 'diploma')
-                                        <label>{{ $en2 ? 'Diploma / training (FR)' : 'Diplôme / formation (FR)' }}</label>
-                                        <input type="text" data-name="fr[title]">
-                                        <label>{{ $en2 ? 'Diploma / training (EN)' : 'Diplôme / formation (EN)' }}</label>
-                                        <input type="text" data-name="en[title]">
-                                        <label>{{ $en2 ? 'School / institution' : 'École / institution' }}</label>
+                                        {{-- Tablo de Denis (07.07) : nom du cours (large) | école | date --}}
+                                        <label>{{ $en2 ? 'NAME OF THE COURSE OR ACADEMIC TRAINING' : 'NOM DU COURS OU DE LA FORMATION ACADÉMIQUE' }}</label>
+                                        <input type="text" data-name="{{ app()->getLocale() }}[title]">
+                                        <label>{{ $en2 ? 'OFFICIAL NAME OF THE SCHOOL, UNIVERSITY, TRADE OR PROFESSIONAL SCHOOL' : "NOM OFFICIEL DE L'ÉCOLE, UNIVERSITÉ, ÉCOLE DE MÉTIERS OU PROFESSIONNELLE" }}</label>
                                         <input type="text" data-name="school">
-                                        <label>{{ $en2 ? 'Date obtained' : "Date d'obtention" }}</label>
-                                        <input type="text" data-name="graduated_at" placeholder="2020/06">
+                                        <label>{{ $en2 ? 'GRADUATION DATE (YYYY/MM)' : 'DATE DU DIPLÔME (AAAA/MM)' }}</label>
+                                        <input type="text" data-name="graduated_at" maxlength="7">
+                                    @elseif ($option === 'license')
+                                        {{-- Tablo de Denis (07.07, sans STATUS ni COMMENTS) :
+                                             TYPE | ÉMETTEUR (large) | NO | DÉBUT | FIN --}}
+                                        <label>TYPE</label>
+                                        <input type="text" data-name="{{ app()->getLocale() }}[title]" list="ck_license_types">
+                                        <datalist id="ck_license_types">
+                                            @foreach(($en2
+                                                ? ['Operating Permit','Professional Licence','Accreditation / Certification','Professional Association','Professional Order','Union','Government Authorization','Master Title / Specialization','Medical / Technical Accreditation','Sector Recognition','Other']
+                                                : ["Permis d'exploitation",'Licence professionnelle','Accréditation / Certification','Association professionnelle','Ordre professionnel','Union ou syndicat','Autorisation gouvernementale','Titre de maîtrise / Spécialisation','Accréditation médicale / technique','Reconnaissance sectorielle','Autre']) as $lt)
+                                                <option value="{{ $lt }}"></option>
+                                            @endforeach
+                                        </datalist>
+                                        <label>{{ $en2 ? 'OFFICIAL NAME OF ISSUING AUTHORITY / ORGANIZATION' : "NOM OFFICIEL DE L'ÉMETTEUR / ORGANISME" }}</label>
+                                        <input type="text" data-name="issuer">
+                                        <label>{{ $en2 ? 'PERMIT / LICENCE / MEMBERSHIP / REGISTRATION NO.' : 'NO DE PERMIS / LICENCE / MEMBRE / INSCRIPTION' }}</label>
+                                        <input type="text" data-name="registration_number">
+                                        <label>{{ $en2 ? 'START DATE (YYYY/MM)' : 'DATE DE DÉBUT (AAAA/MM)' }}</label>
+                                        <input type="text" data-name="start_date" maxlength="7">
+                                        <label>{{ $en2 ? 'EXPIRY DATE (YYYY/MM)' : 'DATE DE FIN (AAAA/MM)' }}</label>
+                                        <input type="text" data-name="expiry_date" maxlength="7">
                                     @else
                                         <label>{{ $en2 ? 'Title (FR)' : 'Titre (FR)' }}</label>
                                         <input type="text" data-name="fr[title]">
@@ -467,6 +486,13 @@
                         if (type === 'diploma') {
                             var extra = [get(item, 'school'), get(item, 'graduated_at')].filter(Boolean).join(', ');
                             return t + (extra ? ' — ' + extra : '');
+                        }
+                        if (type === 'license') {
+                            // Tablo Denis : TYPE — émetteur, no, début–fin
+                            var parts = [get(item, 'issuer'), get(item, 'registration_number'),
+                                [get(item, 'start_date'), get(item, 'expiry_date')].filter(Boolean).join('–')]
+                                .filter(Boolean).join(', ');
+                            return t + (parts ? ' — ' + parts : '');
                         }
                         return t;
                     }

@@ -60,6 +60,11 @@ class License extends Model
 		'title',
 		'description',
 		'subscriber_id',
+		// Tablo de Denis (07.07.26) : emetteur, no d'inscription, debut, fin (AAAA/MM)
+		'issuer',
+		'registration_number',
+		'start_date',
+		'expiry_date',
 	];
 
 	public bool $isAjaxEnabled = true;

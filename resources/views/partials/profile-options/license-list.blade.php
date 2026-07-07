@@ -4,7 +4,9 @@
          class="single-list__item list__item"
          style="padding: 20px;">
            <span>
-                {{$license->title}}
+                {{ $license->title }}@if($license->issuer) — {{ $license->issuer }}@endif
+                @if($license->registration_number) ({{ $license->registration_number }})@endif
+                @if($license->start_date || $license->expiry_date) {{ trim($license->start_date . '–' . $license->expiry_date, '–') }}@endif
            </span>
         <button type="button" class="call-to-action up-button">
             <i class="fas fa-arrow-up"></i>

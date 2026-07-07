@@ -25,8 +25,8 @@
         ? 'The more complete your profile, the more trust you inspire — and the better your chances of being selected by CIRKLE clients.'
         : "Plus votre profil est complet, plus vous inspirez confiance et augmentez vos chances d'être sélectionné par les clients de la plateforme CIRKLE." }}</p>
     <p><strong>{{ $en
-        ? 'For each entry: type (permit, association, licence, union, other) — official name of the issuer — your registration number — start date (year/month).'
-        : "Pour chaque entrée : type (permis, association, licence, union, syndicat, autre) — nom officiel de l'émetteur — no de l'inscrit — date de début (an/mois)." }}</strong></p>
+        ? 'For each entry: TYPE — official name of the issuing authority / organization — permit / licence / membership / registration no. — start date (YYYY/MM) — expiry date (YYYY/MM).'
+        : "Pour chaque entrée : TYPE — nom officiel de l'émetteur / organisme — no de permis / licence / membre / inscription — date de début (AAAA/MM) — date de fin (AAAA/MM)." }}</strong></p>
     <p class="ck-optform-avis"><strong>{{ $en ? 'Important notice:' : 'Avis important :' }}</strong>
         {{ $en
             ? 'Each supplier remains fully responsible for the accuracy of the information, permits, licences, certifications or affiliations they declare. CIRKLE does not systematically verify the information submitted and cannot be held responsible for suppliers\' declarations.'

@@ -18,7 +18,33 @@
 <template id="{{ $editId }}">
     <form class="form" method="POST" action="{{ urlRouteName('profile-option.update', ['type' => $type, 'id' => $item->id]) }}">
         @csrf
-        @if($type === 'diploma')
+        @if($type === 'license')
+            {{-- Tablo de Denis (07.07) : TYPE | ÉMETTEUR | NO | DÉBUT | FIN --}}
+            <div class="form__column">
+                <label>TYPE (FR)</label>
+                <input name="fr[title]" value="{{ $item->translate('fr')?->title }}">
+            </div>
+            <div class="form__column">
+                <label>TYPE (EN)</label>
+                <input name="en[title]" value="{{ $item->translate('en')?->title }}">
+            </div>
+            <div class="form__column">
+                <label>{{ app()->getLocale() === 'en' ? 'Official name of issuing authority / organization' : "Nom officiel de l'émetteur / organisme" }}</label>
+                <input name="issuer" value="{{ $item->issuer }}">
+            </div>
+            <div class="form__column">
+                <label>{{ app()->getLocale() === 'en' ? 'Permit / licence / membership / registration no.' : 'No de permis / licence / membre / inscription' }}</label>
+                <input name="registration_number" value="{{ $item->registration_number }}">
+            </div>
+            <div class="form__column">
+                <label>{{ app()->getLocale() === 'en' ? 'Start date (YYYY/MM)' : 'Date de début (AAAA/MM)' }}</label>
+                <input name="start_date" value="{{ $item->start_date }}" maxlength="7">
+            </div>
+            <div class="form__column">
+                <label>{{ app()->getLocale() === 'en' ? 'Expiry date (YYYY/MM)' : 'Date de fin (AAAA/MM)' }}</label>
+                <input name="expiry_date" value="{{ $item->expiry_date }}" maxlength="7">
+            </div>
+        @elseif($type === 'diploma')
             <div class="form__column">
                 <label>@lang('fiche.diploma.course') (FR)</label>
                 <input name="fr[title]" value="{{ $item->translate('fr')?->title }}">

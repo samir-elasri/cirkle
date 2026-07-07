@@ -221,22 +221,36 @@
                 </div>
             @endif
 
-            {{-- ===================== Onglet Permis / licences ===================== --}}
+            {{-- Onglet Permis : tablo de Denis 07.07 (type, emetteur large, no, debut, fin — sans status/comments) --}}
             @if ($licenses->count())
+                @php($enL = app()->getLocale() === 'en')
                 <div class="fiche-tabs__panel" data-tab-panel="permis">
                     <div class="fiche-section">
                         <div class="fiche-section__title">{{ setting('license_title') }}</div>
                         <div class="fiche-section__content">
-                            <div class="service-list">
-                                @foreach($licenses as $license)
-                                    <div class="service-single">
-                                        <div class="service-single__content">
-                                            <div>{{ $license->title }}</div>
-                                            <div class="label-style small-label">{{ $license->description }}</div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                            <table class="license-table" style="width:100%;border-collapse:collapse">
+                                <thead>
+                                    <tr style="text-align:left;border-bottom:2px solid #e2e6df">
+                                        <th style="padding:.5em .75em;width:18%">TYPE</th>
+                                        <th style="padding:.5em .75em;width:42%">{{ $enL ? 'OFFICIAL NAME OF ISSUING AUTHORITY / ORGANIZATION' : "NOM OFFICIEL DE L'ÉMETTEUR / ORGANISME" }}</th>
+                                        <th style="padding:.5em .75em;width:20%">{{ $enL ? 'PERMIT / LICENCE / MEMBERSHIP / REGISTRATION NO.' : 'NO DE PERMIS / LICENCE / MEMBRE / INSCRIPTION' }}</th>
+                                        <th style="padding:.5em .75em;width:10%">{{ $enL ? 'START (YYYY/MM)' : 'DÉBUT (AAAA/MM)' }}</th>
+                                        <th style="padding:.5em .75em;width:10%">{{ $enL ? 'EXPIRY (YYYY/MM)' : 'FIN (AAAA/MM)' }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($licenses as $license)
+                                        <tr style="border-bottom:1px solid #eef1ec">
+                                            <td style="padding:.5em .75em">{{ $license->title }}</td>
+                                            {{-- anciens permis (avant le tablo) : le détail vivait dans description --}}
+                                            <td style="padding:.5em .75em">{{ $license->issuer ?: $license->description }}</td>
+                                            <td style="padding:.5em .75em">{{ $license->registration_number }}</td>
+                                            <td style="padding:.5em .75em">{{ $license->start_date }}</td>
+                                            <td style="padding:.5em .75em">{{ $license->expiry_date }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -250,10 +264,11 @@
                         <div class="fiche-section__content">
                             <table class="diploma-table" style="width:100%;border-collapse:collapse">
                                 <thead>
+                                    {{-- + d'espace pour le NOM (Denis 07.07) --}}
                                     <tr style="text-align:left;border-bottom:2px solid #e2e6df">
-                                        <th style="padding:.5em .75em">{{ __('fiche.diploma.course') }}</th>
-                                        <th style="padding:.5em .75em">{{ __('fiche.diploma.school') }}</th>
-                                        <th style="padding:.5em .75em">{{ __('fiche.diploma.date') }}</th>
+                                        <th style="padding:.5em .75em;width:45%">{{ __('fiche.diploma.course') }}</th>
+                                        <th style="padding:.5em .75em;width:40%">{{ __('fiche.diploma.school') }}</th>
+                                        <th style="padding:.5em .75em;width:15%">{{ __('fiche.diploma.date') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

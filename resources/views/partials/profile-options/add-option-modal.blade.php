@@ -28,6 +28,32 @@
                     <label for="image[]">@lang('profile.options.fields.images')</label>
                     <input name="images[]" type="file" multiple>
                 </div>
+            @elseif($optionName === 'license')
+                {{-- Tablo de Denis (07.07) : TYPE | ÉMETTEUR | NO | DÉBUT | FIN --}}
+                <div class="form__column">
+                    <label for="fr[title]">TYPE (FR)</label>
+                    <input name="fr[title]">
+                </div>
+                <div class="form__column">
+                    <label for="en[title]">TYPE (EN)</label>
+                    <input name="en[title]">
+                </div>
+                <div class="form__column">
+                    <label for="issuer">{{ app()->getLocale() === 'en' ? 'Official name of issuing authority / organization' : "Nom officiel de l'émetteur / organisme" }}</label>
+                    <input name="issuer">
+                </div>
+                <div class="form__column">
+                    <label for="registration_number">{{ app()->getLocale() === 'en' ? 'Permit / licence / membership / registration no.' : 'No de permis / licence / membre / inscription' }}</label>
+                    <input name="registration_number">
+                </div>
+                <div class="form__column">
+                    <label for="start_date">{{ app()->getLocale() === 'en' ? 'Start date (YYYY/MM)' : 'Date de début (AAAA/MM)' }}</label>
+                    <input name="start_date" maxlength="7">
+                </div>
+                <div class="form__column">
+                    <label for="expiry_date">{{ app()->getLocale() === 'en' ? 'Expiry date (YYYY/MM)' : 'Date de fin (AAAA/MM)' }}</label>
+                    <input name="expiry_date" maxlength="7">
+                </div>
             @elseif($optionName === 'diploma')
                 <div class="form__column">
                     <label for="fr[title]">@lang('fiche.diploma.course') (FR)</label>
