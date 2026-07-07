@@ -42,7 +42,9 @@
                 </div>
             @endif
 
-            {!! Form::open(['url' => urlRouteName('subscriber.register.storeSupplierFull')]) !!}
+            {{-- files=>true : la photo de la feuille d'estimation (10A) et les photos de
+                 promotion (bloc 13F) partent avec le formulaire principal. --}}
+            {!! Form::open(['url' => urlRouteName('subscriber.register.storeSupplierFull'), 'files' => true]) !!}
                 <input type="hidden" name="preference_language" value="{{ App::getLocale() }}">
 
                 {{-- ───────────── 1) COORDONNÉES ─────────────
@@ -354,6 +356,9 @@
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                                 <sl-checkbox name="{{ $option }}" value="1" class="ck-option-check" data-panel="opt_panel_{{ $option }}" @if(old($option)) checked @endif>
                                     <span style="text-transform:uppercase">{{ setting("{$option}_title", $option) }}</span>
+                                    {{-- Logos (Denis 07.07) : PROMO dans un cercle + E pour le recrutement --}}
+                                    @if($option === 'promotion')<span class="ck-promo-badge">PROMO</span>@endif
+                                    @if($option === 'job_offer')<img class="ck-e-badge" src="{{ asset_with_version('/dist/img/cirkle-e-badge.png') }}" alt="E">@endif
                                 </sl-checkbox>
                                 {{-- ▸ OUVRIR ouvre LE FORMULAIRE de Denis (08F-13F) avec les
                                      espaces à remplir (Denis 04.07). --}}
@@ -365,15 +370,95 @@
                             <div class="ck-opt-panel" id="opt_panel_{{ $option }}" @if($optType) data-type="{{ $optType }}" @endif>
                                 @include('partials.option-forms.' . $option)
                                 @if ($option === 'estimation')
-                                    {{-- Champs directs (soumis avec le formulaire principal) --}}
-                                    <label>{{ $en2 ? 'Estimation cost ($ — leave empty if free)' : "Coût de l'estimation ($ — laisser vide si gratuite)" }}</label>
-                                    <input type="number" step="0.01" min="0" name="estimation_cost" value="{{ old('estimation_cost') }}">
-                                    <label style="margin-top:10px">{{ $en2 ? 'Accepted payment methods' : 'Modes de paiement acceptés' }}</label>
-                                    <div style="display:flex;gap:14px;flex-wrap:wrap">
-                                        <sl-checkbox name="accepts_cash" value="1" @if(old('accepts_cash')) checked @endif>{{ $en2 ? 'Cash' : 'Comptant' }}</sl-checkbox>
-                                        <sl-checkbox name="accepts_check" value="1" @if(old('accepts_check')) checked @endif>{{ $en2 ? 'Cheque' : 'Chèque' }}</sl-checkbox>
-                                        <sl-checkbox name="accepts_debit" value="1" @if(old('accepts_debit')) checked @endif>{{ $en2 ? 'Debit' : 'Débit' }}</sl-checkbox>
-                                        <sl-checkbox name="accepts_credit" value="1" @if(old('accepts_credit')) checked @endif>{{ $en2 ? 'Credit' : 'Crédit' }}</sl-checkbox>
+                                    {{-- FORM 10A de Denis (07.07 : « remplacer tout avec mon form »).
+                                         Champs réels, soumis avec le formulaire principal (est[…]). --}}
+                                    <style>
+                                        .ck-est-o { color:#d33; font-weight:700; margin-right:4px; }
+                                        .ck-est-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:4px 0; font-size:.92rem; }
+                                        .ck-est-row input[type=text] { flex:1 1 220px; height:32px !important; }
+                                        .ck-est-head { font-weight:700; text-decoration:underline; margin:12px 0 4px; }
+                                    </style>
+                                    <div class="ck-est-head">{{ $en2 ? 'THE ESTIMATE WILL BE PRODUCED:' : "L'ESTIMATION SERA PRODUITE :" }}</div>
+                                    @foreach([
+                                        'client_location' => $en2 ? "AT THE CLIENT'S LOCATION" : 'CHEZ LE CLIENT',
+                                        'gps_map' => $en2 ? 'VIA THE "GPS MAP"' : 'VIA LA « CARTE GPS »',
+                                        'client_photos' => $en2 ? 'BASED ON CLIENT-PROVIDED PHOTOS' : 'VIA PHOTOS DU CLIENT',
+                                        'client_video' => $en2 ? 'BASED ON CLIENT-PROVIDED VIDEO' : 'VIA VIDÉO DU CLIENT',
+                                    ] as $k => $lbl)
+                                        <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[produced][{{ $k }}]" value="1" @if(old("est.produced.$k")) checked @endif> {{ $lbl }}</label>
+                                    @endforeach
+
+                                    <div class="ck-est-head">{{ $en2 ? 'COST OF THE ESTIMATE' : "COÛT DE L'ESTIMATION" }}</div>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="free" @if(old('est.cost.type') === 'free') checked @endif> {{ $en2 ? 'FREE OF CHARGE' : 'GRATUIT' }}</label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="on_site" @if(old('est.cost.type') === 'on_site') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE:' : 'PAYABLE SUR PLACE :' }}
+                                        <input type="text" name="est[cost][on_site_note]" value="{{ old('est.cost.on_site_note') }}"></label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="on_site_credited" @if(old('est.cost.type') === 'on_site_credited') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE AND CREDITED TOWARD THE COST OF THE WORK:' : 'PAYABLE SUR PLACE ET CRÉDITÉ SUR LA FACTURE DES TRAVAUX :' }}
+                                        <input type="text" name="est[cost][credited_note]" value="{{ old('est.cost.credited_note') }}"></label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="other" @if(old('est.cost.type') === 'other') checked @endif> {{ $en2 ? 'OTHER:' : 'AUTRE MÉTHODE :' }}
+                                        <input type="text" name="est[cost][other_note]" value="{{ old('est.cost.other_note') }}"></label>
+
+                                    <div class="ck-est-head">{{ $en2 ? 'ACCEPTED METHODS OF PAYMENT' : 'NOUS ACCEPTONS LE PAIEMENT' }}</div>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][cash]" value="1" @if(old('est.pay.cash')) checked @endif> {{ $en2 ? 'CASH' : 'EN ARGENT' }}</label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][cheque]" value="1" @if(old('est.pay.cheque')) checked @endif> {{ $en2 ? 'CHEQUE' : 'PAR CHÈQUE' }}</label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][interac]" value="1" @if(old('est.pay.interac')) checked @endif> {{ $en2 ? 'INTERAC E-TRANSFER:' : 'VIA INTERAC :' }}
+                                        <input type="text" name="est[pay][interac_note]" value="{{ old('est.pay.interac_note') }}"></label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][debit]" value="1" @if(old('est.pay.debit')) checked @endif> {{ $en2 ? 'DEBIT CARDS — SPECIFY ACCEPTED DEBIT CARDS:' : 'CARTES DE DÉBIT — précisez les cartes acceptées :' }}
+                                        <input type="text" name="est[pay][debit_note]" value="{{ old('est.pay.debit_note') }}"></label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][credit]" value="1" @if(old('est.pay.credit')) checked @endif> {{ $en2 ? 'CREDIT CARDS — SPECIFY ACCEPTED CREDIT CARDS:' : 'CARTES DE CRÉDIT — précisez les cartes acceptées :' }}
+                                        <input type="text" name="est[pay][credit_note]" value="{{ old('est.pay.credit_note') }}"></label>
+
+                                    <div class="ck-est-head">{{ $en2 ? 'APPOINTMENTS & DISCUSSIONS' : 'POUR RENDEZ-VOUS ET DISCUSSIONS SVP' }}</div>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span> {{ $en2 ? 'CALL:' : 'APPELEZ :' }}
+                                        <input type="text" name="est[appt][call_note]" value="{{ old('est.appt.call_note') }}"></label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span> {{ $en2 ? 'EMAIL:' : 'COURRIELLEZ :' }}
+                                        <input type="text" name="est[appt][email_note]" value="{{ old('est.appt.email_note') }}"></label>
+
+                                    <label class="ck-est-row" style="margin-top:8px"><span class="ck-est-o">O</span> <strong>{{ $en2 ? 'CONTRACT CANCELLATION FEES:' : "FRAIS DE CANCELLATION D'UN CONTRAT :" }}</strong>
+                                        <input type="text" name="est[cancellation_note]" value="{{ old('est.cancellation_note') }}"></label>
+                                    <label class="ck-est-row"><span class="ck-est-o">O</span> <strong>{{ $en2 ? 'OTHER TERMS SET BY THE SUPPLIER:' : 'AUTRES PAR LE FOURNISSEUR :' }}</strong>
+                                        <input type="text" name="est[other_note]" value="{{ old('est.other_note') }}"></label>
+
+                                    <label style="margin-top:10px">{{ $en2 ? "PICTURE OF THE SUPPLIER'S ESTIMATION SHEET (optional)" : "PHOTO DE VOTRE FEUILLE D'ESTIMATION (facultatif)" }}</label>
+                                    <input type="file" name="estimation_sheet_image" accept="image/*">
+                                @elseif ($option === 'promotion')
+                                    {{-- BLOC de Denis (07.07) : UNE promotion (pas de liste ni de
+                                         « + Ajouter ») — champs réels, soumis avec le formulaire
+                                         principal : titre, description, durée, option photos A/B. --}}
+                                    <div style="font-weight:700;margin-bottom:8px">
+                                        {{ $en2 ? 'DEAR CLIENTS, HERE IS OUR PROMOTION IN DETAIL:' : 'CHÈRES CLIENTS VOICI NOTRE PROMOTION EN DÉTAILS :' }}
+                                    </div>
+                                    <label>TITLE :</label>
+                                    <input type="text" name="promo[title]" value="{{ old('promo.title') }}">
+                                    <label>DESCRIPTION :</label>
+                                    <textarea name="promo[description]">{{ old('promo.description') }}</textarea>
+                                    <label style="margin-top:10px">{{ $en2 ? 'DURATION OF THE PROMOTION' : 'DURÉE DE LA PROMOTION' }}</label>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                                        <span style="font-weight:600;font-size:.9rem">{{ $en2 ? 'START DATE :' : 'DATE DE DÉBUT :' }}</span>
+                                        <input type="text" name="promo[start_year]" value="{{ old('promo.start_year') }}" maxlength="4" style="width:8ch"> <span style="font-size:.85rem">{{ $en2 ? 'YEAR' : 'ANNÉE' }}</span>
+                                        <input type="text" name="promo[start_month]" value="{{ old('promo.start_month') }}" maxlength="2" style="width:5ch"> <span style="font-size:.85rem">{{ $en2 ? 'MONTH' : 'MOIS' }}</span>
+                                        <input type="text" name="promo[start_day]" value="{{ old('promo.start_day') }}" maxlength="2" style="width:5ch"> <span style="font-size:.85rem">{{ $en2 ? 'DAY' : 'JOUR' }}</span>
+                                    </div>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px">
+                                        <span style="font-weight:600;font-size:.9rem">{{ $en2 ? 'END DATE :' : 'DATE DE FIN :' }}</span>
+                                        <input type="text" name="promo[end_year]" value="{{ old('promo.end_year') }}" maxlength="4" style="width:8ch"> <span style="font-size:.85rem">{{ $en2 ? 'YEAR' : 'ANNÉE' }}</span>
+                                        <input type="text" name="promo[end_month]" value="{{ old('promo.end_month') }}" maxlength="2" style="width:5ch"> <span style="font-size:.85rem">{{ $en2 ? 'MONTH' : 'MOIS' }}</span>
+                                        <input type="text" name="promo[end_day]" value="{{ old('promo.end_day') }}" maxlength="2" style="width:5ch"> <span style="font-size:.85rem">{{ $en2 ? 'DAY' : 'JOUR' }}</span>
+                                    </div>
+                                    <label style="margin-top:10px">{{ $en2 ? 'PROMOTION PHOTOS (one choice)' : 'PHOTOS DE LA PROMOTION (un seul choix)' }}</label>
+                                    <div style="display:flex;gap:16px;flex-wrap:wrap">
+                                        <label style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px">
+                                            <input type="radio" name="promo[photos_tier]" value="" @if(old('promo.photos_tier','') === '') checked @endif> {{ $en2 ? 'No photos' : 'Sans photos' }}
+                                        </label>
+                                        <label style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px">
+                                            <input type="radio" name="promo[photos_tier]" value="A" @if(old('promo.photos_tier') === 'A') checked @endif> OPTION A – 3 PHOTOS 50 $
+                                        </label>
+                                        <label style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px">
+                                            <input type="radio" name="promo[photos_tier]" value="B" @if(old('promo.photos_tier') === 'B') checked @endif> OPTION B – 6 PHOTOS 80 $
+                                        </label>
+                                    </div>
+                                    <div id="promo_photos_wrap" style="display:none;margin-top:6px">
+                                        <label>{{ $en2 ? 'Your promotion photos' : 'Vos photos de promotion' }} (<span id="promo_photos_max">3</span> max)</label>
+                                        <input type="file" name="promo_photos[]" accept="image/*" multiple>
                                     </div>
                                 @else
                                     <div class="ck-opt-items" data-type="{{ $optType }}"></div>
@@ -433,6 +518,14 @@
                                         <span class="ck-opt-msg"></span>
                                     </div>
                                 @endif
+
+                                {{-- Dernière ligne : le TARIF de l'option (Denis 07.07) — style
+                                     « COÛT UNIQUE » surligné de ses formulaires. --}}
+                                @php $optPrice = (float) setting("{$option}_price"); @endphp
+                                <div style="margin-top:12px;background:#ffff00;border:1px solid #e0d000;border-radius:6px;padding:8px 12px;font-weight:700;display:inline-block">
+                                    {{ $en2 ? 'FEE:' : 'TARIF :' }} {{ number_format($optPrice, 2) }} $
+                                    @if($option === 'promotion') <span style="font-weight:600">( + OPTION A 50 $ / OPTION B 80 $ )</span>@endif
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -772,6 +865,38 @@
             if (r && !r.checked) { r.checked = true; update(); }
         });
     });
+})();
+</script>
+
+{{-- Photos de la PROMOTION : le téléversement n'apparaît qu'avec l'option A (3 max)
+     ou B (6 max); nombre de fichiers vérifié au choix. --}}
+<script>
+(function () {
+    var radios = document.querySelectorAll('input[name="promo[photos_tier]"]');
+    var wrap = document.getElementById('promo_photos_wrap');
+    var maxEl = document.getElementById('promo_photos_max');
+    var fileInput = wrap ? wrap.querySelector('input[type=file]') : null;
+    if (!radios.length || !wrap) return;
+    var en = document.documentElement.lang === 'en';
+    function maxFor() {
+        var r = document.querySelector('input[name="promo[photos_tier]"]:checked');
+        return r && r.value === 'B' ? 6 : (r && r.value === 'A' ? 3 : 0);
+    }
+    function sync() {
+        var m = maxFor();
+        wrap.style.display = m ? 'block' : 'none';
+        if (maxEl) maxEl.textContent = m;
+        if (!m && fileInput) fileInput.value = '';
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    if (fileInput) fileInput.addEventListener('change', function () {
+        var m = maxFor();
+        if (m && fileInput.files.length > m) {
+            alert(en ? ('Maximum ' + m + ' photos for this option.') : ('Maximum ' + m + ' photos pour cette option.'));
+            fileInput.value = '';
+        }
+    });
+    sync();
 })();
 </script>
 

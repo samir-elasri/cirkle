@@ -67,6 +67,11 @@ class Promotion extends Model
 		'in_progress',
 		'subscriber_id',
 		'description',
+		// Bloc promotion de Denis (07.07.26)
+		'start_date',
+		'end_date',
+		'photos_tier',
+		'photos_json',
 	];
 
 	public array $positionParentFields = ['subscriber_id'];

@@ -175,6 +175,8 @@ class Subscriber extends Authenticatable implements TranslatableContract
 
 		'@Section estimation',
 		'estimation_cost',
+		'estimation_json',
+		'estimation_sheet_image',
 		'accepts_cash',
 		'accepts_check',
 		'accepts_debit',

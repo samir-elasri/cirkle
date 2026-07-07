@@ -89,6 +89,13 @@ class Purchase extends Model
 	}
 
 	public function getTitleAttribute(){
+		// Option photos du bloc PROMOTION (Denis 07.07) : pas de reglage dedie.
+		if ($this->item_name === 'promotion_photos_A') {
+			return 'PROMOTION - OPTION A (3 PHOTOS)';
+		}
+		if ($this->item_name === 'promotion_photos_B') {
+			return 'PROMOTION - OPTION B (6 PHOTOS)';
+		}
         $key = "{$this->item_name}_title";
 		return setting($key) ?? $key;
 	}

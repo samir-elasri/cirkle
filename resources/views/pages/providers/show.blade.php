@@ -288,10 +288,68 @@
 
             {{-- ===================== Onglet Estimation ===================== --}}
             @if ($provider->profile_estimation_active)
+                @php($estData = json_decode($provider->estimation_json ?: '', true) ?: [])
+                @php($estEn = app()->getLocale() === 'en')
                 <div class="fiche-tabs__panel" data-tab-panel="estimation">
                     <div class="fiche-section">
                         <div class="fiche-section__title">{{ setting('estimation_title') }}</div>
                         <div class="fiche-section__content">
+                        @if ($estData)
+                            {{-- Formulaire 10A de Denis : seules les réponses COCHÉES s'affichent --}}
+                            @php($producedLabels = [
+                                'client_location' => $estEn ? "At the client's location" : 'Chez le client',
+                                'gps_map' => $estEn ? 'Via the "GPS map"' : 'Via la « carte GPS »',
+                                'client_photos' => $estEn ? 'Based on client-provided photos' : 'Via photos du client',
+                                'client_video' => $estEn ? 'Based on client-provided video' : 'Via vidéo du client',
+                            ])
+                            @php($produced = array_keys(array_filter((array) ($estData['produced'] ?? []))))
+                            @if ($produced)
+                                <p><strong>{{ $estEn ? 'The estimate will be produced:' : "L'estimation sera produite :" }}</strong>
+                                    {{ implode(' · ', array_map(static fn ($k) => $producedLabels[$k] ?? $k, $produced)) }}</p>
+                            @endif
+                            @php($costType = $estData['cost']['type'] ?? null)
+                            @if ($costType)
+                                <p><strong>{{ $estEn ? 'Cost of the estimate:' : "Coût de l'estimation :" }}</strong>
+                                    @if ($costType === 'free') {{ $estEn ? 'Free of charge' : 'Gratuit' }}
+                                    @elseif ($costType === 'on_site') {{ $estEn ? 'Payable on-site' : 'Payable sur place' }} {{ $estData['cost']['on_site_note'] ?? '' }}
+                                    @elseif ($costType === 'on_site_credited') {{ $estEn ? 'Payable on-site and credited toward the cost of the work' : 'Payable sur place et crédité sur la facture des travaux' }} {{ $estData['cost']['credited_note'] ?? '' }}
+                                    @else {{ $estData['cost']['other_note'] ?? ($estEn ? 'Other' : 'Autre') }}
+                                    @endif</p>
+                            @endif
+                            @php($payLabels = [
+                                'cash' => $estEn ? 'Cash' : 'En argent',
+                                'cheque' => $estEn ? 'Cheque' : 'Par chèque',
+                                'interac' => 'Interac',
+                                'debit' => $estEn ? 'Debit cards' : 'Cartes de débit',
+                                'credit' => $estEn ? 'Credit cards' : 'Cartes de crédit',
+                            ])
+                            @php($pays = [])
+                            @foreach ($payLabels as $pk => $pl)
+                                @if (!empty($estData['pay'][$pk]))
+                                    @php($note = trim((string) ($estData['pay'][$pk . '_note'] ?? '')))
+                                    @php($pays[] = $pl . ($note !== '' ? ' (' . $note . ')' : ''))
+                                @endif
+                            @endforeach
+                            @if ($pays)
+                                <p><strong>{{ $estEn ? 'Accepted payments:' : 'Nous acceptons le paiement :' }}</strong> {{ implode(' · ', $pays) }}</p>
+                            @endif
+                            @if (!empty($estData['appt']['call_note']) || !empty($estData['appt']['email_note']))
+                                <p><strong>{{ $estEn ? 'Appointments & discussions:' : 'Pour rendez-vous et discussions :' }}</strong>
+                                    @if (!empty($estData['appt']['call_note'])) {{ $estEn ? 'Call' : 'Appelez' }} : {{ $estData['appt']['call_note'] }} @endif
+                                    @if (!empty($estData['appt']['email_note'])) — {{ $estEn ? 'Email' : 'Courriellez' }} : {{ $estData['appt']['email_note'] }} @endif</p>
+                            @endif
+                            @if (!empty($estData['cancellation_note']))
+                                <p><strong>{{ $estEn ? 'Contract cancellation fees:' : "Frais de cancellation d'un contrat :" }}</strong> {{ $estData['cancellation_note'] }}</p>
+                            @endif
+                            @if (!empty($estData['other_note']))
+                                <p><strong>{{ $estEn ? 'Other terms:' : 'Autres :' }}</strong> {{ $estData['other_note'] }}</p>
+                            @endif
+                            @if ($provider->estimation_sheet_image)
+                                <p><strong>{{ $estEn ? "Picture of the supplier's estimation sheet:" : "Feuille d'estimation du fournisseur :" }}</strong></p>
+                                <div>{{ Html::image($provider->estimation_sheet_image, '', ['style' => 'max-width:420px;border-radius:8px']) }}</div>
+                            @endif
+                        @else
+                            {{-- anciennes inscriptions : champs coût + modes de paiement --}}
                             <div style="display: flex; flex-direction: row; gap: 10px; margin-bottom: 24px;">
                                 <span>{{ __('providers.estimation_cost') }}</span>
                                 <span>{{ prettyPrice($provider->estimation_cost) }}</span>
@@ -314,6 +372,7 @@
                                     <span class="{{$provider->accepts_credit ? 'active' : ''}}">{{ __('form.yes') }}</span><span class="{{!$provider->accepts_credit ? 'active' : ''}}">{{ __('form.no') }}</span>
                                 </div>
                             </div>
+                        @endif
                         </div>
                     </div>
                 </div>
@@ -338,25 +397,46 @@
                 </div>
             @endif
 
-            {{-- ===================== Onglet Promotions (différé en v1, affiché si présent) ===================== --}}
+            {{-- ===================== Onglet Promotions =====================
+                 Bloc de Denis (07.07) : « CHÈRES CLIENTS VOICI NOTRE PROMOTION EN
+                 DÉTAILS » — titre, description, durée (début/fin), photos (option A/B). --}}
             @if ($promotions->count())
+                @php($promoEn = app()->getLocale() === 'en')
                 <div class="fiche-tabs__panel" data-tab-panel="promotions">
-                    <div data-component="carouselSwiper" data-slideshow-auto-play-speed="400" class="slideshow mini-slideshow">
-                        <div class="mini-slideshow__header">
-                            <h3>{{ setting('promotion_title') }}</h3>
-                            <div class="mini-slideshow__header__arrows">
-                                <div class="slick-prev"><i class="fas fa-caret-left"></i></div>
-                                <div class="slick-next"><i class="fas fa-caret-right"></i></div>
-                            </div>
+                    <div class="fiche-section">
+                        <div class="fiche-section__title">
+                            {{ setting('promotion_title') }} <span class="ck-promo-badge">PROMO</span>
                         </div>
-                        <div class="slides mini-slides">
+                        <div class="fiche-section__content">
+                            <p style="font-weight:700">
+                                {{ $promoEn ? 'DEAR CLIENTS, HERE IS OUR PROMOTION IN DETAIL:' : 'CHÈRES CLIENTS VOICI NOTRE PROMOTION EN DÉTAILS :' }}
+                            </p>
                             @foreach($promotions as $promotion)
-                                <div class="slide promotions mini-slide">
-                                    <div>{{ Html::image($promotion->image, $promotion->legend, ['width' => 500]) }}</div>
-                                    <div>
-                                        <div style="color:black;" class="label-style small-label">{{ $promotion->title }}</div>
-                                        <div class="label-style small-label">{{ $promotion->description }}</div>
-                                    </div>
+                                @php($promoPhotos = json_decode($promotion->photos_json ?: '[]', true) ?: [])
+                                <div style="border:2px solid #ffd200;border-radius:10px;padding:14px 18px;margin-bottom:14px;background:#fffdf2">
+                                    @if ($promotion->title)
+                                        <div style="font-weight:700;font-size:1.1em;color:#157a47">{{ $promotion->title }}</div>
+                                    @endif
+                                    @if ($promotion->description)
+                                        <div style="margin:6px 0">{{ $promotion->description }}</div>
+                                    @endif
+                                    @if ($promotion->start_date || $promotion->end_date)
+                                        <div style="font-weight:600;color:#b25a00">
+                                            {{ $promoEn ? 'DURATION OF THE PROMOTION:' : 'DURÉE DE LA PROMOTION :' }}
+                                            @if ($promotion->start_date) {{ $promoEn ? 'from' : 'du' }} {{ $promotion->start_date }} @endif
+                                            @if ($promotion->end_date) {{ $promoEn ? 'to' : 'au' }} {{ $promotion->end_date }} @endif
+                                        </div>
+                                    @endif
+                                    @if ($promotion->image)
+                                        <div style="margin-top:8px">{{ Html::image($promotion->image, $promotion->legend, ['style' => 'max-width:420px;border-radius:8px']) }}</div>
+                                    @endif
+                                    @if ($promoPhotos)
+                                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                                            @foreach ($promoPhotos as $pp)
+                                                {{ Html::image($pp, '', ['style' => 'width:140px;height:105px;object-fit:cover;border-radius:8px']) }}
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

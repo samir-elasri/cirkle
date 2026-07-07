@@ -419,14 +419,45 @@ class SubscriberController extends Controller
 			}
 		}
 
-		// Option ESTIMATION : ses champs (coût, modes de paiement) sont saisis
-		// directement dans la page — on les pose sur le fournisseur.
+		// Option ESTIMATION : le formulaire 10A de Denis (07.07) au complet — toutes
+		// les réponses en JSON + la photo de sa feuille d'estimation (fichier temp,
+		// déplacé au compte par moveTemporaryFilesToFinalLocation).
 		if ($request->input('estimation')) {
-			$subscriber->estimation_cost = $request->input('estimation_cost') ?: null;
-			$subscriber->accepts_cash   = (bool) $request->input('accepts_cash');
-			$subscriber->accepts_check  = (bool) $request->input('accepts_check');
-			$subscriber->accepts_debit  = (bool) $request->input('accepts_debit');
-			$subscriber->accepts_credit = (bool) $request->input('accepts_credit');
+			$subscriber->estimation_json = json_encode($request->input('est', []), JSON_UNESCAPED_UNICODE);
+			if ($request->hasFile('estimation_sheet_image')) {
+				$subscriber->estimation_sheet_image =
+					$this->saveRegistrationTempFile($request->file('estimation_sheet_image'), $request);
+			}
+		}
+
+		// Option PROMOTION : le BLOC de Denis (07.07) — UNE promotion (titre,
+		// description, durée, option photos A 3/50 $ ou B 6/80 $), soumise avec le
+		// formulaire principal. Remplace la liste de session.
+		if ($request->input('promotion')) {
+			$p = (array) $request->input('promo', []);
+			$composeDate = static function ($y, $m, $d) {
+				$parts = array_filter([trim((string) $y), trim((string) $m), trim((string) $d)], static fn ($v) => $v !== '');
+				return $parts ? implode('/', $parts) : null;
+			};
+			$tier = in_array($p['photos_tier'] ?? '', ['A', 'B'], true) ? $p['photos_tier'] : null;
+			$item = [
+				app()->getLocale() => [
+					'title' => trim((string) ($p['title'] ?? '')),
+					'description' => trim((string) ($p['description'] ?? '')),
+				],
+				'start_date' => $composeDate($p['start_year'] ?? '', $p['start_month'] ?? '', $p['start_day'] ?? ''),
+				'end_date' => $composeDate($p['end_year'] ?? '', $p['end_month'] ?? '', $p['end_day'] ?? ''),
+				'photos_tier' => $tier,
+				'photos' => [],
+			];
+			$max = $tier === 'B' ? 6 : ($tier === 'A' ? 3 : 0);
+			if ($max > 0) {
+				foreach (array_values((array) $request->file('promo_photos', [])) as $i => $file) {
+					if ($i >= $max || !$file) { break; }
+					$item['photos'][] = $this->saveRegistrationTempFile($file, $request);
+				}
+			}
+			$request->session()->put('profile_promotions', [$item]);
 		}
 
 		// Option SITE WEB, dans la fiche après les provinces (Denis 02.07). storeStep6
@@ -1913,7 +1944,19 @@ class SubscriberController extends Controller
 
 				if($subscriber->profile_promotion_activation_datetime) {
 					$promotionsData = $request->session()->get('profile_promotions', []);
+					$promoTier = null;
 					foreach ($promotionsData as $promotionData) {
+						// Bloc de Denis (07.07) : photos (chemins) → photos_json
+						if (array_key_exists('photos', $promotionData)) {
+							$promotionData['photos_json'] = json_encode(
+								array_values((array) $promotionData['photos']),
+								JSON_UNESCAPED_UNICODE
+							);
+							unset($promotionData['photos']);
+						}
+						if (!empty($promotionData['photos_tier'])) {
+							$promoTier = $promotionData['photos_tier'];
+						}
 						$promotion = new Promotion();
 						$promotionData['subscriber_id'] = $subscriber->id;
 						$promotion->saveElement($promotionData);
@@ -1929,6 +1972,20 @@ class SubscriberController extends Controller
 						'total_price'   => $price,
 					]);
 					Cart::add($purchase);
+
+					// Option photos du bloc promotion : A = 3 photos 50 $, B = 6 photos 80 $.
+					if (in_array($promoTier, ['A', 'B'], true)) {
+						$tierPrice = $promoTier === 'B' ? 80 : 50;
+						$tierPurchase = new Purchase();
+						$tierPurchase->fill([
+							'purchase_type' => 'Option profil',
+							'item_name'     => 'promotion_photos_' . $promoTier,
+							'quantity'      => 1,
+							'unit_price'    => $tierPrice,
+							'total_price'   => $tierPrice,
+						]);
+						Cart::add($tierPurchase);
+					}
 				}
 
 				if ($subscriber->profile_image_activation_datetime) {
@@ -2142,6 +2199,29 @@ class SubscriberController extends Controller
 	 * @param Request $request
 	 * @return void
 	 */
+	/**
+	 * Fichier téléversé avec le FORMULAIRE PRINCIPAL d'inscription (photo de la feuille
+	 * d'estimation 10A, photos du bloc promotion) → même dossier temp/session que les
+	 * fichiers d'options (ProfileOptionController::saveTempFile), déplacé au compte
+	 * par moveTemporaryFilesToFinalLocation.
+	 */
+	private function saveRegistrationTempFile(\Illuminate\Http\UploadedFile $file, Request $request): string
+	{
+		$publicPath = rtrim(config('media.public_path', public_path()), '/\\') . '/';
+		$filesDirectory = rtrim(ltrim(config('media.files_directory', 'medias'), '/\\'), '/\\') . '/';
+		$directoryUri = 'temp/registration/' . $request->session()->getId() . '/';
+		$fullDirectory = $publicPath . $filesDirectory . $directoryUri;
+
+		if (!\File::isDirectory($fullDirectory)) {
+			\File::makeDirectory($fullDirectory, 0755, true);
+		}
+
+		$filename = uniqid() . '_' . $file->getClientOriginalName();
+		$file->move($fullDirectory, $filename);
+
+		return '/' . $filesDirectory . $directoryUri . $filename;
+	}
+
 	private function moveTemporaryFilesToFinalLocation(Subscriber $subscriber, Request $request): void
 	{
 		$sessionId = $request->session()->getId();
@@ -2156,7 +2236,7 @@ class SubscriberController extends Controller
 		// Handle files stored in subscriber model during step 5
 		$subscriberData = $request->session()->get('subscriber_model');
 		if ($subscriberData) {
-			$fieldsToCheck = ['image']; // Add other fields that might contain file paths
+			$fieldsToCheck = ['image', 'estimation_sheet_image']; // fields that might contain file paths
 
 			foreach ($fieldsToCheck as $field) {
 				if (!empty($subscriberData->$field) && is_string($subscriberData->$field)) {
@@ -2184,6 +2264,14 @@ class SubscriberController extends Controller
 				foreach ($item as $key => &$value) {
 					if (is_string($value) && str_starts_with($value, $tempWebPrefix)) {
 						$value = $this->moveFileToFinalLocation($value, $subscriber, $key === 'image' ? 'image' : $key);
+					} elseif (is_array($value)) {
+						// tableaux de chemins (photos du bloc promotion)
+						foreach ($value as &$sub) {
+							if (is_string($sub) && str_starts_with($sub, $tempWebPrefix)) {
+								$sub = $this->moveFileToFinalLocation($sub, $subscriber, $key);
+							}
+						}
+						unset($sub);
 					}
 				}
 				unset($value);
