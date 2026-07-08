@@ -377,11 +377,25 @@
                                 @include('partials.option-forms.' . $option)
                                 @if ($option === 'estimation')
                                     {{-- FORM 10A de Denis (07.07 : « remplacer tout avec mon form »).
-                                         Champs réels, soumis avec le formulaire principal (est[…]). --}}
+                                         Champs réels, soumis avec le formulaire principal (est[…]).
+                                         Le « O » rouge EST la case à cliquer (convention 2350 de Denis,
+                                         23.06 : « il faut cliquer le O avant de pouvoir précisez ») —
+                                         cercle rouge vide, rempli quand choisi; le champ à préciser se
+                                         déverrouille au clic du O. --}}
                                     <style>
-                                        .ck-est-o { color:#d33; font-weight:700; margin-right:4px; }
-                                        .ck-est-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:4px 0; font-size:.92rem; }
+                                        .ck-est-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:4px 0; font-size:.92rem; cursor:pointer; }
                                         .ck-est-row input[type=text] { flex:1 1 220px; height:32px !important; }
+                                        .ck-est-row input[type=checkbox], .ck-est-row input[type=radio],
+                                        #opt_panel_promotion input[type=radio] {
+                                            appearance:none; -webkit-appearance:none; margin:0; cursor:pointer;
+                                            width:20px; height:20px; flex:0 0 20px;
+                                            border:2px solid #d33; border-radius:50%; background:#fff;
+                                        }
+                                        .ck-est-row input[type=checkbox]:checked, .ck-est-row input[type=radio]:checked,
+                                        #opt_panel_promotion input[type=radio]:checked {
+                                            background:#d33; box-shadow:inset 0 0 0 3px #fff;
+                                        }
+                                        .ck-est-row input[type=text]:disabled { opacity:.45; background:#efefef; cursor:not-allowed; }
                                         .ck-est-head { font-weight:700; text-decoration:underline; margin:12px 0 4px; }
                                     </style>
                                     <div class="ck-est-head">{{ $en2 ? 'THE ESTIMATE WILL BE PRODUCED:' : "L'ESTIMATION SERA PRODUITE :" }}</div>
@@ -391,38 +405,57 @@
                                         'client_photos' => $en2 ? 'BASED ON CLIENT-PROVIDED PHOTOS' : 'VIA PHOTOS DU CLIENT',
                                         'client_video' => $en2 ? 'BASED ON CLIENT-PROVIDED VIDEO' : 'VIA VIDÉO DU CLIENT',
                                     ] as $k => $lbl)
-                                        <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[produced][{{ $k }}]" value="1" @if(old("est.produced.$k")) checked @endif> {{ $lbl }}</label>
+                                        <label class="ck-est-row"><input type="checkbox" name="est[produced][{{ $k }}]" value="1" @if(old("est.produced.$k")) checked @endif> {{ $lbl }}</label>
                                     @endforeach
 
                                     <div class="ck-est-head">{{ $en2 ? 'COST OF THE ESTIMATE' : "COÛT DE L'ESTIMATION" }}</div>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="free" @if(old('est.cost.type') === 'free') checked @endif> {{ $en2 ? 'FREE OF CHARGE' : 'GRATUIT' }}</label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="on_site" @if(old('est.cost.type') === 'on_site') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE:' : 'PAYABLE SUR PLACE :' }}
+                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="free" @if(old('est.cost.type') === 'free') checked @endif> {{ $en2 ? 'FREE OF CHARGE' : 'GRATUIT' }}</label>
+                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="on_site" @if(old('est.cost.type') === 'on_site') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE:' : 'PAYABLE SUR PLACE :' }}
                                         <input type="text" name="est[cost][on_site_note]" value="{{ old('est.cost.on_site_note') }}"></label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="on_site_credited" @if(old('est.cost.type') === 'on_site_credited') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE AND CREDITED TOWARD THE COST OF THE WORK:' : 'PAYABLE SUR PLACE ET CRÉDITÉ SUR LA FACTURE DES TRAVAUX :' }}
+                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="on_site_credited" @if(old('est.cost.type') === 'on_site_credited') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE AND CREDITED TOWARD THE COST OF THE WORK:' : 'PAYABLE SUR PLACE ET CRÉDITÉ SUR LA FACTURE DES TRAVAUX :' }}
                                         <input type="text" name="est[cost][credited_note]" value="{{ old('est.cost.credited_note') }}"></label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="radio" name="est[cost][type]" value="other" @if(old('est.cost.type') === 'other') checked @endif> {{ $en2 ? 'OTHER:' : 'AUTRE MÉTHODE :' }}
+                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="other" @if(old('est.cost.type') === 'other') checked @endif> {{ $en2 ? 'OTHER:' : 'AUTRE MÉTHODE :' }}
                                         <input type="text" name="est[cost][other_note]" value="{{ old('est.cost.other_note') }}"></label>
 
                                     <div class="ck-est-head">{{ $en2 ? 'ACCEPTED METHODS OF PAYMENT' : 'NOUS ACCEPTONS LE PAIEMENT' }}</div>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][cash]" value="1" @if(old('est.pay.cash')) checked @endif> {{ $en2 ? 'CASH' : 'EN ARGENT' }}</label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][cheque]" value="1" @if(old('est.pay.cheque')) checked @endif> {{ $en2 ? 'CHEQUE' : 'PAR CHÈQUE' }}</label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][interac]" value="1" @if(old('est.pay.interac')) checked @endif> {{ $en2 ? 'INTERAC E-TRANSFER:' : 'VIA INTERAC :' }}
+                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][cash]" value="1" @if(old('est.pay.cash')) checked @endif> {{ $en2 ? 'CASH' : 'EN ARGENT' }}</label>
+                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][cheque]" value="1" @if(old('est.pay.cheque')) checked @endif> {{ $en2 ? 'CHEQUE' : 'PAR CHÈQUE' }}</label>
+                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][interac]" value="1" @if(old('est.pay.interac')) checked @endif> {{ $en2 ? 'INTERAC E-TRANSFER:' : 'VIA INTERAC :' }}
                                         <input type="text" name="est[pay][interac_note]" value="{{ old('est.pay.interac_note') }}"></label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][debit]" value="1" @if(old('est.pay.debit')) checked @endif> {{ $en2 ? 'DEBIT CARDS — SPECIFY ACCEPTED DEBIT CARDS:' : 'CARTES DE DÉBIT — précisez les cartes acceptées :' }}
+                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][debit]" value="1" @if(old('est.pay.debit')) checked @endif> {{ $en2 ? 'DEBIT CARDS — SPECIFY ACCEPTED DEBIT CARDS:' : 'CARTES DE DÉBIT — précisez les cartes acceptées :' }}
                                         <input type="text" name="est[pay][debit_note]" value="{{ old('est.pay.debit_note') }}"></label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span><input type="checkbox" name="est[pay][credit]" value="1" @if(old('est.pay.credit')) checked @endif> {{ $en2 ? 'CREDIT CARDS — SPECIFY ACCEPTED CREDIT CARDS:' : 'CARTES DE CRÉDIT — précisez les cartes acceptées :' }}
+                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][credit]" value="1" @if(old('est.pay.credit')) checked @endif> {{ $en2 ? 'CREDIT CARDS — SPECIFY ACCEPTED CREDIT CARDS:' : 'CARTES DE CRÉDIT — précisez les cartes acceptées :' }}
                                         <input type="text" name="est[pay][credit_note]" value="{{ old('est.pay.credit_note') }}"></label>
 
                                     <div class="ck-est-head">{{ $en2 ? 'APPOINTMENTS & DISCUSSIONS' : 'POUR RENDEZ-VOUS ET DISCUSSIONS SVP' }}</div>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span> {{ $en2 ? 'CALL:' : 'APPELEZ :' }}
+                                    <label class="ck-est-row"><input type="checkbox" name="est[appt][call]" value="1" @if(old('est.appt.call') || old('est.appt.call_note')) checked @endif> {{ $en2 ? 'CALL:' : 'APPELEZ :' }}
                                         <input type="text" name="est[appt][call_note]" value="{{ old('est.appt.call_note') }}"></label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span> {{ $en2 ? 'EMAIL:' : 'COURRIELLEZ :' }}
+                                    <label class="ck-est-row"><input type="checkbox" name="est[appt][email]" value="1" @if(old('est.appt.email') || old('est.appt.email_note')) checked @endif> {{ $en2 ? 'EMAIL:' : 'COURRIELLEZ :' }}
                                         <input type="text" name="est[appt][email_note]" value="{{ old('est.appt.email_note') }}"></label>
 
-                                    <label class="ck-est-row" style="margin-top:8px"><span class="ck-est-o">O</span> <strong>{{ $en2 ? 'CONTRACT CANCELLATION FEES:' : "FRAIS DE CANCELLATION D'UN CONTRAT :" }}</strong>
+                                    <label class="ck-est-row" style="margin-top:8px"><input type="checkbox" name="est[cancellation]" value="1" @if(old('est.cancellation') || old('est.cancellation_note')) checked @endif> <strong>{{ $en2 ? 'CONTRACT CANCELLATION FEES:' : "FRAIS DE CANCELLATION D'UN CONTRAT :" }}</strong>
                                         <input type="text" name="est[cancellation_note]" value="{{ old('est.cancellation_note') }}"></label>
-                                    <label class="ck-est-row"><span class="ck-est-o">O</span> <strong>{{ $en2 ? 'OTHER TERMS SET BY THE SUPPLIER:' : 'AUTRES PAR LE FOURNISSEUR :' }}</strong>
+                                    <label class="ck-est-row"><input type="checkbox" name="est[other]" value="1" @if(old('est.other') || old('est.other_note')) checked @endif> <strong>{{ $en2 ? 'OTHER TERMS SET BY THE SUPPLIER:' : 'AUTRES PAR LE FOURNISSEUR :' }}</strong>
                                         <input type="text" name="est[other_note]" value="{{ old('est.other_note') }}"></label>
+
+                                    <script>
+                                    // Convention 2350 : le champ texte d'une ligne reste verrouillé
+                                    // tant que son « O » n'est pas cliqué. Pour les radios (coût),
+                                    // seule la ligne choisie se déverrouille.
+                                    (function () {
+                                        var panel = document.getElementById('opt_panel_estimation');
+                                        if (!panel) return;
+                                        function sync() {
+                                            panel.querySelectorAll('.ck-est-row').forEach(function (row) {
+                                                var ctl = row.querySelector('input[type=checkbox], input[type=radio]');
+                                                var txt = row.querySelector('input[type=text]');
+                                                if (ctl && txt) { txt.disabled = !ctl.checked; }
+                                            });
+                                        }
+                                        panel.addEventListener('change', sync);
+                                        sync();
+                                    })();
+                                    </script>
 
                                     <label style="margin-top:10px">{{ $en2 ? "PICTURE OF THE SUPPLIER'S ESTIMATION SHEET (optional)" : "PHOTO DE VOTRE FEUILLE D'ESTIMATION (facultatif)" }}</label>
                                     <input type="file" name="estimation_sheet_image" accept="image/*">
