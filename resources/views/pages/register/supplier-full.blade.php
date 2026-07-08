@@ -378,23 +378,16 @@
                                 @if ($option === 'estimation')
                                     {{-- FORM 10A de Denis (07.07 : « remplacer tout avec mon form »).
                                          Champs réels, soumis avec le formulaire principal (est[…]).
-                                         Le « O » rouge EST la case à cliquer (convention 2350 de Denis,
-                                         23.06 : « il faut cliquer le O avant de pouvoir précisez ») —
-                                         cercle rouge vide, rempli quand choisi; le champ à préciser se
-                                         déverrouille au clic du O. --}}
+                                         Le « O » EST la case à cliquer — MÊME design que le master 2350
+                                         (sl-checkbox/sl-radio, contour rouge #d33), et même règle
+                                         (Denis 23.06 : « il faut cliquer le O avant de pouvoir
+                                         précisez ») : le champ se déverrouille au clic du O. --}}
                                     <style>
-                                        .ck-est-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:4px 0; font-size:.92rem; cursor:pointer; }
+                                        .ck-est-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:4px 0; font-size:.92rem; }
                                         .ck-est-row input[type=text] { flex:1 1 220px; height:32px !important; }
-                                        .ck-est-row input[type=checkbox], .ck-est-row input[type=radio],
-                                        #opt_panel_promotion input[type=radio] {
-                                            appearance:none; -webkit-appearance:none; margin:0; cursor:pointer;
-                                            width:20px; height:20px; flex:0 0 20px;
-                                            border:2px solid #d33; border-radius:50%; background:#fff;
-                                        }
-                                        .ck-est-row input[type=checkbox]:checked, .ck-est-row input[type=radio]:checked,
-                                        #opt_panel_promotion input[type=radio]:checked {
-                                            background:#d33; box-shadow:inset 0 0 0 3px #fff;
-                                        }
+                                        {{-- le « O » rouge du master (.form-2350 sl-checkbox::part(control)) --}}
+                                        .ck-est-row sl-checkbox::part(control), .ck-est-row sl-radio::part(control),
+                                        #opt_panel_promotion sl-radio::part(control) { border-color:#d33; }
                                         .ck-est-row input[type=text]:disabled { opacity:.45; background:#efefef; cursor:not-allowed; }
                                         .ck-est-head { font-weight:700; text-decoration:underline; margin:12px 0 4px; }
                                     </style>
@@ -405,38 +398,40 @@
                                         'client_photos' => $en2 ? 'BASED ON CLIENT-PROVIDED PHOTOS' : 'VIA PHOTOS DU CLIENT',
                                         'client_video' => $en2 ? 'BASED ON CLIENT-PROVIDED VIDEO' : 'VIA VIDÉO DU CLIENT',
                                     ] as $k => $lbl)
-                                        <label class="ck-est-row"><input type="checkbox" name="est[produced][{{ $k }}]" value="1" @if(old("est.produced.$k")) checked @endif> {{ $lbl }}</label>
+                                        <div class="ck-est-row"><sl-checkbox name="est[produced][{{ $k }}]" value="1" @checked(old("est.produced.$k"))>{{ $lbl }}</sl-checkbox></div>
                                     @endforeach
 
                                     <div class="ck-est-head">{{ $en2 ? 'COST OF THE ESTIMATE' : "COÛT DE L'ESTIMATION" }}</div>
-                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="free" @if(old('est.cost.type') === 'free') checked @endif> {{ $en2 ? 'FREE OF CHARGE' : 'GRATUIT' }}</label>
-                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="on_site" @if(old('est.cost.type') === 'on_site') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE:' : 'PAYABLE SUR PLACE :' }}
-                                        <input type="text" name="est[cost][on_site_note]" value="{{ old('est.cost.on_site_note') }}"></label>
-                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="on_site_credited" @if(old('est.cost.type') === 'on_site_credited') checked @endif> {{ $en2 ? 'PAYABLE ON-SITE AND CREDITED TOWARD THE COST OF THE WORK:' : 'PAYABLE SUR PLACE ET CRÉDITÉ SUR LA FACTURE DES TRAVAUX :' }}
-                                        <input type="text" name="est[cost][credited_note]" value="{{ old('est.cost.credited_note') }}"></label>
-                                    <label class="ck-est-row"><input type="radio" name="est[cost][type]" value="other" @if(old('est.cost.type') === 'other') checked @endif> {{ $en2 ? 'OTHER:' : 'AUTRE MÉTHODE :' }}
-                                        <input type="text" name="est[cost][other_note]" value="{{ old('est.cost.other_note') }}"></label>
+                                    <sl-radio-group name="est[cost][type]" value="{{ old('est.cost.type') }}">
+                                        <div class="ck-est-row"><sl-radio value="free">{{ $en2 ? 'FREE OF CHARGE' : 'GRATUIT' }}</sl-radio></div>
+                                        <div class="ck-est-row"><sl-radio value="on_site">{{ $en2 ? 'PAYABLE ON-SITE:' : 'PAYABLE SUR PLACE :' }}</sl-radio>
+                                            <input type="text" name="est[cost][on_site_note]" value="{{ old('est.cost.on_site_note') }}"></div>
+                                        <div class="ck-est-row"><sl-radio value="on_site_credited">{{ $en2 ? 'PAYABLE ON-SITE AND CREDITED TOWARD THE COST OF THE WORK:' : 'PAYABLE SUR PLACE ET CRÉDITÉ SUR LA FACTURE DES TRAVAUX :' }}</sl-radio>
+                                            <input type="text" name="est[cost][credited_note]" value="{{ old('est.cost.credited_note') }}"></div>
+                                        <div class="ck-est-row"><sl-radio value="other">{{ $en2 ? 'OTHER:' : 'AUTRE MÉTHODE :' }}</sl-radio>
+                                            <input type="text" name="est[cost][other_note]" value="{{ old('est.cost.other_note') }}"></div>
+                                    </sl-radio-group>
 
                                     <div class="ck-est-head">{{ $en2 ? 'ACCEPTED METHODS OF PAYMENT' : 'NOUS ACCEPTONS LE PAIEMENT' }}</div>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][cash]" value="1" @if(old('est.pay.cash')) checked @endif> {{ $en2 ? 'CASH' : 'EN ARGENT' }}</label>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][cheque]" value="1" @if(old('est.pay.cheque')) checked @endif> {{ $en2 ? 'CHEQUE' : 'PAR CHÈQUE' }}</label>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][interac]" value="1" @if(old('est.pay.interac')) checked @endif> {{ $en2 ? 'INTERAC E-TRANSFER:' : 'VIA INTERAC :' }}
-                                        <input type="text" name="est[pay][interac_note]" value="{{ old('est.pay.interac_note') }}"></label>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][debit]" value="1" @if(old('est.pay.debit')) checked @endif> {{ $en2 ? 'DEBIT CARDS — SPECIFY ACCEPTED DEBIT CARDS:' : 'CARTES DE DÉBIT — précisez les cartes acceptées :' }}
-                                        <input type="text" name="est[pay][debit_note]" value="{{ old('est.pay.debit_note') }}"></label>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[pay][credit]" value="1" @if(old('est.pay.credit')) checked @endif> {{ $en2 ? 'CREDIT CARDS — SPECIFY ACCEPTED CREDIT CARDS:' : 'CARTES DE CRÉDIT — précisez les cartes acceptées :' }}
-                                        <input type="text" name="est[pay][credit_note]" value="{{ old('est.pay.credit_note') }}"></label>
+                                    <div class="ck-est-row"><sl-checkbox name="est[pay][cash]" value="1" @checked(old('est.pay.cash'))>{{ $en2 ? 'CASH' : 'EN ARGENT' }}</sl-checkbox></div>
+                                    <div class="ck-est-row"><sl-checkbox name="est[pay][cheque]" value="1" @checked(old('est.pay.cheque'))>{{ $en2 ? 'CHEQUE' : 'PAR CHÈQUE' }}</sl-checkbox></div>
+                                    <div class="ck-est-row"><sl-checkbox name="est[pay][interac]" value="1" @checked(old('est.pay.interac'))>{{ $en2 ? 'INTERAC E-TRANSFER:' : 'VIA INTERAC :' }}</sl-checkbox>
+                                        <input type="text" name="est[pay][interac_note]" value="{{ old('est.pay.interac_note') }}"></div>
+                                    <div class="ck-est-row"><sl-checkbox name="est[pay][debit]" value="1" @checked(old('est.pay.debit'))>{{ $en2 ? 'DEBIT CARDS — SPECIFY ACCEPTED DEBIT CARDS:' : 'CARTES DE DÉBIT — précisez les cartes acceptées :' }}</sl-checkbox>
+                                        <input type="text" name="est[pay][debit_note]" value="{{ old('est.pay.debit_note') }}"></div>
+                                    <div class="ck-est-row"><sl-checkbox name="est[pay][credit]" value="1" @checked(old('est.pay.credit'))>{{ $en2 ? 'CREDIT CARDS — SPECIFY ACCEPTED CREDIT CARDS:' : 'CARTES DE CRÉDIT — précisez les cartes acceptées :' }}</sl-checkbox>
+                                        <input type="text" name="est[pay][credit_note]" value="{{ old('est.pay.credit_note') }}"></div>
 
                                     <div class="ck-est-head">{{ $en2 ? 'APPOINTMENTS & DISCUSSIONS' : 'POUR RENDEZ-VOUS ET DISCUSSIONS SVP' }}</div>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[appt][call]" value="1" @if(old('est.appt.call') || old('est.appt.call_note')) checked @endif> {{ $en2 ? 'CALL:' : 'APPELEZ :' }}
-                                        <input type="text" name="est[appt][call_note]" value="{{ old('est.appt.call_note') }}"></label>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[appt][email]" value="1" @if(old('est.appt.email') || old('est.appt.email_note')) checked @endif> {{ $en2 ? 'EMAIL:' : 'COURRIELLEZ :' }}
-                                        <input type="text" name="est[appt][email_note]" value="{{ old('est.appt.email_note') }}"></label>
+                                    <div class="ck-est-row"><sl-checkbox name="est[appt][call]" value="1" @checked(old('est.appt.call') || old('est.appt.call_note'))>{{ $en2 ? 'CALL:' : 'APPELEZ :' }}</sl-checkbox>
+                                        <input type="text" name="est[appt][call_note]" value="{{ old('est.appt.call_note') }}"></div>
+                                    <div class="ck-est-row"><sl-checkbox name="est[appt][email]" value="1" @checked(old('est.appt.email') || old('est.appt.email_note'))>{{ $en2 ? 'EMAIL:' : 'COURRIELLEZ :' }}</sl-checkbox>
+                                        <input type="text" name="est[appt][email_note]" value="{{ old('est.appt.email_note') }}"></div>
 
-                                    <label class="ck-est-row" style="margin-top:8px"><input type="checkbox" name="est[cancellation]" value="1" @if(old('est.cancellation') || old('est.cancellation_note')) checked @endif> <strong>{{ $en2 ? 'CONTRACT CANCELLATION FEES:' : "FRAIS DE CANCELLATION D'UN CONTRAT :" }}</strong>
-                                        <input type="text" name="est[cancellation_note]" value="{{ old('est.cancellation_note') }}"></label>
-                                    <label class="ck-est-row"><input type="checkbox" name="est[other]" value="1" @if(old('est.other') || old('est.other_note')) checked @endif> <strong>{{ $en2 ? 'OTHER TERMS SET BY THE SUPPLIER:' : 'AUTRES PAR LE FOURNISSEUR :' }}</strong>
-                                        <input type="text" name="est[other_note]" value="{{ old('est.other_note') }}"></label>
+                                    <div class="ck-est-row" style="margin-top:8px"><sl-checkbox name="est[cancellation]" value="1" @checked(old('est.cancellation') || old('est.cancellation_note'))><strong>{{ $en2 ? 'CONTRACT CANCELLATION FEES:' : "FRAIS DE CANCELLATION D'UN CONTRAT :" }}</strong></sl-checkbox>
+                                        <input type="text" name="est[cancellation_note]" value="{{ old('est.cancellation_note') }}"></div>
+                                    <div class="ck-est-row"><sl-checkbox name="est[other]" value="1" @checked(old('est.other') || old('est.other_note'))><strong>{{ $en2 ? 'OTHER TERMS SET BY THE SUPPLIER:' : 'AUTRES PAR LE FOURNISSEUR :' }}</strong></sl-checkbox>
+                                        <input type="text" name="est[other_note]" value="{{ old('est.other_note') }}"></div>
 
                                     <script>
                                     // Convention 2350 : le champ texte d'une ligne reste verrouillé
@@ -447,13 +442,22 @@
                                         if (!panel) return;
                                         function sync() {
                                             panel.querySelectorAll('.ck-est-row').forEach(function (row) {
-                                                var ctl = row.querySelector('input[type=checkbox], input[type=radio]');
+                                                var ctl = row.querySelector('sl-checkbox, sl-radio');
                                                 var txt = row.querySelector('input[type=text]');
-                                                if (ctl && txt) { txt.disabled = !ctl.checked; }
+                                                if (!ctl || !txt) return;
+                                                var on = ctl.tagName === 'SL-RADIO'
+                                                    ? (ctl.closest('sl-radio-group') || {}).value === ctl.getAttribute('value')
+                                                    : !!ctl.checked;
+                                                txt.disabled = !on;
                                             });
                                         }
-                                        panel.addEventListener('change', sync);
+                                        panel.addEventListener('sl-change', sync);
                                         sync();
+                                        // re-synchroniser une fois les composants Shoelace chargés
+                                        if (window.customElements && customElements.whenDefined) {
+                                            customElements.whenDefined('sl-checkbox').then(sync);
+                                            customElements.whenDefined('sl-radio-group').then(sync);
+                                        }
                                     })();
                                     </script>
 
@@ -484,17 +488,16 @@
                                         <input type="text" name="promo[end_day]" value="{{ old('promo.end_day') }}" maxlength="2" style="width:5ch"> <span style="font-size:.85rem">{{ $en2 ? 'DAY' : 'JOUR' }}</span>
                                     </div>
                                     <label style="margin-top:10px">{{ $en2 ? 'PROMOTION PHOTOS (one choice)' : 'PHOTOS DE LA PROMOTION (un seul choix)' }}</label>
-                                    <div style="display:flex;gap:16px;flex-wrap:wrap">
-                                        <label style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px">
-                                            <input type="radio" name="promo[photos_tier]" value="" @if(old('promo.photos_tier','') === '') checked @endif> {{ $en2 ? 'No photos' : 'Sans photos' }}
-                                        </label>
-                                        <label style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px">
-                                            <input type="radio" name="promo[photos_tier]" value="A" @if(old('promo.photos_tier') === 'A') checked @endif> OPTION A – 3 PHOTOS 50 $
-                                        </label>
-                                        <label style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px">
-                                            <input type="radio" name="promo[photos_tier]" value="B" @if(old('promo.photos_tier') === 'B') checked @endif> OPTION B – 6 PHOTOS 80 $
-                                        </label>
-                                    </div>
+                                    {{-- « O OPTION A/B » du bloc de Denis : mêmes O que le master 2350
+                                         (sl-radio, contour rouge). « none » = sans photos (le serveur ne
+                                         retient que A ou B). --}}
+                                    <sl-radio-group name="promo[photos_tier]" value="{{ old('promo.photos_tier') ?: 'none' }}">
+                                        <div style="display:flex;gap:16px;flex-wrap:wrap">
+                                            <sl-radio value="none" style="font-weight:600;font-size:.9rem">{{ $en2 ? 'No photos' : 'Sans photos' }}</sl-radio>
+                                            <sl-radio value="A" style="font-weight:600;font-size:.9rem">OPTION A – 3 PHOTOS 50 $</sl-radio>
+                                            <sl-radio value="B" style="font-weight:600;font-size:.9rem">OPTION B – 6 PHOTOS 80 $</sl-radio>
+                                        </div>
+                                    </sl-radio-group>
                                     <div id="promo_photos_wrap" style="display:none;margin-top:6px">
                                         <label>{{ $en2 ? 'Your promotion photos' : 'Vos photos de promotion' }} (<span id="promo_photos_max">3</span> max)</label>
                                         <input type="file" name="promo_photos[]" accept="image/*" multiple>
@@ -914,15 +917,15 @@
      ou B (6 max); nombre de fichiers vérifié au choix. --}}
 <script>
 (function () {
-    var radios = document.querySelectorAll('input[name="promo[photos_tier]"]');
+    var group = document.querySelector('sl-radio-group[name="promo[photos_tier]"]');
     var wrap = document.getElementById('promo_photos_wrap');
     var maxEl = document.getElementById('promo_photos_max');
     var fileInput = wrap ? wrap.querySelector('input[type=file]') : null;
-    if (!radios.length || !wrap) return;
+    if (!group || !wrap) return;
     var en = document.documentElement.lang === 'en';
     function maxFor() {
-        var r = document.querySelector('input[name="promo[photos_tier]"]:checked');
-        return r && r.value === 'B' ? 6 : (r && r.value === 'A' ? 3 : 0);
+        var v = group.value || group.getAttribute('value');
+        return v === 'B' ? 6 : (v === 'A' ? 3 : 0);
     }
     function sync() {
         var m = maxFor();
@@ -930,7 +933,7 @@
         if (maxEl) maxEl.textContent = m;
         if (!m && fileInput) fileInput.value = '';
     }
-    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    group.addEventListener('sl-change', sync);
     if (fileInput) fileInput.addEventListener('change', function () {
         var m = maxFor();
         if (m && fileInput.files.length > m) {
@@ -939,6 +942,9 @@
         }
     });
     sync();
+    if (window.customElements && customElements.whenDefined) {
+        customElements.whenDefined('sl-radio-group').then(sync);
+    }
 })();
 </script>
 
