@@ -17,6 +17,8 @@
   "subscription-details": "Your subscription is valid until :date inclusively",
   "renewal_email_title": "Your CIRKLE subscription expires soon",
   "renewal_email_body": "Your subscription expires on :date. To renew or cancel it, go to your profile: :url",
+  "option_renewal_email_title": "Your CIRKLE \":option\" option expires soon",
+  "option_renewal_email_body": "Your monthly \":option\" option expires on :date. To keep it for another month, renew it here: :url — without renewal it will be removed from your listing (and its logo will disappear next to your name).",
   "cancel-at-term-end": "Your subscription stays active until the end of the term, with no renewal and no refund.",
   "invoices": "My invoices",
   "invoice-download": "Download invoice",

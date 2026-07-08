@@ -98,6 +98,8 @@
     "summary": "Sommaire des frais",
     "empty": "Aucune option sélectionnée.",
     "from": "à partir de",
+    "per-month": "/ mois",
+    "one-time": "(frais unique)",
     "months": "mois",
     "url-forfait": "Forfait site web",
     "url-forfait-required": "Veuillez choisir un forfait site web.",

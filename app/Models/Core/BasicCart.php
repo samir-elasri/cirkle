@@ -23,6 +23,12 @@ use Arr;
 class BasicCart extends Model
 {
 
+	/** Options de profil ayant des colonnes profile_*_active / _activation_datetime. */
+	private const PROFILE_OPTION_ITEMS = ['license', 'diploma', 'promotion', 'image', 'estimation', 'job_offer', 'url'];
+
+	/** Options facturées PAR MOIS (Denis 08.07) — chaque achat couvre un mois. */
+	public const MONTHLY_OPTIONS = ['promotion', 'job_offer'];
+
 	protected $currentCart;
 
 	protected $coupon;
@@ -202,6 +208,12 @@ class BasicCart extends Model
                         $item->order_id = $order->id;
                         $item->save();
                         $cartType = 'registration';
+                    } elseif (!in_array($item->item_name, self::PROFILE_OPTION_ITEMS, true)) {
+                        // Complément sans indicateur de profil (ex. promotion_photos_A/B) :
+                        // on enregistre l'achat, sans toucher aux colonnes profile_*.
+                        $item->order_id = $order->id;
+                        $item->save();
+                        $cartType = 'option';
                     } else {
                         // Handle profile options as before
                         $optionName = 'profile_' . $item->item_name . '_active';
@@ -216,6 +228,12 @@ class BasicCart extends Model
                             if ($months) {
                                 $subscriber->url_forfait_end = now()->addMonths($months);
                             }
+                        }
+                        // Options mensuelles (Denis 08.07) : l'achat couvre UN mois — échéance
+                        // à +1 mois, rappel/grâce puis désactivation gérés par DailyCron.
+                        if (in_array($item->item_name, self::MONTHLY_OPTIONS, true)) {
+                            $subscriber->{'profile_' . $item->item_name . '_expires_at'} = now()->addMonth();
+                            $subscriber->{'profile_' . $item->item_name . '_renewal_reminder_sent_at'} = null;
                         }
                         $subscriber->$optionDatetime = now();
                         $subscriber->save();

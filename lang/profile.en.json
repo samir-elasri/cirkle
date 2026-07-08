@@ -98,6 +98,8 @@
     "summary": "Fee summary",
     "empty": "No option selected.",
     "from": "from",
+    "per-month": "/ month",
+    "one-time": "(one-time fee)",
     "months": "months",
     "url-forfait": "Website plan",
     "url-forfait-required": "Please choose a website plan.",

@@ -32,6 +32,7 @@ class DailyCron extends Command
         $this->sendSurveys();
         $this->searchNotifications();
         $this->subscriptionLifecycle();
+        $this->monthlyOptionsLifecycle();
     }
 
     /**
@@ -99,6 +100,76 @@ class DailyCron extends Command
         foreach ($toDeactivate as $sub) {
             $sub->update(['active' => false]);
             $sub->subscriber?->update(['is_public' => false]);
+        }
+    }
+
+    /**
+     * Options MENSUELLES — Recrutement et Promotion à 100 $/mois (Denis 08.07).
+     * Chaque achat couvre un mois (échéance posée par BasicCart::buyCart). Même
+     * cycle que l'abonnement : rappel avant l'échéance, grâce, puis désactivation.
+     * À la désactivation, le logo (PROMO / E) disparaît de la fiche — règle de
+     * Denis (18.06 : « aussitôt qu'il décide de ne pas payer il faut enlever le
+     * logo ») — et l'option redevient achetable depuis « Ajouter des options ».
+     */
+    private function monthlyOptionsLifecycle(): void
+    {
+        $now = now();
+        $window = (int) (setting('renewal_reminder_days') ?: 10);
+
+        foreach (\App\Models\Core\BasicCart::MONTHLY_OPTIONS as $option) {
+            $activeCol   = "profile_{$option}_active";
+            $expiresCol  = "profile_{$option}_expires_at";
+            $reminderCol = "profile_{$option}_renewal_reminder_sent_at";
+
+            // 1) Rappel avant l'échéance (une seule fois par cycle)
+            $expiringSoon = Subscriber::query()
+                ->where($activeCol, true)
+                ->whereNotNull($expiresCol)
+                ->whereNull($reminderCol)
+                ->whereDate($expiresCol, '<=', $now->copy()->addDays($window)->toDateString())
+                ->get();
+
+            $this->info($expiringSoon->count() . " {$option} option(s) expiring within {$window} days");
+
+            foreach ($expiringSoon as $subscriber) {
+                try {
+                    if ($subscriber->email) {
+                        \Mail::to($subscriber->email)->send(new \App\Mail\AdminMail(
+                            __('subscription.option_renewal_email_body', [
+                                'option' => setting("{$option}_title") ?: $option,
+                                'date'   => prettyDate($subscriber->$expiresCol),
+                                'url'    => urlRouteName('add-options', [], true),
+                            ]),
+                            __('subscription.option_renewal_email_title', [
+                                'option' => setting("{$option}_title") ?: $option,
+                            ])
+                        ));
+                    }
+                    $subscriber->$reminderCol = $now;
+                    $subscriber->save();
+                } catch (\Throwable $e) {
+                    $this->error("{$option} renewal reminder failed for subscriber " . $subscriber->id . ': ' . $e->getMessage());
+                }
+            }
+
+            // 2) Échéance dépassée au-delà de la grâce → désactivation : le logo
+            //    disparaît (les fiches lisent profile_*_active) et l'option
+            //    redevient disponible à l'achat pour un nouveau mois.
+            $toDeactivate = Subscriber::query()
+                ->where($activeCol, true)
+                ->whereNotNull($expiresCol)
+                ->whereDate($expiresCol, '<', $now->copy()->subDays($window)->toDateString())
+                ->get();
+
+            $this->info($toDeactivate->count() . " {$option} option(s) to deactivate (month ended)");
+
+            foreach ($toDeactivate as $subscriber) {
+                $subscriber->$activeCol = false;
+                $subscriber->{"profile_{$option}_activation_datetime"} = null;
+                $subscriber->$expiresCol = null;
+                $subscriber->$reminderCol = null;
+                $subscriber->save();
+            }
         }
     }
 

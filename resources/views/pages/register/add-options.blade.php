@@ -45,7 +45,9 @@
                                     @if($option === 'url')
                                         @lang('profile.add-options.from') {{ prettyPrice(100) }}
                                     @else
-                                        {{ prettyPrice($optionPrices[$option]) }}
+                                        {{-- Cadence (Denis 08.07) : Promotion et Recrutement PAR MOIS,
+                                             les autres en frais unique. --}}
+                                        {{ prettyPrice($optionPrices[$option]) }} {{ in_array($option, ['promotion', 'job_offer'], true) ? __('profile.add-options.per-month') : __('profile.add-options.one-time') }}
                                     @endif
                                 </span>
                                 {{-- Bouton « Ouvrir » : ouvre/ferme le sous-formulaire de l'option (demandé par Denis).

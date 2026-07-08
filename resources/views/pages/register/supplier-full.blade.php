@@ -75,24 +75,30 @@
                 </style>
                 <div class="registration-title">1. {{ $t('Coordonnées', 'Contact details') }}</div>
 
-                <div class="form__column ck-coord"><label>{{ __('auth.register.company_name') }}</label><input type="text" name="company_name" value="{{ old('company_name') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.owner_names') }}</label><input type="text" name="owner_names" value="{{ old('owner_names') }}"></div>
+                {{-- BLOCS 100 % VIDES (Denis 08.07) : le remplissage automatique du navigateur
+                     remplissait les coordonnées (et, par ricochet, les codes postaux — Chrome
+                     remplit tout le « groupe adresse » d'un coup). Même parade que les boîtes
+                     de codes postaux : autocomplete off + readonly retiré au focus, car le
+                     navigateur ne remplit jamais un champ readonly. --}}
+                @php $ckEmpty = 'autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\')"'; @endphp
+                <div class="form__column ck-coord"><label>{{ __('auth.register.company_name') }}</label><input type="text" name="company_name" value="{{ old('company_name') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.owner_names') }}</label><input type="text" name="owner_names" value="{{ old('owner_names') }}" {!! $ckEmpty !!}></div>
                 <div class="form__column ck-coord"><label>{{ __('auth.register.legal_form_id') }}</label>
                     <sl-select name="legal_form_id" value="{{ old('legal_form_id') }}" placeholder="{{ __('main.choose') }}">
                         @foreach ($legalForms as $lf)<sl-option value="{{ $lf->id }}">{{ $lf->title }}</sl-option>@endforeach
                     </sl-select>
                 </div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.federal_tax_number') }}</label><input type="text" name="federal_tax_number" value="{{ old('federal_tax_number') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.street') }}</label><input type="text" name="street" value="{{ old('street') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.city') }}</label><input type="text" name="city" value="{{ old('city') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.postal_code') }}</label><input type="text" name="postal_code" value="{{ old('postal_code') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.phone') }}</label><input type="text" name="phone" value="{{ old('phone') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.toll_free_phone') }}</label><input type="text" name="toll_free_phone" value="{{ old('toll_free_phone') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.fax') }}</label><input type="text" name="fax" value="{{ old('fax') }}"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.federal_tax_number') }}</label><input type="text" name="federal_tax_number" value="{{ old('federal_tax_number') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.street') }}</label><input type="text" name="street" value="{{ old('street') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.city') }}</label><input type="text" name="city" value="{{ old('city') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.postal_code') }}</label><input type="text" name="postal_code" value="{{ old('postal_code') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.phone') }}</label><input type="text" name="phone" value="{{ old('phone') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.toll_free_phone') }}</label><input type="text" name="toll_free_phone" value="{{ old('toll_free_phone') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.fax') }}</label><input type="text" name="fax" value="{{ old('fax') }}" {!! $ckEmpty !!}></div>
                 {{-- autocomplete off : le navigateur de Denis remplissait « demo.fourn… » tout seul --}}
-                <div class="form__column ck-coord"><label>{{ $t('Adresse courriel', 'Email address') }}</label><input type="email" name="email" value="{{ old('email') }}" autocomplete="off"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.start_date') }}</label><input type="date" name="start_date" value="{{ old('start_date') }}"></div>
-                <div class="form__column ck-coord"><label>{{ __('auth.register.insurance_coverage') }}</label><input type="text" name="insurance_coverage" value="{{ old('insurance_coverage') }}"></div>
+                <div class="form__column ck-coord"><label>{{ $t('Adresse courriel', 'Email address') }}</label><input type="email" name="email" value="{{ old('email') }}" {!! $ckEmpty !!}></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.start_date') }}</label><input type="date" name="start_date" value="{{ old('start_date') }}" autocomplete="off"></div>
+                <div class="form__column ck-coord"><label>{{ __('auth.register.insurance_coverage') }}</label><input type="text" name="insurance_coverage" value="{{ old('insurance_coverage') }}" {!! $ckEmpty !!}></div>
 
                 {{-- Heures d'affaires : 7 jours, heure de début → heure de fin (dropdowns 15 min). --}}
                 @php
@@ -470,18 +476,21 @@
                                         <input type="text" data-name="legend">
                                         <input type="hidden" data-name="is_photos" value="1">
                                     @elseif ($option === 'diploma')
-                                        {{-- Tablo de Denis (07.07) : nom du cours (large) | école | date --}}
+                                        {{-- Tablo de Denis (07.07) : nom du cours (large) | école | date.
+                                             Blocs VIDES (Denis 08.07) : même parade anti-remplissage
+                                             que les coordonnées. --}}
                                         <label>{{ $en2 ? 'NAME OF THE COURSE OR ACADEMIC TRAINING' : 'NOM DU COURS OU DE LA FORMATION ACADÉMIQUE' }}</label>
-                                        <input type="text" data-name="{{ app()->getLocale() }}[title]">
+                                        <input type="text" data-name="{{ app()->getLocale() }}[title]" {!! $ckEmpty !!}>
                                         <label>{{ $en2 ? 'OFFICIAL NAME OF THE SCHOOL, UNIVERSITY, TRADE OR PROFESSIONAL SCHOOL' : "NOM OFFICIEL DE L'ÉCOLE, UNIVERSITÉ, ÉCOLE DE MÉTIERS OU PROFESSIONNELLE" }}</label>
-                                        <input type="text" data-name="school">
+                                        <input type="text" data-name="school" {!! $ckEmpty !!}>
                                         <label>{{ $en2 ? 'GRADUATION DATE (YYYY/MM)' : 'DATE DU DIPLÔME (AAAA/MM)' }}</label>
-                                        <input type="text" data-name="graduated_at" maxlength="7">
+                                        <input type="text" data-name="graduated_at" maxlength="7" {!! $ckEmpty !!}>
                                     @elseif ($option === 'license')
                                         {{-- Tablo de Denis (07.07, sans STATUS ni COMMENTS) :
-                                             TYPE | ÉMETTEUR (large) | NO | DÉBUT | FIN --}}
+                                             TYPE | ÉMETTEUR (large) | NO | DÉBUT | FIN.
+                                             Blocs VIDES (Denis 08.07) : anti-remplissage. --}}
                                         <label>TYPE</label>
-                                        <input type="text" data-name="{{ app()->getLocale() }}[title]" list="ck_license_types">
+                                        <input type="text" data-name="{{ app()->getLocale() }}[title]" list="ck_license_types" {!! $ckEmpty !!}>
                                         <datalist id="ck_license_types">
                                             @foreach(($en2
                                                 ? ['Operating Permit','Professional Licence','Accreditation / Certification','Professional Association','Professional Order','Union','Government Authorization','Master Title / Specialization','Medical / Technical Accreditation','Sector Recognition','Other']
@@ -490,26 +499,21 @@
                                             @endforeach
                                         </datalist>
                                         <label>{{ $en2 ? 'OFFICIAL NAME OF ISSUING AUTHORITY / ORGANIZATION' : "NOM OFFICIEL DE L'ÉMETTEUR / ORGANISME" }}</label>
-                                        <input type="text" data-name="issuer">
+                                        <input type="text" data-name="issuer" {!! $ckEmpty !!}>
                                         <label>{{ $en2 ? 'PERMIT / LICENCE / MEMBERSHIP / REGISTRATION NO.' : 'NO DE PERMIS / LICENCE / MEMBRE / INSCRIPTION' }}</label>
-                                        <input type="text" data-name="registration_number">
+                                        <input type="text" data-name="registration_number" {!! $ckEmpty !!}>
                                         <label>{{ $en2 ? 'START DATE (YYYY/MM)' : 'DATE DE DÉBUT (AAAA/MM)' }}</label>
-                                        <input type="text" data-name="start_date" maxlength="7">
+                                        <input type="text" data-name="start_date" maxlength="7" {!! $ckEmpty !!}>
                                         <label>{{ $en2 ? 'EXPIRY DATE (YYYY/MM)' : 'DATE DE FIN (AAAA/MM)' }}</label>
-                                        <input type="text" data-name="expiry_date" maxlength="7">
+                                        <input type="text" data-name="expiry_date" maxlength="7" {!! $ckEmpty !!}>
                                     @else
-                                        <label>{{ $en2 ? 'Title (FR)' : 'Titre (FR)' }}</label>
-                                        <input type="text" data-name="fr[title]">
-                                        <label>{{ $en2 ? 'Description (FR)' : 'Description (FR)' }}</label>
-                                        <textarea data-name="fr[description]"></textarea>
-                                        <label>{{ $en2 ? 'Title (EN)' : 'Titre (EN)' }}</label>
-                                        <input type="text" data-name="en[title]">
-                                        <label>{{ $en2 ? 'Description (EN)' : 'Description (EN)' }}</label>
-                                        <textarea data-name="en[description]"></textarea>
-                                        @if ($option === 'promotion')
-                                            <label>{{ $en2 ? 'Image (optional)' : 'Image (facultatif)' }}</label>
-                                            <input type="file" data-name="image" accept="image/*">
-                                        @endif
+                                        {{-- Recrutement (Denis 08.07 : « enlever le français ») : UNE seule
+                                             langue — celle de la plateforme — comme les tablos Permis et
+                                             Diplômes. Plus de champs Titre/Description (FR) + (EN). --}}
+                                        <label>{{ $en2 ? 'JOB TITLE' : 'TITRE DU POSTE' }}</label>
+                                        <input type="text" data-name="{{ app()->getLocale() }}[title]" {!! $ckEmpty !!}>
+                                        <label>{{ $en2 ? 'JOB DESCRIPTION (tasks, requirements, schedule, how to apply)' : 'DESCRIPTION DU POSTE (tâches, exigences, horaire, comment postuler)' }}</label>
+                                        <textarea data-name="{{ app()->getLocale() }}[description]"></textarea>
                                     @endif
 
                                     <div class="ck-opt-actions">
@@ -520,10 +524,15 @@
                                 @endif
 
                                 {{-- Dernière ligne : le TARIF de l'option (Denis 07.07) — style
-                                     « COÛT UNIQUE » surligné de ses formulaires. --}}
-                                @php $optPrice = (float) setting("{$option}_price"); @endphp
+                                     « COÛT UNIQUE » surligné de ses formulaires. Cadence (Denis 08.07) :
+                                     Recrutement et Promotion PAR MOIS, les autres en frais unique. --}}
+                                @php
+                                    $optPrice = (float) setting("{$option}_price");
+                                    $optMonthly = in_array($option, ['promotion', 'job_offer'], true);
+                                @endphp
                                 <div style="margin-top:12px;background:#ffff00;border:1px solid #e0d000;border-radius:6px;padding:8px 12px;font-weight:700;display:inline-block">
                                     {{ $en2 ? 'FEE:' : 'TARIF :' }} {{ number_format($optPrice, 2) }} $
+                                    {{ $optMonthly ? ($en2 ? '/ MONTH' : '/ MOIS') : ($en2 ? '(ONE-TIME FEE)' : '(FRAIS UNIQUE)') }}
                                     @if($option === 'promotion') <span style="font-weight:600">( + OPTION A 50 $ / OPTION B 80 $ )</span>@endif
                                 </div>
                             </div>

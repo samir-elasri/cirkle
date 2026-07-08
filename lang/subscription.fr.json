@@ -17,6 +17,8 @@
   "subscription-details": "Votre abonnement est valide jusqu'au :date inclusivement",
   "renewal_email_title": "Votre abonnement CIRKLE expire bientôt",
   "renewal_email_body": "Votre abonnement expire le :date. Pour le renouveler ou l'annuler, rendez-vous dans votre profil : :url",
+  "option_renewal_email_title": "Votre option « :option » CIRKLE expire bientôt",
+  "option_renewal_email_body": "Votre option mensuelle « :option » expire le :date. Pour la conserver un mois de plus, renouvelez-la ici : :url — sans renouvellement, elle sera retirée de votre fiche (et son logo disparaîtra à côté de votre nom).",
   "cancel-at-term-end": "Votre abonnement restera actif jusqu'à la fin du terme, sans renouvellement ni remboursement.",
   "invoices": "Mes factures",
   "invoice-download": "Télécharger la facture",
