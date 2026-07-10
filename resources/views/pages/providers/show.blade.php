@@ -389,6 +389,10 @@
                                     <div>
                                         <div>{{ $jobOffer->title }}</div>
                                         <div class="label-style">{{ $jobOffer->description }}</div>
+                                        {{-- PHOTO du formulaire de recrutement du fournisseur (Denis 09.07) --}}
+                                        @if ($jobOffer->image)
+                                            <div style="margin-top:8px">{{ Html::image($jobOffer->image, '', ['style' => 'max-width:420px;border-radius:8px']) }}</div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>

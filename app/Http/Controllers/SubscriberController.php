@@ -181,6 +181,19 @@ class SubscriberController extends Controller
 			return Redirect::to(urlRouteName('home'))->with('error', __('auth.already-loggedin'));
 		}
 
+		// VISITE FRAÎCHE (pas un retour d'erreurs) : purger le brouillon d'une
+		// tentative précédente — sinon la fiche 2350 et les listes d'options se
+		// repeupleraient (Denis 09.07 : « tous les blocs doivent être vides »).
+		// Au retour d'erreurs (old input flashé), on GARDE tout : le fournisseur
+		// ne recommence pas à zéro.
+		if (!$request->session()->hasOldInput()) {
+			$request->session()->forget([
+				'registerFormData', 'subscriber_model', 'subscriber_services', 'postal_codes',
+				'profile_licenses', 'profile_diplomas', 'profile_promotions',
+				'profile_subscriber_images', 'profile_job_offers',
+			]);
+		}
+
 		$params['legalForms'] = Category::getListByIdentifier('legal_forms');
 
 		$params['subcategories'] = ServiceCategory::where('active', '=', true)
@@ -266,8 +279,14 @@ class SubscriberController extends Controller
 			'password_confirmation' => 'required_with:password|same:password',
 			'accept_condition'    => 'accepted',
 		];
-		$rules[$zoneType === 'province' ? 'subscription_state_id' : 'postal_codes'] =
-			$zoneType === 'province' ? 'required|exists:states,id' : 'required|array';
+		// Zone province : 1 OU PLUSIEURS provinces (Denis 09.07 : « le fourn peut
+		// choisir 1 ou plusieurs prov ») — facturées chacune à son prix.
+		if ($zoneType === 'province') {
+			$rules['subscription_state_ids']   = 'required|array|min:1';
+			$rules['subscription_state_ids.*'] = 'exists:states,id';
+		} else {
+			$rules['postal_codes'] = 'required|array';
+		}
 
 		$validator = Validator::make($request->all(), $rules);
 		$validator->setAttributeNames([
@@ -282,7 +301,8 @@ class SubscriberController extends Controller
 			'conclusion_read' => app()->getLocale() === 'en' ? 'Conclusion page' : 'Page Conclusion',
 			'subscription_id' => __('auth.register.subscription_id'),
 			'postal_codes' => __('auth.register.postal_codes'),
-			'subscription_state_id' => 'Province',
+			'subscription_state_ids' => 'Province(s)',
+			'subscription_state_ids.*' => 'Province',
 			'password' => __('auth.register.password'),
 			'password_confirmation' => __('auth.register.password_confirmation'),
 			'accept_condition' => __('auth.register.terms'),
@@ -290,13 +310,22 @@ class SubscriberController extends Controller
 
 		$selectedCategory = $request->input('service_category_id');
 		$validator->after(function ($v) use ($request, $zoneType, $selectedCategory) {
-			$stateId = $zoneType === 'province' ? ($request->input('subscription_state_id') ?: null) : null;
-			$exists = SubscriptionPrice::where('subscription_id', '=', $request->input('subscription_id') ?: 0)
-				->where('service_category_id', '=', $selectedCategory)
-				->where('state_id', '=', $stateId)
-				->exists();
-			if (!$exists) {
-				$v->errors()->add('subscription_id', "Ce forfait n'est pas disponible pour cette zone.");
+			// Chaque zone choisie (le code postal, ou CHAQUE province cochée) doit
+			// avoir un prix pour ce couple catégorie × abonnement.
+			$stateIds = $zoneType === 'province'
+				? array_filter((array) $request->input('subscription_state_ids', []))
+				: [null];
+			foreach ($stateIds as $stateId) {
+				$exists = SubscriptionPrice::where('subscription_id', '=', $request->input('subscription_id') ?: 0)
+					->where('service_category_id', '=', $selectedCategory)
+					->where('state_id', '=', $stateId)
+					->exists();
+				if (!$exists) {
+					$zoneLabel = $stateId ? optional(State::find($stateId))->title : null;
+					$v->errors()->add('subscription_id', $zoneLabel
+						? "Ce forfait n'est pas disponible pour la province « {$zoneLabel} »."
+						: "Ce forfait n'est pas disponible pour cette zone.");
+				}
 			}
 			if ($zoneType === 'postal') {
 				$filled = collect($request->input('postal_codes', []))->filter(fn ($c) => trim((string) $c) !== '')->count();
@@ -313,6 +342,19 @@ class SubscriberController extends Controller
 		});
 
 		if ($validator->fails()) {
+			// Denis 09.07 : « qd submit s'il manque info… il faut que le fourn
+			// recommence à zéro ???? » — NON. La fiche 2350 est rechargée par une
+			// requête AJAX SÉPARÉE, pour laquelle le old() flashé est déjà consommé.
+			// On garde donc les réponses de la fiche en session (le partial
+			// service-form lit registerFormData.* en repli); createSupplierFull
+			// purge ce brouillon sur une visite fraîche (blocs vides).
+			$request->session()->put('registerFormData', array_merge(
+				(array) $request->session()->get('registerFormData', []),
+				$request->only([
+					'services', 'service_input', 'custom_services',
+					'capabilities', 'capability_input', 'custom_capabilities',
+				])
+			));
 			return redirect()->back()->withInput()->withErrors($validator);
 		}
 
@@ -323,7 +365,7 @@ class SubscriberController extends Controller
 			'insurance_coverage', 'business_hours',
 			'provider_type', 'service_category_id', 'services', 'service_input', 'custom_services',
 			'capabilities', 'capability_input', 'custom_capabilities',
-			'subscription_id', 'zone_type', 'postal_codes', 'subscription_state_id',
+			'subscription_id', 'zone_type', 'postal_codes', 'subscription_state_ids',
 		]);
 		$form['zone_type'] = $zoneType;
 
@@ -1865,19 +1907,28 @@ class SubscriberController extends Controller
 				Cart::empty();
 
 				// Abonnement : prix résolu selon la CATÉGORIE + la ZONE choisie
-				// (code postal = state NULL, ou la province). Corrige aussi le prix
+				// (code postal = state NULL, ou la/les provinces). Corrige aussi le prix
 				// par catégorie (l'ancien « premier prix » était arbitraire).
-				$subscriptionItem = Cart::getItem($request->session()->get('registerFormData.subscription_id'), Subscription::class);
-				if ($subscriptionItem) {
-					$zoneStateId = $request->session()->get('registerFormData.subscription_state_id') ?: null;
+				// Denis 09.07 : « le fourn peut choisir 1 ou plusieurs prov » — UNE ligne
+				// d'abonnement au panier PAR province (chacune à son prix), donc buyCart
+				// crée un PurchasedSub par province (sa zone sur purchased_subs.state_id).
+				$subscriptionId = $request->session()->get('registerFormData.subscription_id');
+				$zoneStateIds = array_values(array_filter(
+					(array) ($request->session()->get('registerFormData.subscription_state_ids')
+						?: $request->session()->get('registerFormData.subscription_state_id')) // ancien assistant (une seule)
+				));
+				$categoryId = $request->session()->get('registerFormData.service_category_id');
+				foreach ($zoneStateIds ?: [null] as $zoneStateId) {
+					$subscriptionItem = Cart::getItem($subscriptionId, Subscription::class);
+					if (!$subscriptionItem) { break; }
 					$resolvedCost = SubscriptionPrice::where('subscription_id', '=', $subscriptionItem->id)
-						->where('service_category_id', '=', $request->session()->get('registerFormData.service_category_id'))
+						->where('service_category_id', '=', $categoryId)
 						->where('state_id', '=', $zoneStateId)
 						->value('cost');
 					if ($resolvedCost !== null) {
 						// Forfait CODE POSTAL : facturé PAR code postal, 1 à 10 (Denis 02.07 :
 						// « Plan price = 75 $ per POSTAL CODE » + son 2350 « BILLING ACCORDINGLY »).
-						// Par province : prix unique de la province.
+						// Par province : prix unique de CHAQUE province choisie.
 						$nbCodes = $zoneStateId === null ? max(1, $postalCodes->count()) : 1;
 						$subscriptionItem->cost = (float) $resolvedCost * $nbCodes; // honoré par Subscription::getCostAttribute
 					}

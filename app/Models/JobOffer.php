@@ -59,6 +59,7 @@ class JobOffer extends Model
 
     protected $fillable = [
         'currently_recruiting',
+        'image',
         'subscriber_id',
         'title',
         'description',
@@ -78,6 +79,7 @@ class JobOffer extends Model
 
     protected array $niceNames = [
 		'currently_recruiting' => 'Recrutement en cours',
+		'image' => 'Photo (formulaire du fournisseur)',
 		'title' => 'Titre',
 		'description' => 'Description',
 	];

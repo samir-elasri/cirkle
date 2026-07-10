@@ -260,9 +260,21 @@
                         <label class="zone-head"><input type="radio" name="zone_type" value="province">
                             🍁 {{ app()->getLocale() === 'en' ? 'BY PROVINCE' : 'PAR PROVINCE' }}</label>
                         <div class="zone-body">
-                            <sl-select name="subscription_state_id" id="subscription_state_id" value="{{ old('subscription_state_id') }}" placeholder="{{ __('main.choose') }}">
-                                @foreach($provinces as $province)<sl-option value="{{ $province->id }}">{{ $province->title }}</sl-option>@endforeach
-                            </sl-select>
+                            {{-- 1 OU PLUSIEURS provinces (Denis 09.07) — chacune à son prix,
+                                 le total s'additionne; le prix s'affiche à côté de chaque
+                                 province dès que la profession et la durée sont choisies. --}}
+                            <div style="margin-bottom:6px">{{ app()->getLocale() === 'en'
+                                ? 'Choose 1 or more provinces — each province is billed at its own price.'
+                                : 'Choisissez 1 ou plusieurs provinces — chaque province est facturée à son prix.' }}</div>
+                            <div style="display:flex;flex-direction:column;gap:4px">
+                                @foreach($provinces as $province)
+                                    <div style="display:flex;align-items:center;gap:10px">
+                                        <sl-checkbox class="ck-province-check" name="subscription_state_ids[]" value="{{ $province->id }}"
+                                            @checked(in_array($province->id, (array) old('subscription_state_ids', [])))>{{ $province->title }}</sl-checkbox>
+                                        <span class="ck-province-price" data-state="{{ $province->id }}" style="color:#666;font-size:.9rem"></span>
+                                    </div>
+                                @endforeach
+                            </div>
                             <div class="ui segment" style="display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;margin-top:10px;background:#fff">
                                 <strong>{{ app()->getLocale() === 'en' ? 'Price' : 'Prix' }}</strong>
                                 <strong id="province_price_display">—</strong>
@@ -550,6 +562,10 @@
                                         <input type="text" data-name="{{ app()->getLocale() }}[title]" {!! $ckEmpty !!}>
                                         <label>{{ $en2 ? 'JOB DESCRIPTION (tasks, requirements, schedule, how to apply)' : 'DESCRIPTION DU POSTE (tâches, exigences, horaire, comment postuler)' }}</label>
                                         <textarea data-name="{{ app()->getLocale() }}[description]"></textarea>
+                                        {{-- Bloc PHOTO (Denis 09.07) : le fournisseur insère l'image de
+                                             SON PROPRE formulaire de recrutement — affichée sur sa fiche. --}}
+                                        <label>{{ $en2 ? 'PHOTO — INSERT YOUR OWN RECRUITMENT FORM (image)' : 'PHOTO — INSÉREZ VOTRE PROPRE FORMULAIRE DE RECRUTEMENT (image)' }}</label>
+                                        <input type="file" data-name="image" accept="image/*">
                                     @endif
 
                                     <div class="ck-opt-actions">
@@ -808,8 +824,10 @@
 
                 {{-- ───────────── 4) MOT DE PASSE & CONDITIONS ───────────── --}}
                 <div class="registration-title">4. {{ app()->getLocale() === 'en' ? 'Password & terms' : 'Mot de passe & conditions' }}</div>
-                <div class="form__column"><input type="password" name="password" placeholder="{{ __('auth.register.password') }}" autocomplete="new-password"></div>
-                <div class="form__column"><input type="password" name="password_confirmation" placeholder="{{ __('auth.register.password_confirmation') }}" autocomplete="new-password"></div>
+                {{-- PASSWORD : blocs VIDES (Denis 09.07) — même parade que les coordonnées :
+                     le navigateur ne remplit jamais un champ readonly (retiré au focus). --}}
+                <div class="form__column"><input type="password" name="password" placeholder="{{ __('auth.register.password') }}" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"></div>
+                <div class="form__column"><input type="password" name="password_confirmation" placeholder="{{ __('auth.register.password_confirmation') }}" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"></div>
                 <div class="form__column">
                     <sl-checkbox name="accept_condition" value="1"><a href="{!! urlRouteName('term-of-use') !!}" target="_blank">{{ __('auth.register.terms') }}</a></sl-checkbox>
                 </div>
@@ -833,7 +851,8 @@
     var priceMap = {!! json_encode($priceMap, JSON_UNESCAPED_UNICODE) !!};
     var cat  = document.getElementById('service_category_id');
     var sub  = document.getElementById('subscription_id');
-    var prov = document.getElementById('subscription_state_id');
+    var provChecks = document.querySelectorAll('sl-checkbox.ck-province-check');
+    var provPrices = document.querySelectorAll('.ck-province-price');
     var postalSection = document.getElementById('postal_section');
     var provSection   = document.getElementById('province_section');
     var postalPriceEl = document.getElementById('postal_price_display');
@@ -871,15 +890,27 @@
                 postalPriceEl.textContent = '—';
             }
         }
-        // Province : prix du couple province × durée
+        // Provinces : prix affiché à côté de CHAQUE province, total = somme des
+        // provinces cochées (Denis 09.07 : 1 ou plusieurs provinces).
+        provPrices.forEach(function (span) {
+            var c = map[span.getAttribute('data-state')];
+            span.textContent = (c || c === 0) ? fmt.format(c) + (dur ? ' (' + dur + ')' : '') : '';
+        });
         if (provPriceEl) {
-            var pcost = map[val(prov)];
-            provPriceEl.textContent = (pcost || pcost === 0)
-                ? fmt.format(pcost) + (dur ? ' (' + dur + ')' : '')
+            var total = 0, picked = 0, missing = false;
+            provChecks.forEach(function (cb) {
+                if (!cb.checked) return;
+                picked++;
+                var c = map[cb.getAttribute('value')];
+                if (c || c === 0) { total += Number(c); } else { missing = true; }
+            });
+            provPriceEl.textContent = picked
+                ? (fmt.format(total) + (picked > 1 ? ' (' + picked + (en ? ' provinces' : ' provinces') + ')' : '') + (missing ? ' ⚠' : ''))
                 : '—';
         }
     }
     document.querySelectorAll('input[name="zone_type"]').forEach(function(r){ r.addEventListener('change', update); });
+    provChecks.forEach(function (cb) { cb.addEventListener('sl-change', update); });
     // Anti-remplissage automatique du navigateur (Denis 04.07 : « j'inscris 1 code
     // postal, tous les blocs répètent le même ») : un code en double est vidé —
     // chaque boîte doit contenir un code DIFFÉRENT (facturation par code).
@@ -896,7 +927,7 @@
         i.addEventListener('input', function(){ dedupePostals(); update(); });
         i.addEventListener('change', function(){ dedupePostals(); update(); });
     });
-    [cat, sub, prov].forEach(function(el){ if (el) el.addEventListener('sl-change', update); });
+    [cat, sub].forEach(function(el){ if (el) el.addEventListener('sl-change', update); });
     if (window.customElements && customElements.whenDefined) { customElements.whenDefined('sl-select').then(function(){ setTimeout(update,0); }); }
     setTimeout(update, 0);
 
