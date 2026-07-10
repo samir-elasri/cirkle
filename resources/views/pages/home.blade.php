@@ -11,7 +11,14 @@
     $platformType = $selectedProviderType ?? 'residential';
     // Catalogue complet (noir) : catégories (parents) -> professions (sous-catégories)
     $profsByCat = ($subcategories ?? collect())->groupBy('service_category_id');
+    // Caricatures « sur les côtés » (Denis 11.07) = les MÊMES images que le
+    // carrousel du haut (slides actifs de l'admin). Vide tant qu'aucune n'est ajoutée.
+    $sideCaricatures = \App\Models\Core\Slide::where('active', true)
+        ->whereNotNull('image')->where('image', '!=', '')
+        ->orderBy('position')->pluck('image');
 @endphp
+
+@include('partials.side-caricatures', ['caricatures' => $sideCaricatures])
 
 <section class="ck-home">
     <div class="optimal-content-width">
