@@ -1,16 +1,4 @@
 <div>
-	{{-- Halo blanc sur le texte du carrousel (Denis 11.07) : le rend lisible
-	     par-dessus une caricature claire et chargée. --}}
-	<style>
-		.slideshow__content h2,
-		.slideshow__text,
-		.slideshow__sub-text {
-			text-shadow:
-				0 0 6px #fff, 0 0 12px #fff,
-				-1px -1px 1px #fff, 1px -1px 1px #fff,
-				-1px 1px 1px #fff, 1px 1px 1px #fff;
-		}
-	</style>
 	<section data-component="slideshow" data-slideshow-auto-play-speed="{{ $auto_play_speed }}" class="slideshow" >
 		<div class="slides anim-fade-up" data-component="scrollfire" style="height: {{ round($height / $optimal_content_width * 100) }}vw; max-height: {{ $height }}px" >
 			@foreach($slides as $slide)
