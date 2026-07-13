@@ -355,7 +355,18 @@ class SubscriberController extends Controller
 					'capabilities', 'capability_input', 'custom_capabilities',
 				])
 			));
-			return redirect()->back()->withInput()->withErrors($validator);
+			// Denis 13.07 : les cases COORDONNÉES + CODES POSTAUX + MOT DE PASSE
+			// doivent rester VIDES même après une erreur de soumission (« il y a
+			// toujours des cases qui ne sont pas vides »). On EXCLUT ces champs du
+			// old() flashé — seuls la profession, la fiche et les choix (forfait/
+			// zone/options) sont conservés pour ne pas tout recommencer.
+			$emptyOnError = [
+				'company_name', 'owner_names', 'legal_form_id', 'federal_tax_number',
+				'street', 'city', 'postal_code', 'phone', 'toll_free_phone', 'fax',
+				'email', 'start_date', 'insurance_coverage', 'business_hours',
+				'postal_codes', 'password', 'password_confirmation',
+			];
+			return redirect()->back()->withInput($request->except($emptyOnError))->withErrors($validator);
 		}
 
 		// ── registerFormData : toutes les données des étapes 1, 2, 4 ──
