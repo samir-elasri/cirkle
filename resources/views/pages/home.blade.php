@@ -11,6 +11,11 @@
     $platformType = $selectedProviderType ?? 'residential';
     // Catalogue complet (noir) : catégories (parents) -> professions (sous-catégories)
     $profsByCat = ($subcategories ?? collect())->groupBy('service_category_id');
+    // Ruban de caricatures (Denis 16.07) : les 6 tuiles découpées de son image.
+    $caricTiles = [
+        'landscape-arborist-a', 'landscape-arborist-b', 'landscape-tree-worker',
+        'landscape-lawncare-a', 'landscape-lawncare-b', 'landscape-gardener',
+    ];
 @endphp
 
 <section class="ck-home">
@@ -142,5 +147,32 @@
         </div>
     </div>
 </section>
+
+{{-- Ruban de caricatures (Denis 16.07) : sous les professions, ~5 en vue, défile
+     lentement et en continu vers la DROITE. Discret (pas fatiguant). Les tuiles
+     sont dupliquées pour une boucle sans couture; pause au survol. --}}
+@if(!empty($caricTiles))
+<section class="ck-caric" aria-hidden="true">
+    <style>
+        .ck-caric { width:100%; overflow:hidden; padding:16px 0 20px;
+            background:#f4f8f4; border-top:1px solid #e6ece6; border-bottom:1px solid #e6ece6; }
+        .ck-caric__track { display:flex; gap:16px; width:max-content; padding:0 8px;
+            animation:ck-caric-slide 48s linear infinite; }
+        .ck-caric:hover .ck-caric__track { animation-play-state:paused; }
+        .ck-caric__tile { flex:0 0 auto; width:clamp(150px, calc(20vw - 16px), 300px); }
+        .ck-caric__tile img { width:100%; height:auto; display:block; border-radius:14px;
+            border:1px solid #e2e8e2; box-shadow:0 6px 18px rgba(22,27,38,.10); background:#fff; }
+        /* départ décalé d'une copie → mouvement vers la DROITE, boucle sans couture */
+        @keyframes ck-caric-slide { from { transform:translateX(-50%); } to { transform:translateX(0); } }
+        @media (max-width:560px){ .ck-caric__tile { width:44vw; } }
+        @media (prefers-reduced-motion: reduce){ .ck-caric__track { animation:none; } }
+    </style>
+    <div class="ck-caric__track">
+        @foreach(array_merge($caricTiles, $caricTiles) as $tile)
+            <div class="ck-caric__tile"><img src="{{ asset_with_version('/dist/img/caricatures/'.$tile.'.png') }}" alt=""></div>
+        @endforeach
+    </div>
+</section>
+@endif
 
 {!! $blocs !!}
