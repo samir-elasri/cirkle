@@ -154,8 +154,8 @@
 @if(!empty($caricTiles))
 <section class="ck-caric" aria-hidden="true">
     <style>
-        .ck-caric { width:100%; overflow:hidden; padding:16px 0 20px;
-            background:#f4f8f4; border-top:1px solid #e6ece6; border-bottom:1px solid #e6ece6; }
+        .ck-caric { width:100%; overflow:hidden; background:transparent;
+            margin-top:30px; padding:0 0 6px; }
         .ck-caric__track { display:flex; gap:16px; width:max-content; padding:0 8px;
             animation:ck-caric-slide 48s linear infinite; }
         .ck-caric:hover .ck-caric__track { animation-play-state:paused; }
