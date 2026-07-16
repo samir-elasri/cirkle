@@ -95,21 +95,50 @@
             {{-- Denis 24.06 : « la ligne FOURNISSEURS … servclient@ : le font + gros ». --}}
             <p class="ck-home__catalogue-contact" style="font-size:1.15em;font-weight:700">{{ $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à servclient@cirkleservices.com', 'Suppliers: if your profession is not listed, email us at servclient@cirkleservices.com') }}</p>
 
-            @foreach ($categories as $category)
-                @php $profs = ($profsByCat[$category->id] ?? collect())->filter(fn ($p) => !empty($p->title) && (($p->provider_type ?: 'residential') === $platformType)); @endphp
-                @if (!$category->title || $profs->isEmpty()) @continue @endif
-                <div class="ck-home__cat-row">
-                    <div class="ck-home__cat">{{ $category->title }}</div>
-                    <div class="ck-home__profs">
-                        {{-- Catalogue noir = liste de référence de TOUTES les professions de Cirkle,
-                             NON cliquable (Denis 01.07). Le client clique plutôt sur les professions
-                             en VERT qui apparaissent sous son code postal (partials/search). --}}
-                        @foreach ($profs as $prof)
-                            <span class="ck-home__prof">{{ $prof->title }}</span>
-                        @endforeach
+            {{-- Catalogue en BLOCS par catégorie (Denis 16.07 : « plus prof, moins
+                 tassé, dans des blocs… rajouter des infos ex. caricatures »). Chaque
+                 catégorie = une carte (même style que les colonnes du haut) avec un
+                 emplacement d'icône/caricature, un compteur, et ses professions en
+                 pastilles. Liste de RÉFÉRENCE non cliquable (Denis 01.07) — le vert
+                 cliquable apparaît après le code postal (partials/search). --}}
+            <style>
+                .ck-cat-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px; margin-top:.7em; }
+                .ck-cat-card { background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:16px; padding:16px 18px; box-shadow:0 10px 26px rgba(22,27,38,.07); }
+                .ck-cat-card__head { display:flex; align-items:center; gap:11px; margin-bottom:12px; padding-bottom:10px; border-bottom:2px solid #eaf3ec; }
+                .ck-cat-card__icon { width:40px; height:40px; flex:0 0 40px; border-radius:50%; object-fit:cover;
+                    background:linear-gradient(135deg,#e9f6ee,#d5efdd); display:flex; align-items:center; justify-content:center; }
+                .ck-cat-card__icon svg { width:20px; height:20px; fill:#00893e; }
+                .ck-cat-card__title { font-weight:800; color:#00893e; font-size:1.02rem; letter-spacing:.3px; text-transform:uppercase; }
+                .ck-cat-card__count { margin-left:auto; background:#eef6f0; color:#3c7a52; font-weight:700; font-size:.78rem; border-radius:999px; padding:3px 10px; white-space:nowrap; }
+                .ck-cat-card__profs { display:flex; flex-wrap:wrap; gap:7px 8px; }
+                .ck-cat-chip { background:#f5f8f5; border:1px solid #e6ece6; color:#1f2a22; font-size:.83rem; border-radius:9px; padding:5px 10px; line-height:1.2; }
+                @media (max-width:560px){ .ck-cat-cards { grid-template-columns:1fr; } }
+            </style>
+            <div class="ck-cat-cards">
+                @foreach ($categories as $category)
+                    @php $profs = ($profsByCat[$category->id] ?? collect())->filter(fn ($p) => !empty($p->title) && (($p->provider_type ?: 'residential') === $platformType)); @endphp
+                    @if (!$category->title || $profs->isEmpty()) @continue @endif
+                    <div class="ck-cat-card">
+                        <div class="ck-cat-card__head">
+                            {{-- Emplacement icône/caricature de la catégorie (Denis : « rajouter
+                                 des infos dans ces blocs ») : la caricature si définie, sinon une
+                                 pastille verte avec une icône générique. --}}
+                            @if (!empty($category->image))
+                                <img class="ck-cat-card__icon" src="{{ $category->image }}" alt="">
+                            @else
+                                <span class="ck-cat-card__icon"><svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5zm0 2.2 6.5 3.6L12 11.4 5.5 7.8 12 4.2zM5 9.3l6 3.3v7.1l-6-3.3V9.3zm14 0v7.1l-6 3.3v-7.1l6-3.3z"/></svg></span>
+                            @endif
+                            <span class="ck-cat-card__title">{{ $category->title }}</span>
+                            <span class="ck-cat-card__count">{{ $profs->count() }}</span>
+                        </div>
+                        <div class="ck-cat-card__profs">
+                            @foreach ($profs as $prof)
+                                <span class="ck-cat-chip">{{ $prof->title }}</span>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
 </section>
