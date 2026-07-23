@@ -1,6 +1,10 @@
 {{-- PAGE IDÉOLOGIE / ENGAGEMENT — contenu fourni par Denis
      (docs/WEB CIRKLE IDEOLOGIE ENGAGEMENT 20.06.25). Rendu dans la mise en page du site. --}}
-@php $loc = app()->getLocale(); $t = fn ($fr, $en) => $loc === 'en' ? $en : $fr; @endphp
+@php
+    $loc = app()->getLocale(); $t = fn ($fr, $en) => $loc === 'en' ? $en : $fr;
+    // Caricatures « groupes de 3 » (Denis 22.07 : « ajustement du slider et des images »).
+    $caricTiles = ['caric-01', 'caric-08', 'caric-17', 'caric-19', 'caric-10', 'caric-02'];
+@endphp
 
 <section class="ck-ideo">
     <div class="optimal-content-width">
@@ -93,5 +97,34 @@
         <p style="text-align:center"><span class="ck-ck">CIRKLESERVICES.COM</span></p>
     </div>
 </section>
+
+{{-- Bande de caricatures « groupes de 3 » (Denis 22.07) : quelques planches qui
+     défilent doucement pour illustrer la page. Versions web légères (/pro-web). --}}
+@if(!empty($caricTiles))
+<section class="ck-ideo-caric">
+    <style>
+        .ck-ideo-caric { width:100%; overflow:hidden; background:transparent; margin:8px 0 40px; }
+        .ck-ideo-caric__viewport { width:100%; overflow:hidden;
+            -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); }
+        .ck-ideo-caric__track { display:flex; gap:16px; width:max-content; padding:0 8px;
+            animation:ck-ideo-caric-slide 60s linear infinite; }
+        .ck-ideo-caric:hover .ck-ideo-caric__track { animation-play-state:paused; }
+        .ck-ideo-caric__tile { flex:0 0 auto; width:clamp(260px, 40vw, 460px); }
+        .ck-ideo-caric__tile img { width:100%; height:auto; display:block; border-radius:16px;
+            border:1px solid #e2e8e2; box-shadow:0 8px 22px rgba(22,27,38,.12); background:#fff; }
+        @keyframes ck-ideo-caric-slide { from { transform:translateX(-50%); } to { transform:translateX(0); } }
+        @media (max-width:560px){ .ck-ideo-caric__tile { width:78vw; } }
+        @media (prefers-reduced-motion: reduce){ .ck-ideo-caric__track { animation:none; } }
+    </style>
+    <div class="ck-ideo-caric__viewport">
+        <div class="ck-ideo-caric__track">
+            @foreach(array_merge($caricTiles, $caricTiles) as $tile)
+                <div class="ck-ideo-caric__tile"><img loading="lazy" src="{{ asset_with_version('/dist/img/caricatures/pro-web/'.$tile.'.jpg') }}" alt=""></div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 
 {!! $blocs ?? '' !!}

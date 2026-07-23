@@ -359,8 +359,77 @@ class PageController extends Controller
 
 		$params['structured_datas'] = $this->getStructuredDatas($page);
 
+		// Pages standard qui possèdent une mise en page dédiée (blade) — p. ex. la page
+		// Contact de Denis (id 29). On garde l'URL /{id}/{slug} existante mais on rend
+		// pages.<label> s'il existe (même convention que custom()). Sinon rendu par blocs.
+		$customStandardViews = [
+			'contact' => 'pages.contact',
+		];
+		$customView = $customStandardViews[$page->label] ?? null;
+		if ($customView && View::exists($customView)) {
+			$params['view_name'] = $customView;
+		}
+
 		// Retourne le rendu de la page
 		return $this->render($params);
+	}
+
+	/**
+	 * Formulaire « Contact rapide » de la page Contact (Denis 22.07).
+	 * Anti-bot : honeypot (ck_website) + middleware recaptcha (si activé plus tard).
+	 * Le courriel est envoyé à settings.reception_email.
+	 *
+	 * @param  RouteRequest  $request
+	 * @return RedirectResponse
+	 */
+	public function contactUs(RouteRequest $request): RedirectResponse
+	{
+		$loc = app()->getLocale();
+
+		$thanks = $loc === 'en'
+			? 'Thank you for contacting us! Please allow 24 to 48h for a reply by email or phone. Subject to holidays or acts of nature.'
+			: 'Merci de prendre contact avec nous ! 24h à 48h pour une réponse par courriel ou téléphone. Selon les jours fériés ou en raison de mère nature.';
+
+		// Honeypot : un robot remplit ce champ caché → on ignore silencieusement
+		// (on renvoie quand même le remerciement pour ne pas révéler le piège).
+		if (!empty($request->input('ck_website'))) {
+			return Redirect::back()->with('success', $thanks);
+		}
+
+		$data = $request->validate([
+			'name'    => ['required', 'string', 'max:150'],
+			'email'   => ['required', 'email', 'max:190'],
+			'phone'   => ['nullable', 'string', 'max:50'],
+			'message' => ['required', 'string', 'max:6000'],
+		]);
+
+		$to = setting()->reception_email ?: config('mail.from.address');
+
+		$body = ($loc === 'en' ? "New message from the Contact form:\n\n" : "Nouveau message du formulaire Contact :\n\n")
+			. "Nom : {$data['name']}\n"
+			. "Courriel : {$data['email']}\n"
+			. 'Téléphone : ' . ($data['phone'] ?: '—') . "\n\n"
+			. "Message :\n" . $data['message'] . "\n";
+
+		// Envoi en texte simple (Mail::raw) : fiable et sans dépendance au gabarit
+		// « mail::raw » d'AdminMail qui n'existe pas dans ce projet. Reply-To = le
+		// visiteur, pour que Cirkle réponde directement au courriel du client.
+		try {
+			Mail::raw($body, static function ($m) use ($to, $data) {
+				$m->to($to)
+					->subject('Contact rapide — cirkleservices.com')
+					->replyTo($data['email'], $data['name']);
+			});
+		} catch (Throwable $e) {
+			\Log::error('Contact form mail failed: ' . $e->getMessage());
+			return Redirect::back()
+				->with('error', $loc === 'en'
+					? 'Sorry, your message could not be sent. Please try again later.'
+					: "Désolé, votre message n'a pas pu être envoyé. Veuillez réessayer plus tard.")
+				->withInput();
+		}
+
+		return Redirect::back()->with('success', $thanks);
 	}
 
 	/**

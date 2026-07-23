@@ -21,3 +21,10 @@ yarn-error.log
 dump_err.log
 .DS_Store
 public_html.old.zip
+
+# Caricatures : seules les versions web légères (pro-web/) utilisées par le site sont
+# versionnées. Les planches pleine résolution, les bannières FB non encore utilisées et
+# les fichiers source (docx/pdf) restent locaux (trop lourds / non servis).
+/public_html/dist/img/caricatures/pro/
+/public_html/dist/img/caricatures/FACEBOOK-PUB-*.jpg
+/docs/caricatures-source/

@@ -11,11 +11,16 @@
     $platformType = $selectedProviderType ?? 'residential';
     // Catalogue complet (noir) : catégories (parents) -> professions (sous-catégories)
     $profsByCat = ($subcategories ?? collect())->groupBy('service_category_id');
-    // Ruban de caricatures (Denis 16.07) : les 6 tuiles découpées de son image.
+    // Caricatures par profession (Denis 22.07 — doc « CARICATURES PROFESSION PAR CHAT »).
+    // Chaque planche montre 3 personnages : c'est déjà un « groupe de 3 » (spec Denis :
+    // « groupes de 3 images pour un look plus équilibré »). On utilise les versions web
+    // allégées (/pro-web, ~80 Ko chacune) pour ne pas alourdir l'accueil.
     $caricTiles = [
-        'landscape-arborist-a', 'landscape-arborist-b', 'landscape-tree-worker',
-        'landscape-lawncare-a', 'landscape-lawncare-b', 'landscape-gardener',
+        'caric-01', 'caric-02', 'caric-06', 'caric-07', 'caric-08', 'caric-10',
+        'caric-12', 'caric-14', 'caric-15', 'caric-17', 'caric-18', 'caric-19',
     ];
+    // Phrase courte du site (Denis 22.07 : « 5 à 10 mots max »).
+    $ckTagline = $t('Le bon fournisseur, en 2 à 3 clics.', 'The right pro, in just 2–3 clicks.');
 @endphp
 
 <section class="ck-home">
@@ -148,29 +153,37 @@
     </div>
 </section>
 
-{{-- Ruban de caricatures (Denis 16.07) : sous les professions, ~5 en vue, défile
-     lentement et en continu vers la DROITE. Discret (pas fatiguant). Les tuiles
-     sont dupliquées pour une boucle sans couture; pause au survol. --}}
+{{-- Phrase courte + slider de caricatures « groupes de 3 » (Denis 22.07).
+     Chaque planche = 3 personnages ; elles défilent doucement et en continu vers la
+     DROITE — bannière dynamique discrète qui « donne vie » au site. Tuiles dupliquées
+     pour une boucle sans couture ; pause au survol ; fondus sur les bords. --}}
 @if(!empty($caricTiles))
-<section class="ck-caric" aria-hidden="true">
+<section class="ck-caric">
     <style>
-        .ck-caric { width:100%; overflow:hidden; background:transparent;
-            margin-top:30px; padding:0 0 6px; }
-        .ck-caric__track { display:flex; gap:16px; width:max-content; padding:0 8px;
-            animation:ck-caric-slide 48s linear infinite; }
+        .ck-caric { width:100%; overflow:hidden; background:transparent; margin-top:34px; padding:0 0 10px; }
+        .ck-caric__tagline { text-align:center; font-size:clamp(1.15rem,2.4vw,1.6rem); font-weight:900;
+            color:#00893e; margin:0 auto 16px; padding:0 16px; max-width:900px; line-height:1.25; text-wrap:balance; }
+        .ck-caric__viewport { width:100%; overflow:hidden;
+            -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); }
+        .ck-caric__track { display:flex; gap:18px; width:max-content; padding:0 9px;
+            animation:ck-caric-slide 70s linear infinite; }
         .ck-caric:hover .ck-caric__track { animation-play-state:paused; }
-        .ck-caric__tile { flex:0 0 auto; width:clamp(150px, calc(20vw - 16px), 300px); }
-        .ck-caric__tile img { width:100%; height:auto; display:block; border-radius:14px;
-            border:1px solid #e2e8e2; box-shadow:0 6px 18px rgba(22,27,38,.10); background:#fff; }
+        .ck-caric__tile { flex:0 0 auto; width:clamp(300px, 46vw, 520px); }
+        .ck-caric__tile img { width:100%; height:auto; display:block; border-radius:16px;
+            border:1px solid #e2e8e2; box-shadow:0 8px 22px rgba(22,27,38,.12); background:#fff; }
         /* départ décalé d'une copie → mouvement vers la DROITE, boucle sans couture */
         @keyframes ck-caric-slide { from { transform:translateX(-50%); } to { transform:translateX(0); } }
-        @media (max-width:560px){ .ck-caric__tile { width:44vw; } }
+        @media (max-width:560px){ .ck-caric__tile { width:80vw; } .ck-caric__track { gap:12px; } }
         @media (prefers-reduced-motion: reduce){ .ck-caric__track { animation:none; } }
     </style>
-    <div class="ck-caric__track">
-        @foreach(array_merge($caricTiles, $caricTiles) as $tile)
-            <div class="ck-caric__tile"><img src="{{ asset_with_version('/dist/img/caricatures/'.$tile.'.png') }}" alt=""></div>
-        @endforeach
+    <p class="ck-caric__tagline">{{ $ckTagline }}</p>
+    <div class="ck-caric__viewport">
+        <div class="ck-caric__track">
+            @foreach(array_merge($caricTiles, $caricTiles) as $tile)
+                <div class="ck-caric__tile"><img loading="lazy" src="{{ asset_with_version('/dist/img/caricatures/pro-web/'.$tile.'.jpg') }}" alt=""></div>
+            @endforeach
+        </div>
     </div>
 </section>
 @endif

@@ -146,10 +146,8 @@
 	   l'écran) + colonnes uniques sur téléphone. --}} */
 	@media (max-width:768px){
 		html, body{ overflow-x:hidden; max-width:100%; }
-		/* Carrousel : sans image, il ne laissait qu'une bande vide dont le texte
-		   « Promotion » débordait sur le sélecteur. Le message promo reste affiché
-		   dans la bannière juste en dessous. À revoir quand des caricatures y seront. */
-		.slideshow{ display:none !important; }
+		/* La bande diaporama vide est désormais masquée à la source
+		   (slideshow.blade.php ne rend plus une bannière sans image). */
 		.ck-home__cols{ grid-template-columns:1fr !important; }
 		.ck-home__col{ min-width:0 !important; max-width:100% !important; }
 		.ck-cat-cards{ grid-template-columns:1fr !important; }

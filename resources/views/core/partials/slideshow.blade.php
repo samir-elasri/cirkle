@@ -1,3 +1,12 @@
+@php
+	// Ne pas afficher une bannière vide : le diaporama d'accueil (slideshow 3, aussi
+	// utilisé par /profile) n'a qu'une diapo SANS image → bande vide en haut de page
+	// (Denis 22.07). On ne rend le diaporama que s'il existe au moins une diapo avec
+	// une image ou une vidéo. Dès que des diapos réelles sont ajoutées en admin, il
+	// réapparaît automatiquement.
+	$ckHasSlides = collect($slides)->contains(fn ($s) => !empty($s->image) || !empty($s->filename_video));
+@endphp
+@if($ckHasSlides)
 <div>
 	<section data-component="slideshow" data-slideshow-auto-play-speed="{{ $auto_play_speed }}" class="slideshow" >
 		<div class="slides anim-fade-up" data-component="scrollfire" style="height: {{ round($height / $optimal_content_width * 100) }}vw; max-height: {{ $height }}px" >
@@ -42,3 +51,4 @@
 		<hr class="on-mobile slideshow__end">
 	</section>
 </div>
+@endif
