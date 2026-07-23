@@ -29,8 +29,25 @@
         {{-- Sélecteur des 4 plateformes (résidentiel/B2B × FR/EN) — choix mis en évidence en jaune --}}
         @include('partials.platform-selector')
 
-        {{-- Bannières : promotion, lancement, recrutement + suggestion --}}
-        <p class="ck-home__banner ck-home__banner--promo">{{ $t('Promotion : avant le 1er octobre 2026, vous recevrez un crédit de 100,00 $.', 'Promotion: before October 1, 2026, you will receive a $100.00 credit.') }}</p>
+        {{-- Promotion « EN GROS » (Denis 23.07 : « où est la promotion en gros »). Elle
+             se trouvait avant dans la bande diaporama, retirée car sans image ; on la
+             remet ici, bien visible, en tête de l'accueil. --}}
+        <style>
+            .ck-promo-hero { display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;
+                text-align:center; margin:14px 0 12px; padding:16px 24px; border-radius:16px;
+                background:linear-gradient(135deg,#00993a,#0b7f36); color:#fff; box-shadow:0 10px 26px rgba(0,153,58,.28); }
+            .ck-promo-hero__badge { flex:0 0 auto; background:#ffd200; color:#7a5b00; font-weight:900; letter-spacing:.6px;
+                font-size:1.05rem; padding:8px 18px; border-radius:999px; text-transform:uppercase; }
+            .ck-promo-hero__text { margin:0; font-weight:800; font-size:clamp(1.05rem,2.2vw,1.5rem); line-height:1.3; }
+            .ck-promo-hero__text .amt { color:#ffd200; white-space:nowrap; }
+            @media (max-width:560px){ .ck-promo-hero { padding:14px 16px; gap:10px; } }
+        </style>
+        <div class="ck-promo-hero">
+            <span class="ck-promo-hero__badge">{{ $t('Promotion', 'Promotion') }}</span>
+            <p class="ck-promo-hero__text">{{ $t('Bienvenue sur CIRKLE ! Inscrivez-vous avant le 1er octobre 2026 et recevez un crédit de', 'Welcome to CIRKLE! Sign up before October 1, 2026 and get a credit of') }} <span class="amt">100,00&nbsp;$</span>.</p>
+        </div>
+
+        {{-- Bannières : lancement, recrutement + suggestion --}}
         <p class="ck-home__banner ck-home__banner--launch">{{ $t('Lancement officiel prévu pour le 1er octobre 2026.', 'Official launch planned for October 1, 2026.') }}</p>
         <p class="ck-home__banner ck-home__banner--recruit">{{ $t("Notre processus de recrutement « perpétuel » des fournisseurs se poursuit afin d'élargir notre réseau de partenaires.", 'Our ongoing supplier recruitment continues in order to grow our network of partners.') }}</p>
         <p class="ck-home__suggestion">{{ $t("Suggestion : profitez de votre présence pour naviguer Cirkle afin d'anticiper, prévoir et budgéter vos prochains services et/ou vos futurs projets.", 'Suggestion: use your visit to browse Cirkle to anticipate, plan and budget your next services and future projects.') }}</p>
