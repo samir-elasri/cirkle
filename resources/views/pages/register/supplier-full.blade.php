@@ -1081,6 +1081,43 @@
 })();
 </script>
 
+{{-- Denis 24.07 : « SPECIFY don't work ». Le champ « Precisez » se débloque quand le « O »
+     de la ligne est coché (verrou demandé le 22.06) — pas évident. Écouteur DÉLÉGUÉ : cliquer
+     dans le champ grisé coche le O automatiquement → on clique et on écrit directement. --}}
+<script>
+(function () {
+    document.addEventListener('pointerdown', function (e) {
+        var input = (e.target && e.target.closest) ? e.target.closest('.form-2350 .supplier-input') : null;
+        if (!input || !input.readOnly) return;
+        var row = input.closest('.form__row');
+        var box = row && row.querySelector('sl-checkbox');
+        if (box && !box.checked) { box.checked = true; box.dispatchEvent(new CustomEvent('sl-change', { bubbles: true })); }
+    });
+
+    // Denis 24.07 : dates des options PERMIS/DIPLÔME « pas conformes ». Ces champs attendent
+    // AAAA/MM (an/mois) mais rien ne le guidait. On ajoute un repère (placeholder), le clavier
+    // numérique, et un formatage auto (chiffres + « / » après l'année) → saisie conforme.
+    var DATE_FIELDS = ['graduated_at', 'start_date', 'expiry_date'];
+    function isOptDate(el) {
+        if (!el || el.tagName !== 'INPUT' || el.getAttribute('maxlength') !== '7') return false;
+        var dn = (el.getAttribute('data-name') || '').replace(/\[.*/, '');
+        return DATE_FIELDS.indexOf(dn) !== -1;
+    }
+    var ph = (document.documentElement.lang === 'en') ? 'YYYY/MM' : 'AAAA/MM';
+    document.addEventListener('focusin', function (e) {
+        if (!isOptDate(e.target)) return;
+        if (!e.target.getAttribute('placeholder')) e.target.setAttribute('placeholder', ph);
+        e.target.setAttribute('inputmode', 'numeric');
+    });
+    document.addEventListener('input', function (e) {
+        if (!isOptDate(e.target)) return;
+        var v = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+        if (v.length > 4) v = v.slice(0, 4) + '/' + v.slice(4);
+        e.target.value = v;
+    });
+})();
+</script>
+
 {{-- Filtre de la liste des professions selon la plateforme choisie (Résidentiel/B2B).
      Chaque profession existe une fois par plateforme (WW0001RE / WW0001B2BE…) : on n'affiche
      que celles de la plateforme sélectionnée pour supprimer les doublons. Si la plateforme n'a

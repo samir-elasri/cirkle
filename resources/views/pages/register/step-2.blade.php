@@ -137,9 +137,19 @@
         if (!row) return;
         var input = row.querySelector('.supplier-input');
         if (!input) return;
-        input.disabled = !box.checked;
+        input.readOnly = !box.checked;                                  // readOnly (pas disabled) : le champ reste cliquable
         input.classList.toggle('supplier-input--locked', !box.checked);
         if (box.checked) { input.focus(); }
+    });
+    // Denis 24.07 : « SPECIFY don't work ». En fait le champ « Precisez » se débloque quand
+    // on coche le « O » de la ligne — pas évident. On rend ça direct : cliquer dans le champ
+    // grisé coche le O tout seul → le fournisseur clique et écrit immédiatement.
+    document.addEventListener('pointerdown', function (e) {
+        var input = (e.target && e.target.closest) ? e.target.closest('.form-2350 .supplier-input') : null;
+        if (!input || !input.readOnly) return;
+        var row = input.closest('.form__row');
+        var box = row && row.querySelector('sl-checkbox');
+        if (box && !box.checked) { box.checked = true; box.dispatchEvent(new CustomEvent('sl-change', { bubbles: true })); }
     });
 
     {{-- Conclusion OBLIGATOIRE : bloque « Suivant » avec un message clair si pas cochée
