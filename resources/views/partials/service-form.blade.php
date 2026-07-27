@@ -28,9 +28,10 @@
         font: inherit; resize: vertical; overflow-y: auto; box-sizing: border-box;
     }
     .form-2350 .supplier-input::placeholder { color: #b0b0b0 !important; font-style: italic; }
-    /* « Précisez » verrouillé tant que le « O » du service n'est pas coché (demande Denis 22.06).
-       Cliquer dedans coche le O automatiquement (Denis 24.07) → curseur « texte » pour inviter à écrire. */
-    .form-2350 .supplier-input--locked { opacity: .55 !important; cursor: text; background: #efefef !important; }
+    /* « Précisez » verrouillé tant que le « O » à gauche n'est pas coché. Procédure CONSTANTE
+       demandée par Denis (22.06 + 27.07) : le fournisseur DOIT cocher le « O » AVANT d'écrire,
+       sinon ça crée des mélanges. Pas d'auto-coche : curseur « interdit » quand c'est verrouillé. */
+    .form-2350 .supplier-input--locked { opacity: .45 !important; cursor: not-allowed; background: #efefef !important; }
 </style>
 
 <div class="form-2350">
@@ -57,7 +58,7 @@
                 @if ($service->has_input || !empty($service->input_label))
                     <textarea class="supplier-input @if(!$svcChecked) supplier-input--locked @endif" rows="1"
                            name="service_input[{{ $service->id }}]"
-                           @if(!$svcChecked) readonly @endif
+                           @if(!$svcChecked) disabled @endif
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
                            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                     >{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}</textarea>
@@ -119,7 +120,7 @@
                 @if ($service->has_input || !empty($service->input_label))
                     <textarea class="supplier-input @if(!$capChecked) supplier-input--locked @endif" rows="1"
                            name="capability_input[{{ $service->id }}]"
-                           @if(!$capChecked) readonly @endif
+                           @if(!$capChecked) disabled @endif
                            placeholder="{{ $service->input_label ?: __('form.specify') }}"
                            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                     >{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}</textarea>
@@ -161,11 +162,11 @@
             var originalName = input.getAttribute('name') || '';
             function sync() {
                 if (box.checked) {
-                    input.readOnly = false;
+                    input.disabled = false;
                     if (originalName) input.setAttribute('name', originalName);
                     input.classList.remove('supplier-input--locked');
                 } else {
-                    input.readOnly = true;
+                    input.disabled = true;
                     input.removeAttribute('name');
                     input.classList.add('supplier-input--locked');
                 }

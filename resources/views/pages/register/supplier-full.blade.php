@@ -1081,20 +1081,10 @@
 })();
 </script>
 
-{{-- Denis 24.07 : « SPECIFY don't work ». Le champ « Precisez » se débloque quand le « O »
-     de la ligne est coché (verrou demandé le 22.06) — pas évident. Écouteur DÉLÉGUÉ : cliquer
-     dans le champ grisé coche le O automatiquement → on clique et on écrit directement. --}}
+{{-- Dates des options PERMIS/DIPLÔME : guidage du format AAAA/MM (Denis 24.07). --}}
 <script>
 (function () {
-    document.addEventListener('pointerdown', function (e) {
-        var input = (e.target && e.target.closest) ? e.target.closest('.form-2350 .supplier-input') : null;
-        if (!input || !input.readOnly) return;
-        var row = input.closest('.form__row');
-        var box = row && row.querySelector('sl-checkbox');
-        if (box && !box.checked) { box.checked = true; box.dispatchEvent(new CustomEvent('sl-change', { bubbles: true })); }
-    });
-
-    // Denis 24.07 : dates des options PERMIS/DIPLÔME « pas conformes ». Ces champs attendent
+    // Dates des options PERMIS/DIPLÔME « pas conformes ». Ces champs attendent
     // AAAA/MM (an/mois) mais rien ne le guidait. On ajoute un repère (placeholder), le clavier
     // numérique, et un formatage auto (chiffres + « / » après l'année) → saisie conforme.
     var DATE_FIELDS = ['graduated_at', 'start_date', 'expiry_date'];
