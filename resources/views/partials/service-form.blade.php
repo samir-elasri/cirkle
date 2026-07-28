@@ -183,7 +183,10 @@
                 }
             }
             sync();
-            box.addEventListener('sl-change', sync);
+            // Denis (option choisie) : cocher le « O » amène le curseur DIRECTEMENT dans le
+            // champ → on tape tout de suite. Le champ lui-même ne bascule jamais (il ne fait
+            // qu'écrire) : plus de confusion « cliquer pour activer » vs « cliquer pour écrire ».
+            box.addEventListener('sl-change', function () { sync(); if (box.checked) { input.focus(); } });
             if (window.customElements) { customElements.whenDefined('sl-checkbox').then(sync); }
         });
     })();
