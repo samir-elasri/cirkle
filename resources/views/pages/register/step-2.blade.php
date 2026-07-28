@@ -139,6 +139,9 @@
         if (!input) return;
         input.disabled = !box.checked;                                  // verrouillé tant que le « O » n'est pas coché
         input.classList.toggle('supplier-input--locked', !box.checked);
+        // repère : « cochez la case » quand verrouillé, vrai « Précisez » quand déverrouillé
+        if (box.checked && input.dataset.ph) { input.placeholder = input.dataset.ph; }
+        else if (!box.checked && input.dataset.hint) { input.placeholder = input.dataset.hint; }
         if (box.checked) { input.focus(); }
     });
 

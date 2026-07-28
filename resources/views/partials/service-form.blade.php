@@ -34,6 +34,13 @@
     .form-2350 .supplier-input--locked { opacity: .45 !important; cursor: not-allowed; background: #efefef !important; }
 </style>
 
+@php
+    // Repère quand le « Précisez » est verrouillé : dit clairement au fournisseur de cocher
+    // le « O » à gauche d'abord (Denis 27/28.07 — le champ semblait « ne pas marcher » parce
+    // que rien n'indiquait qu'il faut cocher la case en premier). Aucune auto-coche.
+    $ckHintPh = app()->getLocale() === 'en' ? '◄ Tick the box on the left to write here' : '◄ Cochez la case à gauche pour écrire ici';
+@endphp
+
 <div class="form-2350">
 
 <div class="form__column">
@@ -59,7 +66,8 @@
                     <textarea class="supplier-input @if(!$svcChecked) supplier-input--locked @endif" rows="1"
                            name="service_input[{{ $service->id }}]"
                            @if(!$svcChecked) disabled @endif
-                           placeholder="{{ $service->input_label ?: __('form.specify') }}"
+                           placeholder="{{ $svcChecked ? ($service->input_label ?: __('form.specify')) : $ckHintPh }}"
+                           data-ph="{{ $service->input_label ?: __('form.specify') }}" data-hint="{{ $ckHintPh }}"
                            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                     >{{ old('service_input.' . $service->id) ?? ($existingServiceInputs[$service->id] ?? (session('registerFormData.service_input.' . $service->id) ?? '')) }}</textarea>
                 @endif
@@ -121,7 +129,8 @@
                     <textarea class="supplier-input @if(!$capChecked) supplier-input--locked @endif" rows="1"
                            name="capability_input[{{ $service->id }}]"
                            @if(!$capChecked) disabled @endif
-                           placeholder="{{ $service->input_label ?: __('form.specify') }}"
+                           placeholder="{{ $capChecked ? ($service->input_label ?: __('form.specify')) : $ckHintPh }}"
+                           data-ph="{{ $service->input_label ?: __('form.specify') }}" data-hint="{{ $ckHintPh }}"
                            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                     >{{ old('capability_input.' . $service->id) ?? ($existingCapabilityInputs[$service->id] ?? (session('registerFormData.capability_input.' . $service->id) ?? '')) }}</textarea>
                 @endif
@@ -165,10 +174,12 @@
                     input.disabled = false;
                     if (originalName) input.setAttribute('name', originalName);
                     input.classList.remove('supplier-input--locked');
+                    if (input.dataset.ph) input.placeholder = input.dataset.ph;
                 } else {
                     input.disabled = true;
                     input.removeAttribute('name');
                     input.classList.add('supplier-input--locked');
+                    if (input.dataset.hint) input.placeholder = input.dataset.hint;
                 }
             }
             sync();
