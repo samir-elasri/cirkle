@@ -177,9 +177,11 @@ class ExcelImport
                         // On retire le mot-marqueur du libellé — le champ « Précisez » le remplace.
                         // « SPECIFY » = équivalent anglais (le master EN 25.06 est au format
                         // 3 colonnes avec des libellés SPECIFY — même règle que PRÉCISEZ).
-                        $hasInput = (bool) preg_match('/PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY/iu', $c);
+                        // « BY SUPPLIER » = variante anglaise que Denis emploie parfois (pas
+                        // « BY THE SUPPLIER », qui est descriptif) — ouvre aussi le champ (29.07).
+                        $hasInput = (bool) preg_match('/PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY|BY\s+SUPPLIER/iu', $c);
                         if ($hasInput) {
-                            $c = trim(preg_replace('/\s*:?\s*(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY)\s*:?\s*$/iu', '', $c));
+                            $c = trim(preg_replace('/\s*:?\s*(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY|BY\s+SUPPLIER)\s*:?\s*$/iu', '', $c));
                             $html = $this->stripInputMarker($html);
                         }
                         $entry = [
@@ -547,14 +549,16 @@ class ExcelImport
                 continue; // ligne de prix (forfait)
             }
 
-            // « SPECIFY: » — et Denis glisse parfois le français « PRÉCISEZ » dans ses
-            // fiches anglaises (WS0001RE 03.07) : les deux ouvrent le champ de saisie.
-            $hasInput = (bool) preg_match('/SPECIFY\s*:|PR[ÉE]CISEZ/iu', $bt);
+            // « SPECIFY » (avec ou sans « : ») — et Denis glisse parfois « PRÉCISEZ » ou
+            // « BY SUPPLIER » dans ses fiches anglaises : tous ouvrent le champ de saisie.
+            // Marqueurs INCONSTANTS d'une fiche à l'autre → on les reconnaît tous (29.07),
+            // sinon certains champs arrivaient sans case (« les Specify don't work »).
+            $hasInput = (bool) preg_match('/SPECIFY|PR[ÉE]CISEZ|BY\s+SUPPLIER/iu', $bt);
             $title = $bt;
             $html = $this->formattedText($worksheet->getCell("B{$r}"));
             if ($hasInput) {
-                $title = trim(preg_replace('/\s*:?\s*(SPECIFY|PR[ÉE]CISEZ)\s*:?\s*$/iu', '', $bt));
-                $html = trim(preg_replace('/(SPECIFY|PR[ÉE]CISEZ)\s*:?/iu', '', $html));
+                $title = trim(preg_replace('/\s*:?\s*(SPECIFY|PR[ÉE]CISEZ|BY\s+SUPPLIER)\s*:?\s*$/iu', '', $bt));
+                $html = trim(preg_replace('/(SPECIFY|PR[ÉE]CISEZ|BY\s+SUPPLIER)\s*:?/iu', '', $html));
             }
             if ($title === '') {
                 continue;
@@ -757,13 +761,13 @@ class ExcelImport
     }
 
     /**
-     * Retire le marqueur « PRÉCISEZ »/« PAR FOURNISSEUR » (et son « : ») du libellé HTML
-     * formaté : à l'écran, le champ de saisie « Précisez » remplace ce mot. Nettoie aussi
-     * les espaces et les <span> vides résiduels pour ne pas laisser de trou.
+     * Retire le marqueur « PRÉCISEZ »/« PAR FOURNISSEUR »/« SPECIFY »/« BY SUPPLIER »
+     * (et son « : ») du libellé HTML formaté : à l'écran, le champ de saisie « Précisez »
+     * remplace ce mot. Nettoie aussi les espaces et les <span> vides résiduels.
      */
     private function stripInputMarker(string $html): string
     {
-        $html = preg_replace('/(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY)\s*:?/iu', '', $html);
+        $html = preg_replace('/(PR[ÉE]CISEZ|PAR\s+FOURNISSEUR|SPECIFY|BY\s+SUPPLIER)\s*:?/iu', '', $html);
         $html = preg_replace('/<span[^>]*>\s*<\/span>/iu', '', $html);
         return trim($html);
     }
