@@ -191,7 +191,12 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		'url'
 	];
 
-	protected bool $bigData = true;
+	// Liste des inscrits en mode client (DataTables) plutôt que bigData serveur :
+	// permet la colonne « Type » + le n° C0/F0 (accesseurs, pas des colonnes SQL) et le
+	// filtre Clients/Fournisseurs, sans casser recherche/tri (Denis 31.07). En bigData,
+	// getRange référencerait ces champs comme colonnes SQL réelles → erreur. À revoir si
+	// la liste devient très grande (des milliers d'inscrits) → refaire un filtre serveur.
+	protected bool $bigData = false;
 
 	protected array $enum = [
 		'provider_type' => [
