@@ -203,11 +203,11 @@ class Subscriber extends Authenticatable implements TranslatableContract
 
 	protected array $grid = [
 		'id',
-		'member_number',
+		'formatted_member_number',
 		'name',
 		'company_name',
 		'email',
-		'is_provider',
+		'member_type',
 		'active'
 	];
 
@@ -226,6 +226,8 @@ class Subscriber extends Authenticatable implements TranslatableContract
 
 	protected array $niceNames = [
 		'member_number'                             => 'Numéro de membre',
+		'formatted_member_number'                   => 'Numéro de membre',
+		'member_type'                               => 'Type',
 		'email'                                     => 'Courriel',
 		'first_name'                                => 'Prénom',
 		'last_name'                                 => 'Nom',
@@ -323,6 +325,18 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		}
 
 		return sprintf('%s%05d', $this->is_provider ? 'F' : 'C', $this->member_number);
+	}
+
+	/**
+	 * Type d'inscrit affiché dans la grille admin : « Client » ou « Fournisseur »
+	 * (colonne texte → filtrable par le filtre « Clients / Fournisseurs » ajouté à la
+	 * liste des inscrits, Denis 31.07). Dérivé de is_provider, comme la lettre C/F.
+	 */
+	public function getMemberTypeAttribute(): string
+	{
+		return $this->is_provider
+			? '<span class="label label-warning">Fournisseur</span>'
+			: '<span class="label label-info">Client</span>';
 	}
 
 	/**
