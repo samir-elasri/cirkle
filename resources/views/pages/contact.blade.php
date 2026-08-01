@@ -33,7 +33,10 @@
 			.ck-contact__map { border-radius:16px; overflow:hidden; border:1px solid #e2efe6; min-height:320px; box-shadow:0 6px 22px rgba(10,20,14,.08); }
 			.ck-contact__map iframe { display:block; width:100%; height:100%; min-height:320px; border:0; }
 
-			.ck-contact__formwrap { max-width:760px; margin:0 auto; background:#fff; border:1px solid #e2efe6; border-radius:16px; padding:28px 26px; box-shadow:0 8px 26px rgba(10,20,14,.06); }
+			.ck-contact__bottom { display:grid; grid-template-columns:1.05fr .95fr; gap:28px; align-items:stretch; }
+			.ck-contact__formwrap { background:#fff; border:1px solid #e2efe6; border-radius:16px; padding:28px 26px; box-shadow:0 8px 26px rgba(10,20,14,.06); }
+			.ck-contact__photo { border-radius:16px; overflow:hidden; border:1px solid #e2efe6; box-shadow:0 8px 26px rgba(10,20,14,.06); min-height:340px; background:#eef4f0; }
+			.ck-contact__photo img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
 			.ck-contact__formtitle { text-align:center; font-size:1.5rem; font-weight:900; color:#0b3d29; margin:.1em 0 1em; }
 			.ck-contact__errors { background:#fdecec; border:1px solid #e0b4b4; color:#8a1f1f; border-radius:10px; padding:12px 16px; margin-bottom:18px; }
 			.ck-contact__errors ul { margin:.2em 0 0 1.1em; }
@@ -55,6 +58,8 @@
 
 			@media (max-width:768px) {
 				.ck-contact__top { grid-template-columns:1fr; }
+				.ck-contact__bottom { grid-template-columns:1fr; }
+				.ck-contact__photo { min-height:240px; }
 				.ck-contact__title { font-size:1.6rem; }
 				.ck-contact__map { min-height:260px; }
 				.ck-contact__map iframe { min-height:260px; }
@@ -109,7 +114,8 @@
 			</div>
 		</div>
 
-		{{-- Formulaire « Contact rapide » --}}
+		{{-- Formulaire « Contact rapide » + téléphoniste à droite (Denis 31.07) --}}
+		<div class="ck-contact__bottom">
 		<div class="ck-contact__formwrap">
 			<h2 class="ck-contact__formtitle">{{ $t('Contact rapide', 'Quick contact') }}</h2>
 
@@ -160,6 +166,12 @@
 					'Thank you for reaching out! 24 to 48h for a reply by email or phone.'
 				) }}</p>
 			</form>
+		</div>
+
+		{{-- Téléphoniste, à côté du formulaire « Contact rapide » (Denis 31.07) --}}
+		<div class="ck-contact__photo">
+			<img src="/dist/img/telephoniste-cirkleservices.webp" alt="{{ $t('Téléphoniste Cirkle Services', 'Cirkle Services receptionist') }}" loading="lazy">
+		</div>
 		</div>
 	</div>
 </section>
