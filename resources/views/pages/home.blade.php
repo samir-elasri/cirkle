@@ -120,7 +120,7 @@
         <div class="ck-home__catalogue">
             <p class="ck-home__catalogue-note">{{ $t('Recrutement continu en cours — liste complète des professions actuellement disponibles sur Cirkle :', 'Ongoing recruitment — complete list of professions currently available on Cirkle:') }}</p>
             {{-- Denis 24.06 : « la ligne FOURNISSEURS … servclient@ : le font + gros ». --}}
-            <p class="ck-home__catalogue-contact" style="font-size:1.15em;font-weight:700">{{ $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à servclient@cirkleservices.com', 'Suppliers: if your profession is not listed, email us at servclient@cirkleservices.com') }}</p>
+            <p class="ck-home__catalogue-contact" style="font-size:1.15em;font-weight:700">{!! $t('Fournisseurs : si votre profession ne figure pas dans la liste, écrivez-nous à <a href="mailto:servclient@cirkleservices.com" style="color:inherit;text-decoration:underline">servclient@cirkleservices.com</a>', 'Suppliers: if your profession is not listed, email us at <a href="mailto:servclient@cirkleservices.com" style="color:inherit;text-decoration:underline">servclient@cirkleservices.com</a>') !!}</p>
 
             {{-- Catalogue en BLOCS par catégorie (Denis 16.07 : « plus prof, moins
                  tassé, dans des blocs… rajouter des infos ex. caricatures »). Chaque
