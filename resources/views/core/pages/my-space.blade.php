@@ -235,16 +235,21 @@
                                 'expired'  => ['#d33', $ckEn ? 'EXPIRED' : 'EXPIRÉ'],
                             ];
                             $ckBadge = $ckBadges[$ckStatus] ?? $ckBadges['active'];
+                            // start_date/end_date ne sont PAS castées en dates sur le modèle
+                            // (chaînes) : optional(...)->format() rendait un champ vide.
+                            $ckFmt = static function ($d) {
+                                return $d ? \Carbon\Carbon::parse($d)->format('Y/m/d') : '—';
+                            };
                         @endphp
                         @if($ckSub)
-                            <div style="border:2px solid #e2e6df;border-radius:10px;padding:14px 18px;margin-bottom:16px;background:#fbfbf6">
+                            <div id="ck-sub-box" style="border:2px solid #e2e6df;border-radius:10px;padding:14px 18px;margin-bottom:16px;background:#fbfbf6">
                                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
                                     <strong>{{ $ckEn ? 'My subscription' : 'Mon abonnement' }} — {{ $ckSub->subscription?->title }}</strong>
                                     <span style="background:{{ $ckBadge[0] }};color:#fff;border-radius:12px;padding:2px 12px;font-weight:700;font-size:.85rem">{{ $ckBadge[1] }}</span>
                                 </div>
                                 <div style="font-size:.92rem">
-                                    {{ $ckEn ? 'Start' : 'Début' }} : <strong>{{ optional($ckSub->start_date)->format('Y/m/d') }}</strong>
-                                    — {{ $ckEn ? 'End' : 'Fin' }} : <strong>{{ optional($ckSub->end_date)->format('Y/m/d') }}</strong>
+                                    {{ $ckEn ? 'Start' : 'Début' }} : <strong>{{ $ckFmt($ckSub->start_date) }}</strong>
+                                    — {{ $ckEn ? 'End' : 'Fin' }} : <strong>{{ $ckFmt($ckSub->end_date) }}</strong>
                                     — {{ $ckEn ? 'Duration' : 'Durée' }} : <strong>{{ $ckMonths ? count($ckMonths) : $ckSub->subscription?->duration }} {{ $ckEn ? 'month(s)' : 'mois' }}</strong>
                                 </div>
                                 @if($ckMonths)
