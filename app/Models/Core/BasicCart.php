@@ -251,14 +251,34 @@ class BasicCart extends Model
 					$subscriber->is_public = true;
 					$subscriber->save();
 
+					// Mois CHOISIS (Denis : consécutifs ou non, parmi les 13 prochains).
+					// Calcul automatique (point D) : début = paiement si le mois courant
+					// est choisi, sinon le 1er du premier mois choisi; fin = dernier jour
+					// du dernier mois choisi. Sans mois choisis : ancien modèle continu.
+					$months = is_array($item->months ?? null) ? array_values(array_filter($item->months)) : [];
+					sort($months);
+					if ($months) {
+						$currentYm = now()->format('Y/m');
+						$startDate = $months[0] === $currentYm
+							? now()
+							: \Carbon\Carbon::createFromFormat('Y/m/d', $months[0] . '/01')->startOfDay();
+						$endDate = \Carbon\Carbon::createFromFormat('Y/m/d', end($months) . '/01')->endOfMonth();
+					} else {
+						$startDate = $item->start_datetime;
+						$endDate = $item->end_datetime;
+					}
+
 					PurchasedSub::create([
 						'order_id'        => $order->id,
 						'record_date'     => now(),
 						'subscription_id' => $item->id,
 						'state_id'        => $item->state_id ?? null, // zone : NULL = code postal, sinon province
 						'subscriber_id'   => $subscriber->id,
-						'start_date'      => $item->start_datetime,
-						'end_date'        => $item->end_datetime,
+						'start_date'      => $startDate,
+						'end_date'        => $endDate,
+						// UNESCAPED_SLASHES : « 2026/08 » et non « 2026\/08 » — la recherche
+						// des fournisseurs filtre le mois courant par LIKE sur cette colonne.
+						'months_json'     => $months ? json_encode($months, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null,
 						'active'          => true,
 					]);
 					break;

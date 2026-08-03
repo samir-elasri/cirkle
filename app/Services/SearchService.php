@@ -58,6 +58,7 @@ class SearchService
             ->where('active', true)
             ->where('is_public', true)
             ->where('registration_completed', true)
+            ->coveredThisMonth() // forfait par mois choisis : mois non couvert = invisible (Denis)
             ->whereIn('provider_type', $this->getProviderTypesForSearch($providerType))
             ->where('service_category_id', $professionId)
             ->inRandomOrder() // équité : ordre aléatoire à chaque consultation (spec)
@@ -70,6 +71,7 @@ class SearchService
         return Subscriber::where('active', true)
             ->where('is_public', true)
             ->where('registration_completed', true)
+            ->coveredThisMonth() // forfait par mois choisis : mois non couvert = invisible (Denis)
             ->where('service_category_id', $professionId)
             ->inRandomOrder()
             ->get();

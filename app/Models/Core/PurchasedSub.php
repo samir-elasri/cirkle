@@ -69,6 +69,7 @@ class PurchasedSub extends Model
 		'order_id',
 		'start_date',
 		'end_date',
+		'months_json',
 		'renewal_reminder_sent_at',
 		'cancel_at_period_end',
 		'pause_start_date',
@@ -214,4 +215,44 @@ class PurchasedSub extends Model
     {
         return false;
     }
+
+	/**
+	 * Mois couverts par le forfait (Denis : mois choisis, consecutifs ou non,
+	 * parmi les 13 prochains). Vide = ancien modele (periode continue).
+	 *
+	 * @return array<string> ex. ["2026/08", "2026/10"]
+	 */
+	public function coveredMonths(): array
+	{
+		return json_decode($this->months_json ?: '[]', true) ?: [];
+	}
+
+	/** L'abonnement couvre-t-il le mois donne (YYYY/MM) ? Defaut : le mois courant. */
+	public function coversMonth(?string $ym = null): bool
+	{
+		$ym = $ym ?: now()->format('Y/m');
+		$months = $this->coveredMonths();
+		if ($months) {
+			return in_array($ym, $months, true);
+		}
+
+		return $this->start_date && $this->end_date
+			&& now()->betweenIncluded($this->start_date, $this->end_date);
+	}
+
+	/** Statut calcule : active | upcoming | expired (Denis, point D). */
+	public function getPeriodStatusAttribute(): string
+	{
+		$months = $this->coveredMonths();
+		if ($months) {
+			$now = now()->format('Y/m');
+			if (in_array($now, $months, true)) { return 'active'; }
+			sort($months);
+			return $now < $months[0] ? 'upcoming' : 'expired';
+		}
+		if ($this->start_date && now()->lt($this->start_date)) { return 'upcoming'; }
+		if ($this->end_date && now()->gt($this->end_date)) { return 'expired'; }
+
+		return 'active';
+	}
 }

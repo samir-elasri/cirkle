@@ -206,9 +206,65 @@
                     <label for="subscription_id">{{ __('auth.register.subscription_id') }}</label>
                     <sl-select name="subscription_id" id="subscription_id" value="{{ old('subscription_id') }}">
                         @foreach($subscriptions as $subscription)
-                            <sl-option value="{{ $subscription->id }}" data-max-postal-codes="{{ $subscription->max_postal_codes }}">{{ $subscription->title }}</sl-option>
+                            <sl-option value="{{ $subscription->id }}" data-max-postal-codes="{{ $subscription->max_postal_codes }}" data-duration="{{ $subscription->duration }}">{{ $subscription->title }}</sl-option>
                         @endforeach
                     </sl-select>
+                </div>
+
+                {{-- CHOIX DES MOIS (Denis) : le fournisseur choisit SES mois — consécutifs
+                     OU NON — parmi les 13 prochains; le nombre = la durée du forfait.
+                     Règle (cas C) : chaque mois choisi = un mois de calendrier COMPLET;
+                     si le mois EN COURS est choisi, l'abonnement débute au paiement et ce
+                     mois compte comme complet (aucun prorata). --}}
+                @php
+                    $moisFr = ['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOÛT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DÉCEMBRE'];
+                    $moisEn = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+                    $monthChoices = [];
+                    for ($mi = 0; $mi < 13; $mi++) {
+                        $dt = now()->copy()->startOfMonth()->addMonths($mi);
+                        $monthChoices[] = [
+                            'value' => $dt->format('Y/m'),
+                            'label' => (app()->getLocale() === 'en' ? $moisEn[$dt->month - 1] : $moisFr[$dt->month - 1]) . ' ' . $dt->year,
+                            'current' => $mi === 0,
+                        ];
+                    }
+                    $oldMonths = (array) old('sub_months', []);
+                @endphp
+                <style>
+                    .ck-months { display:flex; flex-wrap:wrap; gap:8px; }
+                    .ck-month { border:2px solid #d9d9d9; border-radius:8px; padding:7px 12px; cursor:pointer;
+                        font-weight:600; font-size:.88rem; color:#555; background:#fff; user-select:none; display:flex; align-items:center; gap:6px; }
+                    .ck-month input { margin:0; }
+                    .ck-month.is-on { border-color:#1b9c5a; background:#f2f8f2; color:#157a47; }
+                    .ck-month.is-off { opacity:.5; cursor:not-allowed; }
+                </style>
+                <div class="form__column" id="sub_months_block">
+                    <label style="font-weight:700">
+                        {{ app()->getLocale() === 'en' ? 'YOUR SUBSCRIPTION MONTHS' : 'VOS MOIS D\'ABONNEMENT' }}
+                        — <span id="months_count">0</span>/<span id="months_needed">—</span>
+                    </label>
+                    <div style="font-size:.9rem;margin-bottom:6px">
+                        {{ app()->getLocale() === 'en'
+                            ? 'Choose YOUR months — consecutive OR NOT — among the next 13 months. The number of months = your plan.'
+                            : 'Choisissez VOS mois — consécutifs OU NON — parmi les 13 prochains mois. Le nombre de mois = votre forfait.' }}
+                    </div>
+                    <div class="ck-months" id="ck_months">
+                        @foreach ($monthChoices as $mc)
+                            <label class="ck-month @if(in_array($mc['value'], $oldMonths, true)) is-on @endif">
+                                <input type="checkbox" name="sub_months[]" value="{{ $mc['value'] }}"
+                                       @if(in_array($mc['value'], $oldMonths, true)) checked @endif>
+                                {{ $mc['label'] }}@if($mc['current']) ({{ app()->getLocale() === 'en' ? 'current' : 'en cours' }})@endif
+                            </label>
+                        @endforeach
+                    </div>
+                    <div style="background:#fff8e1;border:1px solid #ffd200;border-radius:8px;padding:8px 12px;font-size:.85rem;margin-top:8px">
+                        {{ app()->getLocale() === 'en'
+                            ? 'Rule: each chosen month = one FULL calendar month. If you choose the CURRENT month, your subscription starts as soon as you pay and that month counts as a full month (no prorating). Start date, end date, duration and status are calculated automatically.'
+                            : "Règle : chaque mois choisi = un mois de calendrier COMPLET. Si vous choisissez le mois EN COURS, votre abonnement débute dès votre paiement et ce mois compte comme un mois complet (aucun prorata). Les dates de début, de fin, la durée et le statut sont calculés automatiquement." }}
+                    </div>
+                    <div class="form__row--error">
+                        @foreach($errors->get('sub_months', '<small style="color: red">:message</small>') as $error){!! $error !!}@endforeach
+                    </div>
                 </div>
 
                 {{-- Deux SECTIONS visibles (Denis 02.07 : « 1 section pour code postal,
@@ -941,6 +997,57 @@
             if (r && !r.checked) { r.checked = true; update(); }
         });
     });
+})();
+</script>
+
+{{-- CHOIX DES MOIS d'abonnement (Denis) : le nombre de mois cochables = la durée du
+     forfait choisi; consécutifs ou non; présélection des N premiers mois (mois en
+     cours inclus) quand on change de forfait sans choix manuel. --}}
+<script>
+(function () {
+    var sub = document.getElementById('subscription_id');
+    var grid = document.getElementById('ck_months');
+    var countEl = document.getElementById('months_count');
+    var neededEl = document.getElementById('months_needed');
+    if (!sub || !grid) return;
+    var boxes = Array.prototype.slice.call(grid.querySelectorAll('input[type=checkbox]'));
+    var touched = {{ old('sub_months') ? 'true' : 'false' }};
+
+    function duration() {
+        var opt = sub.querySelector('sl-option[value="' + (sub.value || '') + '"]');
+        return opt ? parseInt(opt.getAttribute('data-duration') || '0', 10) : 0;
+    }
+    function selected() { return boxes.filter(function (b) { return b.checked; }); }
+    function paint() {
+        var n = duration();
+        var count = selected().length;
+        if (countEl) countEl.textContent = count;
+        if (neededEl) neededEl.textContent = n || '—';
+        boxes.forEach(function (b) {
+            var lab = b.closest('.ck-month');
+            lab.classList.toggle('is-on', b.checked);
+            var blocked = !b.checked && n > 0 && count >= n;
+            b.disabled = blocked;
+            lab.classList.toggle('is-off', blocked);
+        });
+    }
+    function preselect() {
+        var n = duration();
+        boxes.forEach(function (b, i) { b.checked = (i < n); });
+        paint();
+    }
+    grid.addEventListener('change', function () { touched = true; paint(); });
+    sub.addEventListener('sl-change', function () {
+        // nouveau forfait : si l'utilisateur n'a pas fait de choix manuel, on
+        // présélectionne les N premiers mois (mois en cours inclus)
+        if (!touched) { preselect(); } else { paint(); }
+    });
+    if (window.customElements && customElements.whenDefined) {
+        customElements.whenDefined('sl-select').then(function () {
+            setTimeout(function () { if (!touched && duration()) { preselect(); } else { paint(); } }, 0);
+        });
+    }
+    paint();
 })();
 </script>
 

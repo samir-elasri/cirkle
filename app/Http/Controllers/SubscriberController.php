@@ -275,6 +275,8 @@ class SubscriberController extends Controller
 			'conclusion_read'     => 'accepted',       // page CONCLUSION obligatoire au bas du 2350 (Denis 24.06)
 			'estimation_cost'     => 'nullable|numeric|min:0',
 			'subscription_id'     => 'required',
+			'sub_months'          => 'required|array',   // mois choisis (Denis : consécutifs ou non, parmi les 13 prochains)
+			'sub_months.*'        => 'string|regex:/^\d{4}\/\d{2}$/',
 			'password'            => 'required|regex:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/',
 			'password_confirmation' => 'required_with:password|same:password',
 			'accept_condition'    => 'accepted',
@@ -339,6 +341,23 @@ class SubscriberController extends Controller
 					? 'Please choose ONE website option (duration/price).'
 					: 'Veuillez choisir UNE option site web (durée/prix).');
 			}
+
+			// Mois choisis (Denis) : autant de mois que la durée du forfait, tous
+			// DISTINCTS et dans la fenêtre des 13 prochains mois (mois courant inclus).
+			$subscription = Subscription::find($request->input('subscription_id'));
+			if ($subscription) {
+				$needed = (int) $subscription->duration;
+				$window = [];
+				for ($mi = 0; $mi < 13; $mi++) {
+					$window[] = now()->copy()->startOfMonth()->addMonths($mi)->format('Y/m');
+				}
+				$months = array_values(array_unique(array_filter((array) $request->input('sub_months', []))));
+				if (count($months) !== $needed || array_diff($months, $window)) {
+					$v->errors()->add('sub_months', app()->getLocale() === 'en'
+						? "Please choose exactly {$needed} month(s) among the next 13 months (your plan = {$needed} month(s))."
+						: "Veuillez choisir exactement {$needed} mois parmi les 13 prochains mois (votre forfait = {$needed} mois).");
+				}
+			}
 		});
 
 		if ($validator->fails()) {
@@ -379,6 +398,10 @@ class SubscriberController extends Controller
 			'subscription_id', 'zone_type', 'postal_codes', 'subscription_state_ids',
 		]);
 		$form['zone_type'] = $zoneType;
+		// Mois d'abonnement choisis, triés (Denis : consécutifs ou non)
+		$subMonths = array_values(array_unique(array_filter((array) $request->input('sub_months', []))));
+		sort($subMonths);
+		$form['sub_months'] = $subMonths;
 
 		// Heures d'affaires : 7 jours (début → fin) → une seule chaîne stockée.
 		if (is_array($form['business_hours'] ?? null)) {
@@ -1944,6 +1967,9 @@ class SubscriberController extends Controller
 						$subscriptionItem->cost = (float) $resolvedCost * $nbCodes; // honoré par Subscription::getCostAttribute
 					}
 					$subscriptionItem->state_id = $zoneStateId; // zone enregistrée sur l'achat (BasicCart::buyCart)
+					// Mois choisis (Denis : consécutifs ou non) — buyCart calcule début/fin
+					// et enregistre months_json sur l'achat.
+					$subscriptionItem->months = $request->session()->get('registerFormData.sub_months') ?: null;
 					Cart::add($subscriptionItem);
 				}
 

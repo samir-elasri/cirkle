@@ -218,6 +218,39 @@
 
                         @endif --}}
 
+                        {{-- MON ABONNEMENT (Denis, point D) : début, fin, durée et statut
+                             calculés automatiquement + les mois couverts (consécutifs ou non). --}}
+                        @php($ckSub = $subscriber->purchasedSubs()->where('active', true)->orderByDesc('id')->first())
+                        @if($ckSub)
+                            @php($ckMonths = $ckSub->coveredMonths())
+                            @php($ckStatus = $ckSub->period_status)
+                            @php($ckEn = app()->getLocale() === 'en')
+                            <div style="border:2px solid #e2e6df;border-radius:10px;padding:14px 18px;margin-bottom:16px;background:#fbfbf6">
+                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                                    <strong>{{ $ckEn ? 'My subscription' : 'Mon abonnement' }} — {{ $ckSub->subscription?->title }}</strong>
+                                    @php($ckBadge = ['active' => ['#1b9c5a', $ckEn ? 'ACTIVE' : 'ACTIF'], 'upcoming' => ['#b25a00', $ckEn ? 'UPCOMING' : 'À VENIR'], 'expired' => ['#d33', $ckEn ? 'EXPIRED' : 'EXPIRÉ']][$ckStatus])
+                                    <span style="background:{{ $ckBadge[0] }};color:#fff;border-radius:12px;padding:2px 12px;font-weight:700;font-size:.85rem">{{ $ckBadge[1] }}</span>
+                                </div>
+                                <div style="font-size:.92rem">
+                                    {{ $ckEn ? 'Start' : 'Début' }} : <strong>{{ optional($ckSub->start_date)->format('Y/m/d') }}</strong>
+                                    — {{ $ckEn ? 'End' : 'Fin' }} : <strong>{{ optional($ckSub->end_date)->format('Y/m/d') }}</strong>
+                                    — {{ $ckEn ? 'Duration' : 'Durée' }} : <strong>{{ $ckMonths ? count($ckMonths) : $ckSub->subscription?->duration }} {{ $ckEn ? 'month(s)' : 'mois' }}</strong>
+                                </div>
+                                @if($ckMonths)
+                                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+                                        @foreach($ckMonths as $ckM)
+                                            <span style="border:1px solid {{ $ckM === now()->format('Y/m') ? '#1b9c5a' : '#cfdccf' }};background:{{ $ckM === now()->format('Y/m') ? '#f2f8f2' : '#fff' }};border-radius:12px;padding:2px 10px;font-size:.85rem;font-weight:600">{{ $ckM }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <div style="font-size:.85rem;color:#777;margin-top:8px">
+                                    {{ $ckEn
+                                        ? 'Renewal: manual for now — you will receive a reminder 10 days before the end (automatic renewal comes with Stripe).'
+                                        : 'Renouvellement : manuel pour le moment — vous recevrez un rappel 10 jours avant la fin (le renouvellement automatique arrive avec Stripe).' }}
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Le formulaire 2350 est LE formulaire du fournisseur (Denis) :
                              accessible et modifiable EN TOUT TEMPS, qu'il soit publié ou non. --}}
                         @php

@@ -422,6 +422,37 @@ class Subscriber extends Authenticatable implements TranslatableContract
 				->first() !== null); // return bool
 	}
 
+    /**
+     * Fournisseurs dont l'abonnement couvre le MOIS COURANT (Denis : forfaits par
+     * mois choisis, consecutifs ou non — un mois non couvert = invisible dans les
+     * resultats de recherche ce mois-la). Les comptes sans achat d'abonnement
+     * (demo, historiques) restent visibles : la regle ne s'applique qu'aux
+     * fournisseurs qui ONT des abonnements enregistres.
+     */
+    public function scopeCoveredThisMonth($query)
+    {
+        $ym = now()->format('Y/m');
+
+        return $query->where(function ($q) use ($ym) {
+            $q->whereDoesntHave('purchasedSubs', static function ($qq) {
+                $qq->where('active', true);
+            })->orWhereHas('purchasedSubs', static function ($qq) use ($ym) {
+                $qq->where('active', true)
+                    ->where('on_pause', false)
+                    ->where(function ($w) use ($ym) {
+                        $w->where(function ($legacy) {
+                            $legacy->whereNull('months_json')
+                                ->where('start_date', '<=', now())
+                                ->where('end_date', '>=', now());
+                        })->orWhere('months_json', 'like', '%"' . $ym . '"%')
+                            // tolère aussi la forme échappée « 2026\/08 » (anciens
+                            // enregistrements encodés sans JSON_UNESCAPED_SLASHES)
+                            ->orWhere('months_json', 'like', '%"' . str_replace('/', '\\\\/', $ym) . '"%');
+                    });
+            });
+        });
+    }
+
     public function activeSubscription(): HasOne {
         return $this->purchasedSubs()
             ->where('active', true)
