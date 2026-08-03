@@ -220,15 +220,26 @@
 
                         {{-- MON ABONNEMENT (Denis, point D) : début, fin, durée et statut
                              calculés automatiquement + les mois couverts (consécutifs ou non). --}}
-                        @php($ckSub = $subscriber->purchasedSubs()->where('active', true)->orderByDesc('id')->first())
+                        {{-- ATTENTION : ce fichier contient des blocs @php … @endphp, donc la
+                             forme EN LIGNE « @php(…) » est INTERDITE ici — Blade extrait les
+                             blocs bruts d'abord et apparierait « @php( » avec le « @endphp »
+                             suivant, avalant tout le HTML entre les deux (Mon espace 500). --}}
+                        @php
+                            $ckSub = $subscriber->purchasedSubs()->where('active', true)->orderByDesc('id')->first();
+                            $ckMonths = $ckSub ? $ckSub->coveredMonths() : [];
+                            $ckStatus = $ckSub ? $ckSub->period_status : null;
+                            $ckEn = app()->getLocale() === 'en';
+                            $ckBadges = [
+                                'active'   => ['#1b9c5a', $ckEn ? 'ACTIVE' : 'ACTIF'],
+                                'upcoming' => ['#b25a00', $ckEn ? 'UPCOMING' : 'À VENIR'],
+                                'expired'  => ['#d33', $ckEn ? 'EXPIRED' : 'EXPIRÉ'],
+                            ];
+                            $ckBadge = $ckBadges[$ckStatus] ?? $ckBadges['active'];
+                        @endphp
                         @if($ckSub)
-                            @php($ckMonths = $ckSub->coveredMonths())
-                            @php($ckStatus = $ckSub->period_status)
-                            @php($ckEn = app()->getLocale() === 'en')
                             <div style="border:2px solid #e2e6df;border-radius:10px;padding:14px 18px;margin-bottom:16px;background:#fbfbf6">
                                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
                                     <strong>{{ $ckEn ? 'My subscription' : 'Mon abonnement' }} — {{ $ckSub->subscription?->title }}</strong>
-                                    @php($ckBadge = ['active' => ['#1b9c5a', $ckEn ? 'ACTIVE' : 'ACTIF'], 'upcoming' => ['#b25a00', $ckEn ? 'UPCOMING' : 'À VENIR'], 'expired' => ['#d33', $ckEn ? 'EXPIRED' : 'EXPIRÉ']][$ckStatus])
                                     <span style="background:{{ $ckBadge[0] }};color:#fff;border-radius:12px;padding:2px 12px;font-weight:700;font-size:.85rem">{{ $ckBadge[1] }}</span>
                                 </div>
                                 <div style="font-size:.92rem">
