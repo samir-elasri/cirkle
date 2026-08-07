@@ -33,7 +33,8 @@
 			.ck-contact__map { border-radius:16px; overflow:hidden; border:1px solid #e2efe6; min-height:320px; box-shadow:0 6px 22px rgba(10,20,14,.08); }
 			.ck-contact__map iframe { display:block; width:100%; height:100%; min-height:320px; border:0; }
 
-			.ck-contact__bottom { display:grid; grid-template-columns:1.05fr .95fr; gap:28px; align-items:stretch; }
+			/* photo à GAUCHE, formulaire à droite (Steve 05.08) */
+			.ck-contact__bottom { display:grid; grid-template-columns:.95fr 1.05fr; gap:28px; align-items:stretch; }
 			.ck-contact__formwrap { background:#fff; border:1px solid #e2efe6; border-radius:16px; padding:28px 26px; box-shadow:0 8px 26px rgba(10,20,14,.06); }
 			.ck-contact__photo { border-radius:16px; overflow:hidden; border:1px solid #e2efe6; box-shadow:0 8px 26px rgba(10,20,14,.06); min-height:340px; background:#eef4f0; }
 			.ck-contact__photo img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
@@ -116,6 +117,11 @@
 
 		{{-- Formulaire « Contact rapide » + téléphoniste à droite (Denis 31.07) --}}
 		<div class="ck-contact__bottom">
+			{{-- Téléphoniste à GAUCHE, formulaire à droite (Steve 05.08 : « photo à gauche ») --}}
+			<div class="ck-contact__photo">
+				<img src="/dist/img/telephoniste-cirkleservices.webp" alt="{{ $t('Téléphoniste Cirkle Services', 'Cirkle Services receptionist') }}" loading="lazy">
+			</div>
+
 		<div class="ck-contact__formwrap">
 			<h2 class="ck-contact__formtitle">{{ $t('Contact rapide', 'Quick contact') }}</h2>
 
@@ -168,10 +174,6 @@
 			</form>
 		</div>
 
-		{{-- Téléphoniste, à côté du formulaire « Contact rapide » (Denis 31.07) --}}
-		<div class="ck-contact__photo">
-			<img src="/dist/img/telephoniste-cirkleservices.webp" alt="{{ $t('Téléphoniste Cirkle Services', 'Cirkle Services receptionist') }}" loading="lazy">
-		</div>
 		</div>
 	</div>
 </section>

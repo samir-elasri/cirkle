@@ -71,6 +71,7 @@ class BlocImage extends BlocModel implements TranslatableContract
 		'image',
 		'alt',
 		'legend',
+		'link_url',
 
 		'@ Paramètres généraux',
 		'top_spacing',
@@ -84,6 +85,11 @@ class BlocImage extends BlocModel implements TranslatableContract
 		'title',
 		'image',
 		'alt',
-		'legend'
+		'legend',
+		'link_url'
+	];
+
+	protected array $niceNames = [
+		'link_url' => "Lien cliquable de l'image (facultatif)",
 	];
 }

@@ -219,6 +219,7 @@ class Setting extends Model implements TranslatableContract
 
 		'pub_group_id',
 		'socials_mini_card_group_id',
+		'facebook_url',
 		'partner_mini_card_group_id',
 
 		'@Achats',
@@ -398,6 +399,7 @@ class Setting extends Model implements TranslatableContract
 		'default_bloc_inner_spacing' => 'Espacement par défaut dans les blocs',
 		'menu_is_sticky'             => 'Menu sticky',
 		'socials_mini_card_group_id' => 'Regroupement de mini fiches pour les réseaux sociaux',
+		'facebook_url' => 'Lien Facebook (bas de page)',
 		'pub_group_id'               => 'Regroupement publicités internes par défaut',
 		'news_default_image'         => 'Image par défaut pour les nouvelles',
 		'events_default_image'       => 'Image par défaut pour les évènements',

@@ -342,6 +342,22 @@ class SubscriberController extends Controller
 					: 'Veuillez choisir UNE option site web (durée/prix).');
 			}
 
+			// Mois du forfait SITE WEB : même règle que les mois d'abonnement
+			// (Denis 04-07.08 : « le même principe », « la même présentation »).
+			if ($request->input('url') && \App\Support\WebsiteForfait::isValid($request->input('url_forfait'))) {
+				$urlNeeded = (int) \App\Support\WebsiteForfait::months($request->input('url_forfait'));
+				$window = [];
+				for ($mi = 0; $mi < 13; $mi++) {
+					$window[] = now()->copy()->startOfMonth()->addMonths($mi)->format('Y/m');
+				}
+				$urlMonths = array_values(array_unique(array_filter((array) $request->input('url_months', []))));
+				if (count($urlMonths) !== $urlNeeded || array_diff($urlMonths, $window)) {
+					$v->errors()->add('url_months', app()->getLocale() === 'en'
+						? "Please choose exactly {$urlNeeded} website month(s) among the next 13 months."
+						: "Veuillez choisir exactement {$urlNeeded} mois de site web parmi les 13 prochains mois.");
+				}
+			}
+
 			// Mois choisis (Denis) : autant de mois que la durée du forfait, tous
 			// DISTINCTS et dans la fenêtre des 13 prochains mois (mois courant inclus).
 			$subscription = Subscription::find($request->input('subscription_id'));
@@ -542,6 +558,12 @@ class SubscriberController extends Controller
 		if ($request->input('url')) {
 			$subscriber->profile_url_activation_datetime = now();
 			$subscriber->url_forfait = $request->input('url_forfait');
+			// Mois choisis du site web (consécutifs ou non) — buyCart en déduit la date de fin.
+			$urlMonths = array_values(array_unique(array_filter((array) $request->input('url_months', []))));
+			sort($urlMonths);
+			$subscriber->url_months_json = $urlMonths
+				? json_encode($urlMonths, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+				: null;
 			$websiteUrl = trim((string) $request->input('website_url'));
 			if ($websiteUrl !== '') {
 				foreach (['fr', 'en'] as $loc) {

@@ -224,9 +224,19 @@ class BasicCart extends Model
                         else {
                             // Forfait site web : expiration PROPRE au forfait (palier × durée
                             // choisi). N'écrase plus la date de fin d'abonnement (feature #12).
-                            $months = \App\Support\WebsiteForfait::months($subscriber->url_forfait);
-                            if ($months) {
-                                $subscriber->url_forfait_end = now()->addMonths($months);
+                            // Si le fournisseur a choisi SES mois (Denis 04-07.08), la fin =
+                            // dernier jour du DERNIER mois choisi; sinon durée continue.
+                            $urlMonths = json_decode($subscriber->url_months_json ?: '[]', true) ?: [];
+                            sort($urlMonths);
+                            if ($urlMonths) {
+                                $subscriber->url_forfait_end = \Carbon\Carbon::createFromFormat(
+                                    'Y/m/d', end($urlMonths) . '/01'
+                                )->endOfMonth();
+                            } else {
+                                $months = \App\Support\WebsiteForfait::months($subscriber->url_forfait);
+                                if ($months) {
+                                    $subscriber->url_forfait_end = now()->addMonths($months);
+                                }
                             }
                         }
                         // Options mensuelles (Denis 08.07) : l'achat couvre UN mois — échéance

@@ -3906,3 +3906,216 @@ Samir El Asri
 Il me semble que le site est maintenant bon. Il ne nous reste plus qu’à avoir la clé secrète du compte Stripe et à faire un dernier test d’inscription d’un fournisseur pour terminer tout ça.
 
 D’accord, je vais mettre en place ces modifications ce soir.
+
+Denis Pare
+9:56 PM
+d,apres tes experiences y a t il d,autres choses a ameliorer ??
+
+Samir El Asri
+10:42 PM
+Bonjour Denis,
+
+
+
+Tes 4 points sur les forfaits sont faits. Vidéo ci-jointe (1 min 30) :
+
+
+
+A) ✅ Le fournisseur choisit SES mois — consécutifs ou non
+B) ✅ Les 13 prochains mois sont offerts
+C) ✅ La règle est écrite dans le formulaire : chaque mois choisi = un mois complet; si c'est le mois en cours, ça débute au paiement, aucun prorata
+D) ✅ Début, fin, durée et statut (ACTIF / À VENIR / EXPIRÉ) calculés automatiquement, visibles dans Mon espace
+
+
+
+Important : un mois NON payé = le fournisseur n'apparaît pas aux clients ce mois-là, et il revient automatiquement au mois suivant qu'il a payé.
+
+
+
+J'attends la clé Stripe pour le renouvellement automatique.
+
+
+
+Samir
+
+CIRKLE - forfaits par mois choisis.mp4 
+2 MB
+Je ne vois pas grand-chose d’autre à améliorer pour le moment, le site est bien.
+
+Tuesday, Aug 04
+DP
+Denis Pare
+11:15 PM
+svp le meme principe pour le forfait du site web
+steve me revient demain pour stripe
+
+Wednesday, Aug 05
+DP
+Denis Pare
+7:57 PM
+de Steve
+Plan de travaille
+
+
+
+1. Publicité – Priorités
+
+
+
+Ontario : Concentrer le budget publicitaire sur un seul secteur géographique pour maximiser l’impact.
+Publicité clients : Déterminer les services et métiers à mettre de l’avant en premier (priorisation des annonces).
+Publicité fournisseurs : Identifier les fournisseurs les plus importants pour les campagnes ciblées.
+2. Site Web – Ajustements et Optimisations
+
+
+
+Page d’accueil :
+Finaliser la photo du bas de page (section “indéfini”) avec un lien cliquable.
+Regrouper les images en groupe de 3 pour la version PC (au lieu de 2).
+Ajuster l’affichage pour les résolutions :
+Cellulaire : ✔
+PC 1920 × 1080 : ✔
+PC 2K, 3K, 4K : ajuster au conteneur central (optimal-content-width).
+Accès aux photos : Le client doit fournir toutes les photos nécessaires pour les intégrations.
+Sauvegarde : Dernière sauvegarde effectuée le 31 juillet 2026.
+Lien Facebook : Ajouter le lien Facebook dans le bas de page.
+Politique de vie privée (Loi 25) : Ajouter une page obligatoire expliquant :
+la collecte des renseignements personnels
+l’utilisation
+la protection
+le partage Cette politique doit être claire et transparente pour respecter la Loi 25 au Québec.
+3. Page Contact
+
+
+
+Ajouter l’image fournie :
+Photo à gauche
+4. Page Idéologie & Engagements
+
+
+
+Ajustements du slider et des images selon les besoins. (Référence : https://cirkleservices.com/fr/ideologie-engagement
+5. Support & Formation
+
+
+
+Préparer un accès au code du panneau admin sa peut-être aussi un vidéos sur YouTube.
+Fournir un court vidéo explicatif ou une documentation simple pour le bon fonctionnement du site.
+
+programmer un systeme de tirage 1)pour les membres clients 2) pour fournisseur 3) pour les cl et fourn
+
+Samir El Asri
+8:17 PM
+Monsieur Denis, j’attendais le message de Steve pour récupérer la clé secrète Stripe, et maintenant vous me demandez encore du travail ?
+
+
+
+J’ai déjà réalisé tout le travail initial convenu et je n’ai toujours pas été payé intégralement. Si vous continuez à ajouter de nouvelles fonctionnalités à chaque étape, le projet peut ne jamais se terminer. Ce n’est pas juste de me demander encore du travail sans avoir finalisé le paiement du travail déjà réalisé.
+
+La publicité et la communication n’ont jamais fait partie de votre cahier des charges ni de nos accords initiaux. La publicité est un travail complètement différent, qui relève davantage d’une agence de marketing que d’un développeur full-stack dont le travail porte sur le code.
+
+
+
+Je suis désolé si je peux paraître rude, j’essaie simplement d’être juste dans cette situation.
+
+Samir El Asri
+8:36 PM
+.
+.
+.
+.
+.
+.
+.
+Voici ce qu’on va faire : je vais faire les changements demandés par Steve concernant l’interface du site, aucun problème. En revanche, je ne ferai pas la partie publicité, car elle n’était pas prévue dans notre accord initial et relève plutôt du travail d’une agence marketing.
+
+Thursday, Aug 06
+DP
+Denis Pare
+12:20 AM
+avant de reclamer que le site est finaliser svp il faut que cirkle inclus tous les items incluent ds les 6 video original alors que ta cotation etait base sue ces 6 video ... d,apres moi il manque bocoup de points a finaliser ... laisses moi savoir tes intentions asap merci
+
+Samir El Asri
+9:13 AM
+Bonjour Monsieur Denis,
+
+
+
+J'espère que vous allez bien.
+
+
+
+Oui, je suis d'accord avec vous et je suis tout à fait disposé à réaliser tout ce qui a été discuté au départ, c'est-à-dire tout ce qui figure dans les 6 vidéos et dans le cahier des charges.
+
+
+
+En revanche, je ne réaliserai pas la partie publicité/marketing. Je n'ai jamais travaillé dans ce domaine, car je suis développeur et non spécialiste en marketing. De plus, la publicité n'a jamais été mentionnée dans les 6 vidéos ni dans le cahier des charges.
+
+
+
+Par ailleurs, les règles d'Upwork interdisent d'effectuer des travaux qui ne faisaient pas partie de l'accord initial et du prix convenu avec le client. Je ne peux donc pas enfreindre ces règles et mettre mon compte freelance en danger, car j'en dépends pour gagner ma vie et payer mes factures.
+
+
+
+https://drive.google.com/file/d/1mBd7iSFw3XI3AHWlgwtQ2dN6XVuBqxeS/view
+
+CIRKLE CAHIER DE CHARGES 010626.docx 
+CIRKLE CAHIER DE CHARGES 010626.docx
+254 kB
+Samir El Asri
+9:19 AM
+.
+.
+.
+.
+.
+.
+Donc, puisque vous estimez que le site n'est pas encore finalisé, en dehors de l'intégration de Stripe et des modifications de l'interface demandées par Steve, avant que je commence quoi que ce soit, j'aimerais que vous me fournissiez une liste finale numérotée (1, 2, 3, etc.) de tous les autres éléments qui, selon vous, doivent encore être ajoutés ou corrigés avant que le site soit entièrement prêt à être mis en ligne.
+
+
+
+Je tiens également à m'excuser si certains de mes messages vous ont contrarié. Ce n'est absolument pas mon intention de vous mettre la pression ou de vous manquer de respect. Mon objectif est le même que le vôtre : faire de CIRKLE le meilleur site possible. Je souhaite simplement que tout soit fait de manière juste et équitable pour chacun. 🙏
+
+DP
+Denis Pare
+8:20 PM
+-je suis d,accord que le marketing n,est as inclut
+-svp realise les items sur les 6 videos sans toucher a notre enreg du fourn 2350
+-pour m,aider a suivre travaux serait-il possible de resumer tous les items sur les video et tes commentaires et la realisation full stack pour chacun
+-laisses moi savoir si j,ai besoin d,autres conseils
+-nous sommes les 2 anxieux de finaliser le tout et lancer cirkle sur le web
+IMPORTANT: pour sauver bocoup de temps il est obligatoire que TU TE VERIFIE AVANT DE ME REMETTRE TES TRAVAUX
+
+DP
+Denis Pare
+8:42 PM
+sur le 2350 section prix pour le site web du fournisseur ... il faut offir la meme presentation que pour les tarifs
+
+DP
+Denis Pare
+9:28 PM
+en principe c,etait ta resposabilite de me le conseiller non ?
+
+Samir El Asri
+10:37 PM
+Oui, je vais faire une liste récapitulative et je reviendrai vers vous.
+
+Friday, Aug 07
+DP
+Denis Pare
+12:07 AM
+SVP ENVOIES MOI LE OU LES LIENS DES 6 VIDEO AVEC LESQUEL TU TRAVAIL
+
+Samir El Asri
+12:17 AM
+https://drive.google.com/file/d/1mBd7iSFw3XI3AHWlgwtQ2dN6XVuBqxeS/view
+
+DP
+Denis Pare
+6:59 PM
+j,espere recevoir la liste récapitulative aujourdhui ?
+
+DP
+Denis Pare
+8:04 PM
+j,ai remarqquer que tu n,a pas ajuster SUPPLIER WEB SITE i, 3, 6 mois de la meme facon que pour les tarifs

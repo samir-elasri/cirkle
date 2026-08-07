@@ -110,7 +110,10 @@
         .ck-ideo-caric__track { display:flex; gap:16px; width:max-content; padding:0 8px;
             animation:ck-ideo-caric-slide 60s linear infinite; }
         .ck-ideo-caric:hover .ck-ideo-caric__track { animation-play-state:paused; }
-        .ck-ideo-caric__tile { flex:0 0 auto; width:clamp(260px, 40vw, 460px); }
+        /* PC : 3 planches visibles (Steve 05.08, même règle que l'accueil) */
+        .ck-ideo-caric__tile { flex:0 0 auto; width:clamp(250px, 30vw, 420px); }
+        @media (min-width:1200px){ .ck-ideo-caric__tile { width:calc((var(--wide-content-width) - 32px) / 3); max-width:420px; } }
+        @media (min-width:2000px){ .ck-ideo-caric__viewport { max-width:var(--wide-content-width); margin:0 auto; } }
         .ck-ideo-caric__tile img { width:100%; height:auto; display:block; border-radius:16px;
             border:1px solid #e2e8e2; box-shadow:0 8px 22px rgba(22,27,38,.12); background:#fff; }
         @keyframes ck-ideo-caric-slide { from { transform:translateX(-50%); } to { transform:translateX(0); } }

@@ -153,6 +153,7 @@ class Subscriber extends Authenticatable implements TranslatableContract
 		'profile_url_activation_datetime',
 		'url_forfait',
 		'url_forfait_end',
+		'url_months_json',
 		'end_date',
 
 		'profile_license_active',

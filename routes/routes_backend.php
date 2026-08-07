@@ -56,6 +56,11 @@ Route::namespace('Admin')->prefix('/admin')->name('admin.')->group(function () {
         Route::get('plateformes', 'AdminPlatformController@edit')->name('plateformes.edit');
         Route::post('plateformes', 'AdminPlatformController@update')->name('plateformes.update');
 
+        // Système de tirage : clients / fournisseurs / les deux — Denis-Steve 05.08
+        Route::get('tirage', 'AdminDrawController@index')->name('tirage.index');
+        Route::post('tirage', 'AdminDrawController@run')->name('tirage.run');
+        Route::post('tirage/{id}/supprimer', 'AdminDrawController@destroy')->name('tirage.destroy');
+
         Route::post('excel/import', 'AdminExcelController@import')->name('excel.import');
 
 		/**

@@ -109,4 +109,26 @@
 	registerIconLibrary('system', { resolver: name => `/dist/assets/icons/${name}.svg`, mutator: svg => svg.setAttribute('fill', 'currentColor') });
 	</script>
 
+	{{-- ÉCRANS 2K / 3K / 4K (Steve 05.08) : le contenu reste dans le conteneur central
+	     au lieu de s'étirer sur toute la largeur. Le SCSS étant gelé, la règle vit ici.
+	     Mobile et 1920×1080 sont inchangés (les règles ne s'appliquent qu'au-delà). --}}
+	<style>
+		@media (min-width: 2000px) {
+			.optimal-content-width, .wide-content-width, .narrow-content-width { margin-left: auto; margin-right: auto; }
+			.page-footer__content, .main__content { margin-left: auto; margin-right: auto; }
+			/* bandeaux pleine largeur : on borne le contenu, pas le fond */
+			.ck-caric__viewport { max-width: var(--wide-content-width); margin: 0 auto; }
+		}
+		@media (min-width: 2560px) {
+			body { font-size: 1.06rem; }
+			.optimal-content-width, .wide-content-width { max-width: 128rem; }
+			.ck-caric__viewport { max-width: 128rem; }
+		}
+		@media (min-width: 3400px) {
+			body { font-size: 1.12rem; }
+			.optimal-content-width, .wide-content-width { max-width: 150rem; }
+			.ck-caric__viewport { max-width: 150rem; }
+		}
+	</style>
+
 </head>

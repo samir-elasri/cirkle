@@ -186,7 +186,10 @@
         .ck-caric__track { display:flex; gap:18px; width:max-content; padding:0 9px;
             animation:ck-caric-slide 70s linear infinite; }
         .ck-caric:hover .ck-caric__track { animation-play-state:paused; }
-        .ck-caric__tile { flex:0 0 auto; width:clamp(300px, 46vw, 520px); }
+        /* PC : 3 planches visibles à la fois (Steve 05.08 : « groupes de 3 au lieu de 2 »).
+           Chaque planche montre déjà 3 personnages. Mobile inchangé (règle plus bas). */
+        .ck-caric__tile { flex:0 0 auto; width:clamp(260px, 30vw, 430px); }
+        @media (min-width:1200px){ .ck-caric__tile { width:calc((var(--wide-content-width) - 36px) / 3); max-width:430px; } }
         .ck-caric__tile img { width:100%; height:auto; display:block; border-radius:16px;
             border:1px solid #e2e8e2; box-shadow:0 8px 22px rgba(22,27,38,.12); background:#fff; }
         /* départ décalé d'une copie → mouvement vers la DROITE, boucle sans couture */

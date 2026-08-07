@@ -372,6 +372,33 @@
                                     </optgroup>
                                 @endforeach
                             </select>
+                            {{-- MÊME PRINCIPE QUE LES TARIFS (Denis 04-07.08) : le fournisseur
+                                 choisit SES mois de site web — consécutifs ou non — parmi les
+                                 13 prochains; le nombre de mois = la durée du forfait choisi. --}}
+                            @php $oldUrlMonths = (array) old('url_months', []); @endphp
+                            <div id="url_months_block" style="display:none;margin-bottom:10px">
+                                <label style="display:block;font-weight:600;margin-bottom:4px">
+                                    {{ app()->getLocale() === 'en' ? 'YOUR WEBSITE MONTHS' : 'VOS MOIS DE SITE WEB' }}
+                                    — <span id="url_months_count">0</span>/<span id="url_months_needed">—</span>
+                                </label>
+                                <div style="font-size:.88rem;margin-bottom:6px">
+                                    {{ app()->getLocale() === 'en'
+                                        ? 'Choose YOUR months — consecutive OR NOT — among the next 13 months, exactly like your subscription plan.'
+                                        : 'Choisissez VOS mois — consécutifs OU NON — parmi les 13 prochains mois, exactement comme pour votre forfait d\'abonnement.' }}
+                                </div>
+                                <div class="ck-months" id="ck_url_months">
+                                    @foreach ($monthChoices as $mc)
+                                        <label class="ck-month @if(in_array($mc['value'], $oldUrlMonths, true)) is-on @endif">
+                                            <input type="checkbox" name="url_months[]" value="{{ $mc['value'] }}"
+                                                   @if(in_array($mc['value'], $oldUrlMonths, true)) checked @endif>
+                                            {{ $mc['label'] }}@if($mc['current']) ({{ app()->getLocale() === 'en' ? 'current' : 'en cours' }})@endif
+                                        </label>
+                                    @endforeach
+                                </div>
+                                <div class="form__row--error">
+                                    @foreach($errors->get('url_months', '<small style="color: red">:message</small>') as $error){!! $error !!}@endforeach
+                                </div>
+                            </div>
                             <input type="text" name="website_url" value="{{ old('website_url') }}" autocomplete="off"
                                    placeholder="{{ app()->getLocale() === 'en' ? 'Your website address (https://…)' : 'L\'adresse de votre site web (https://…)' }}"
                                    style="display:block;height:44px;padding:8px 12px;width:100%;max-width:420px;border:1px solid #d9d9d9;border-radius:8px;box-sizing:border-box">
@@ -1095,6 +1122,49 @@
     function sync(){ body.style.display = box.checked ? 'block' : 'none'; }
     box.addEventListener('sl-change', sync);
     if (window.customElements) { customElements.whenDefined('sl-checkbox').then(sync); }
+})();
+</script>
+
+{{-- MOIS du forfait SITE WEB : même mécanique que les mois d'abonnement — le
+     nombre de mois cochables = la durée du forfait site web choisi. --}}
+<script>
+(function () {
+    var sel = document.getElementById('url_forfait');
+    var block = document.getElementById('url_months_block');
+    var grid = document.getElementById('ck_url_months');
+    if (!sel || !block || !grid) return;
+    var boxes = Array.prototype.slice.call(grid.querySelectorAll('input[type=checkbox]'));
+    var countEl = document.getElementById('url_months_count');
+    var neededEl = document.getElementById('url_months_needed');
+    var touched = {{ old('url_months') ? 'true' : 'false' }};
+
+    function needed() {
+        var v = sel.value || '';
+        var parts = v.split('-');
+        return parts.length === 2 ? parseInt(parts[1], 10) : 0;
+    }
+    function paint() {
+        var n = needed();
+        block.style.display = n ? 'block' : 'none';
+        var count = boxes.filter(function (b) { return b.checked; }).length;
+        if (countEl) countEl.textContent = count;
+        if (neededEl) neededEl.textContent = n || '—';
+        boxes.forEach(function (b) {
+            var lab = b.closest('.ck-month');
+            lab.classList.toggle('is-on', b.checked);
+            var blocked = !b.checked && n > 0 && count >= n;
+            b.disabled = blocked;
+            lab.classList.toggle('is-off', blocked);
+        });
+    }
+    function preselect() {
+        var n = needed();
+        boxes.forEach(function (b, i) { b.checked = (i < n); });
+        paint();
+    }
+    grid.addEventListener('change', function () { touched = true; paint(); });
+    sel.addEventListener('change', function () { if (!touched) { preselect(); } else { paint(); } });
+    paint();
 })();
 </script>
 

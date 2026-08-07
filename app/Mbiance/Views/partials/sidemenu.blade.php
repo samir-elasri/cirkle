@@ -45,6 +45,13 @@
                     </a>
                 </li>
 
+                {{-- Lien fixe : tirage parmi les membres (clients / fournisseurs / les deux) --}}
+                <li class="{{ Request::segment(2) === 'tirage' ? 'active' : '' }}">
+                    <a href="/admin/tirage">
+                        <i class="fa fa-gift"></i><span class="text">Tirages</span>
+                    </a>
+                </li>
+
                 @foreach($menus as $menu)
 
 					@if($menu->Autorisation === "hide")
