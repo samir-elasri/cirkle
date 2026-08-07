@@ -28,6 +28,9 @@ class Kernel extends ConsoleKernel
 		// abonnements (rappels 7 jours avant expiration, grâce, fin de terme — feature #12).
 		// Requiert un cron serveur (N0C) : * * * * * php artisan schedule:run
 		$schedule->command('app:daily-cron')->dailyAt('06:00');
+
+		// Sauvegarde de la base (Steve 05.08) : chaque nuit, 14 copies conservees.
+		$schedule->command('cirkle:backup --keep=14')->dailyAt('03:30');
 	}
 
 	/**
