@@ -4119,3 +4119,8 @@ DP
 Denis Pare
 8:04 PM
 j,ai remarqquer que tu n,a pas ajuster SUPPLIER WEB SITE i, 3, 6 mois de la meme facon que pour les tarifs
+
+
+Samir El Asri
+10:11 PM
+Voici la liste: https://claude.ai/code/artifact/cda04a7d-a637-41ae-89ea-78e334406805, SAUVEGARDER LE LIEN SVP

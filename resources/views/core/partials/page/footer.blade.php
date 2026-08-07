@@ -18,6 +18,9 @@
 			@if(setting()->socialsMiniCardGroup?->count())
 				<div class="page-footer__socials">
 					@foreach(setting()->socialsMiniCardGroup->cards as $item)
+						{{-- Icône masquée tant qu'aucune adresse n'est saisie : sinon le lien
+						     ne mène nulle part (repéré à la vérification du 7 août). --}}
+						@continue(trim((string) $item->call_to_action_url) === '')
 						<a href="{{ $item->call_to_action_url }}" target="_blank">
 							<img
 								src="{{ $item->image }}"

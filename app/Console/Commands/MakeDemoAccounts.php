@@ -92,6 +92,35 @@ class MakeDemoAccounts extends Command
             $this->line('  Fiche démo  : ' . $cat->label . ' (#' . $cat->id . ', ' . $pick->count() . ' services cochés)');
         }
 
+        // ── Abonnement de démonstration (mois CHOISIS, consécutifs ou non) pour que
+        // l'encadré « Mon abonnement » de Mon espace ait quelque chose à montrer :
+        // dates calculées, statut ACTIF et pastilles des mois couverts.
+        $subscription = \App\Models\Core\Subscription::where('active', '=', true)
+            ->where('duration', '=', 3)->first()
+            ?? \App\Models\Core\Subscription::where('active', '=', true)->first();
+
+        if ($subscription) {
+            \App\Models\Core\PurchasedSub::where('subscriber_id', '=', $supplier->id)->delete();
+
+            $months = [
+                now()->format('Y/m'),
+                now()->copy()->addMonths(2)->format('Y/m'),
+                now()->copy()->addMonths(5)->format('Y/m'),
+            ];
+            $months = array_slice($months, 0, max(1, (int) $subscription->duration));
+
+            \App\Models\Core\PurchasedSub::create([
+                'record_date'     => now(),
+                'subscription_id' => $subscription->id,
+                'subscriber_id'   => $supplier->id,
+                'start_date'      => now(),
+                'end_date'        => \Carbon\Carbon::createFromFormat('Y/m/d', end($months) . '/01')->endOfMonth(),
+                'months_json'     => json_encode($months, JSON_UNESCAPED_SLASHES),
+                'active'          => true,
+            ]);
+            $this->line('  Abonnement  : ' . $subscription->title . ' — mois ' . implode(', ', $months));
+        }
+
         $this->info('Comptes démo prêts :');
         $this->line('  ADMIN       : ' . self::ADMIN_EMAIL . '  /  ' . $password);
         $this->line('  FOURNISSEUR : ' . self::SUPPLIER_EMAIL . '  /  ' . $password);
